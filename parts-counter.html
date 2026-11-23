@@ -118,6 +118,8 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 .gate{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:var(--acc2);font-size:14px}
 .nav5 button{font-size:12px}
 details.older{margin-top:6px}
+.guide details{border-top:1px solid var(--line);padding:2px 0}.guide summary{cursor:pointer;padding:10px 0;font-weight:600;font-size:16px}.guide details p{margin:0 0 10px;font-size:15px;line-height:1.5}
+.flow{display:flex;align-items:center;justify-content:space-between;gap:4px;margin:0 0 10px;font-size:13px;font-weight:600}.flow span{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:6px 8px}.flow i{color:var(--mute);font-style:normal}
 .bn .lic svg.ic,.lic svg.ic{color:#fff}
 .lk{display:block;margin:4px 0 2px auto;background:none;border:0;color:var(--acc);font:600 14px Barlow,sans-serif;padding:6px 0;cursor:pointer}
 details.cat>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0}details.cat .lic{width:28px;height:28px}
@@ -148,7 +150,7 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
   </section>
 
   <section id="t-store" hidden>
-    <p class="sub">You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of a step to unlock the next one, and every copy costs more than the last.</p>
+    <p class="sub">You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up.</p>
     <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
     <div id="caps"></div>
   </section>
@@ -166,13 +168,25 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
     <div id="shClosed"></div>
     <div id="shOpen" hidden>
       <div class="card"><div class="capg"><h3 class="bn" id="shHead"></h3></div><div class="kv" id="shFlow" style="margin-top:8px"></div></div>
-      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of a step to unlock the next one.</p>
+      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies.</p>
       <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
       <div id="shcaps"></div>
     </div>
   </section>
 
   <section id="t-more" hidden>
+    <h2>How it all fits together</h2>
+    <div class="card guide">
+      <p class="sub" style="margin:0 0 10px">The game is a chain. Money only flows as fast as the weakest link, so the puzzle is always: find the weak link, fix it, and see where the new one is.</p>
+      <div class="flow"><span>Shelves</span><i>→</i><span>Customers</span><i>→</i><span>Checkout</span><i>→</i><span>Money</span></div>
+      <details><summary>1. Selling parts</summary><p>Every product you stock sells some units each second. You only sell as much as the <b>smallest</b> of four things: what's on your shelves, what customers want, what checkout can ring up, and what stocking can put back out. The red box at the top of the screen is the one holding you back right now.</p></details>
+      <details><summary>2. Climbing the parts list</summary><p>Each part starts with the cheapest brand and climbs to the best, one truck or engine at a time. Stock 10 of a product to unlock the next. Stock 25 of a part's last product to move on to the next part. Every step costs more than the one before it.</p></details>
+      <details><summary>3. Keeping up in the Store</summary><p>More products means more units to move, so checkout, stocking and customers fall behind. Every product also takes shelf space. The Store tab is where you fix that. Each aisle is its own ladder: own 10 of an item to unlock the next. An item holds at most 25, so you can't just pile up cheap old gear. You have to move up.</p></details>
+      <details><summary>4. The service shop</summary><p>A few hours in, you can open a shop out back. Jobs earn money like parts do, but they cost more and pay back slower. The shop has its own chain: booked work, trucks coming in, service writers, technicians, and tools. The smallest one sets the pace. Booked jobs take bay slots, the way facings take shelf space. You build all of that in the Shop tab.</p></details>
+      <details><summary>5. Where the two sides meet</summary><p>Once the shop is open, every new part also needs the shop to keep up. You can't sell parts nobody installs. So you can't just race up the parts list: when a part is waiting on the shop, push the shop up, and it pays you back while it grows. The shop also earns close to half your income once it's running.</p></details>
+      <details><summary>6. Things that go wrong</summary><p>Spills and register jams slow checkout. Shoplifters take money. Backorders stop a department restocking for a while. In the shop, a broken lift cuts your tools, a sick technician cuts your labor, and a comeback costs money. Tap the banner (or the spill or thief in the picture) to fix what can be fixed. The rest clear up on their own.</p></details>
+      <details><summary>7. A good habit</summary><p>Glance at the red box, fix that link, then spend the rest on the next step of the parts list or the shop, whichever one the next part is waiting on. If a buy button is gray, you can't afford it yet, or there's no shelf or bay space left for it.</p></details>
+    </div>
     <h2>Income</h2><div class="card"><canvas id="chart" style="width:100%;height:150px;display:block"></canvas><p class="sub" id="chartCap" style="margin:6px 0 0"></p></div>
     <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><div id="cat"></div></div>
     <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
@@ -453,11 +467,10 @@ const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
 
 /* ---------- the store: four ladders, built like the parts list ----------
    Each aisle is a list of items, each item comes in a few makes or sizes.
-   Own 10 of a step to unlock the next one. Every step is priced at the point
-   on the parts ladder where the store will need it, and each copy costs more,
-   so the 11th copy of a step costs more than the first copy of the next. */
+   Own 10 of a step to unlock the next one. Every step is priced close to what a product costs
+   at the point on the parts ladder where the store will need it. */
 const AISLE_SPEC={
- ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:lg(3),N:300,items:[
+ ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:2,N:300,items:[
   ['Counter bell',['Brass','Chrome','Desk']],['Cash drawer',['APG','MMF','Star Micronics']],['Cash register',['Casio','Sharp','Royal']],
   ['Card reader',['Square','Clover','Verifone','Ingenico']],['Barcode scanner',['Honeywell','Zebra','Datalogic']],['Receipt printer',['Epson','Star Micronics','Bixolon']],
   ['Label printer',['Zebra','Brother','DYMO']],['Counter mat',['Rubber','Anti-fatigue','Gel']],['Parts catalog',['=Paper parts catalog','=Catalog binder set','=Catalog library']],
@@ -474,7 +487,7 @@ const AISLE_SPEC={
   ['Call center',['Day-shift','Two-shift','Around-the-clock']],['Shuttle fleet',['Small','Medium','Large']],['Automated order system',['Pilot','Full','Next-generation']],
   ['Same-day delivery network',['Metro','State','Regional']],['Parts network',['Regional','National','Continental']],['Overnight air freight',['Regional','National','International']],
   ['Global order platform',['Pilot','Full','Worldwide']]]},
- sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:lg(2.5),N:300,items:[
+ sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:2,N:300,items:[
   ['Box cutter',['Basic','Safety','Auto-retract']],['Step stool',['Plastic','Steel','Rolling']],['Hand truck',['Harper','Magliner','Wesco']],['Stock cart',['Rubbermaid','Uline','Akro-Mils']],
   ['Price gun',['Single-line','Two-line','Thermal']],['Part-time stock crew',['Weekend','Evening','Overnight']],['Rolling ladder',['Cotterman','Louisville','Werner']],
   ['Shelf labels',['Paper','Magnetic','Electronic']],['Inventory scanner',['Zebra','Honeywell','Datalogic']],['Pallet jack',['Crown','Raymond','Toyota']],
@@ -487,7 +500,7 @@ const AISLE_SPEC={
   ['Cross-dock',['Small','Regional','National']],['Distribution center',['Local','Regional','National']],['Truck fleet',['Small','Mid-size','Large']],
   ['Rail spur',['Short','Long','Double-track']],['Freight network',['Regional','National','Continental']],['Automated port',['River','Lake','Ocean']],
   ['Global logistics network',['Pilot','Full','Worldwide']]]},
- cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:lg(4),N:300,items:[
+ cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:2.1,N:300,items:[
   ['Business cards',['Plain','Two-sided','Embossed']],['Flyers',['Truck stop','Feed store','Fuel island']],['Window sign',['Paper','Vinyl','Neon']],
   ['Free coffee',['=Free coffee pot','=Coffee bar','=Espresso machine']],['Newspaper ad',['Classified','Quarter-page','Full-page']],['Phone book ad',['Line','Box','Full-page']],
   ['Radio spot',['Farm report','Morning drive','Ballgame']],['Yard sign',['Small','Lit','Digital']],['Parts website',['Basic','Catalog','Ordering']],
@@ -499,7 +512,7 @@ const AISLE_SPEC={
   ['National fleet program',['Starter','Growing','Major']],['Truck stop chain deal',['Regional','National','Coast-to-coast']],['Spokesperson',['Local','Regional','National']],
   ['Nationwide campaign',['Spring','Year-round','Coast-to-coast']],['Household name',['Known','Famous','Legendary']],
   ['International campaign',['=Canada campaign','=Mexico campaign','=Worldwide campaign']]]},
- sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:lg(6),N:720,items:[
+ sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:2.5,N:720,items:[
   ['Pegboard',['Small','Large','Wall']],['Slatwall',['4-foot','8-foot','16-foot']],['Wire shelving',['Edsal','Tennsco','Lyon']],['Bin shelving',['Akro-Mils','Lyon','Penco']],
   ['Steel shelving',['Lyon','Tennsco','Penco','Republic']],['Gondola',['Lozier','Madix']],['Endcap display',['Single','Double','Lit']],['Spinner rack',['Small','Tall','Double']],
   ['Drawer cabinet',['Lista','Stanley Vidmar','Lyon']],['Cantilever rack',['Light','Medium','Heavy']],['Tire rack',['Wall','Stacking','Mobile']],['Filter wall',['Small','Medium','Full']],['Battery rack',['Two-tier','Four-tier','Rolling']],['Hose reel rack',['Single','Double','Wall']],['Drum rack',['Two-drum','Four-drum','Bulk']],
@@ -517,7 +530,9 @@ const NEEDU=k=>Math.max(3,(13*k+5)*LADDER[k].u),NEEDF=k=>40+13*k;
 const STEP={};
 /* builds a set of capacity ladders (store aisles or shop sections) along a product ladder.
    needAt(g,k) is what group g has to keep up with at product step k; slot groups are spaced evenly. */
-function buildAisles(SPEC,LAD,needAt,slot){const OUT={},NL=LAD.length;
+const MAXC=25;/* a step holds at most this many copies: past that, move up to the next item */
+/* realAt(g,k): what group g really has to handle at product step k, given about 10 of each product */
+function buildAisles(SPEC,LAD,needAt,slot,realAt){const OUT={},NL=LAD.length;
  for(const [g,c] of Object.entries(SPEC)){
   /* names: the listed items, then later generations of the last ten items */
   const names=[];c.items.forEach(([it,vs],i)=>vs.forEach(v=>names.push({it:i,item:it,n:v[0]==='='?v.slice(1):`${v} ${lc(it)}`})));
@@ -529,16 +544,21 @@ function buildAisles(SPEC,LAD,needAt,slot){const OUT={},NL=LAD.length;
   const need=[];let mx=0;for(let k=0;k<NL;k++){mx=Math.max(mx,needAt(g,k));need.push(mx)}
   const n0=Math.log10(need[0]),n1=Math.log10(need[NL-1]),M=names.length,out=[];let cap=c.base,k=0,prevL=-1,prevA=0;
   const ks=[];for(let j=0;j<M;j++){if(isSlot)k=Math.round(j*(NL-1)/(M-1));else{const f=j/(M-1);while(k<NL-1&&.5*(Math.log10(need[k])-n0)/(n1-n0)+.5*k/(NL-1)<f-1e-9)k++}ks.push(k)}
+  let kb=0;
   for(let j=0;j<M;j++){k=ks[j];
-    /* 10 copies of a step carry you about halfway to where the next step opens */
+    /* when this step is actually needed: the first point where what you sell outgrows what you already have */
+    while(kb<NL-1&&realAt(g,kb)<cap*.95)kb++;
+    /* a full step (25 copies) carries you about halfway to where the next step opens */
     const tgt=.9*Math.sqrt(need[k]*need[ks[Math.min(j+1,M-1)]]);
-    let a=j===0?c.a0:Math.max(prevA*(isSlot?1:1.08),(tgt-cap)/UNLOCK_N);if(isSlot)a=Math.ceil(a);
-    let baseL=LAD[k].lam+c.off;if(j>0)baseL=Math.max(baseL,prevL+UNLOCK_N*lg(1.12)+lg(1.1));
-    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,amt:a,baseL,g2:1.12};if(j>0){const p=out[j-1];p.g2=10**((baseL-p.baseL)/10.5)}
-    out.push(s);STEP[s.id]=s;cap+=UNLOCK_N*a;prevL=baseL;prevA=a}
-  out[M-1].g2=out[M-2].g2;OUT[g]=out}
+    let a=j===0?c.a0:Math.max(prevA*(isSlot?1:1.08),(tgt-cap)/MAXC);if(isSlot)a=Math.ceil(a);
+    /* priced near what a product costs at the point this step is needed; each extra copy climbs gently, like parts do */
+    let baseL=LAD[j?kb:0].lam+c.off;if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
+    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,amt:a,baseL,g2:isSlot?1.15:1.2};
+    out.push(s);STEP[s.id]=s;cap+=MAXC*a;prevL=baseL;prevA=a}
+  OUT[g]=out}
  return OUT}
-const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh');
+const CUMU=[],CUMF=[];{let u=0,f=0;for(const s of LADDER){u+=needOf(s)*s.u;f+=needOf(s);CUMU.push(u);CUMF.push(f)}}
+const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh',(g,k)=>g==='sh'?CUMF[k]*2:g==='cu'?2*CUMU[k]/PER_CUST:2*CUMU[k]);
 
 
 const RANKS=[[-99,'Counter salesperson'],[4,'Senior counter salesperson'],[6,'Parts specialist'],[9,'Lead parts specialist'],[14,'Assistant parts manager'],[22,'Parts manager'],
@@ -647,33 +667,33 @@ const gateOf=s=>SV_GATE[s.k]===undefined?-1:SV_GATE[s.k];
 /* ---------- the shop: five sections, built like the store aisles ---------- */
 const PER_TRUCK=4;
 const SHOP_SPEC={
- vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:lg(2),N:900,items:[
+ vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:2.5,N:900,items:[
   ['Outdoor work pad',['Gravel','Paved','Covered']],['Service bay',['Single','Drive-through','Heated']],['Truck lift',['Rotary','Stertil-Koni','Mohawk']],
   ['Lube pit',['Single','Double','Express']],['Tire bay',['Single','Double','Express']],['Alignment bay',['Standard','Wide','Drive-on']],['Wash bay',['Manual','Brush','Touchless']],
   ['Trailer bay',['Single','Double','Pull-through']],['Paint booth',['Small','Truck-size','Downdraft']],['Body shop',['Small','Large','Full']],
   ['Heavy repair bay',['Single','Double','Crane-equipped']],['Shop building',['Steel','Insulated','Heated']],['Second shop',['Small','Large']],['Mobile service yard',['Small','Large']],
   ['Truck center',['Regional','Flagship']],['Service campus',['Starter','Full']],['Mega service center',['Single','Twin']],['National service network',['Regional','Coast-to-coast']]]},
- vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:lg(3),N:240,items:[
+ vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:3,N:240,items:[
   ['Shop helper',['Weekend','Evening','Day']],['Apprentice technician',['First-year','Second-year','Third-year']],['Lube technician',['Part-time','Full-time','Lead']],
   ['Tire technician',['Part-time','Full-time','Lead']],['Trailer technician',['Part-time','Full-time','Lead']],['Brake technician',['Junior','Certified','Senior']],
   ['Diesel technician',['Level 1','Level 2','Level 3']],['Electrical specialist',['Junior','Senior','Master']],['A/C technician',['Certified','Senior','Lead']],
   ['Mobile technician',['One-truck','Two-truck','Fleet']],['Body technician',['Junior','Senior','Master']],['Night shift',['Small','Full','Double']],
   ['Master technician',['Certified','Senior','Shop-leading']],['Shop foreman',['Day','Night','Lead']],['Technician school partnership',['Local','State','National']],
   ['Service team',['Regional','National']],['Technician network',['Regional','National','Continental']]]},
- vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:lg(3),N:240,items:[
+ vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:3,N:240,items:[
   ['Service counter',['Small','Busy','Full']],['Repair order forms',['Paper','Carbon copy','Digital']],['Service writer',['Trainee','Experienced','Senior']],
   ['Shop management system',['Fullbay','Karmak','Decisiv']],['Estimate software',['Basic','Pro','Fleet']],['Service advisor',['Junior','Senior','Lead']],
   ['Warranty clerk',['Part-time','Full-time','Lead']],['Shop parts runner',['Part-time','Full-time','Lead']],['Appointment desk',['One-line','Four-line','Call-ahead']],
   ['Fleet coordinator',['Local','Regional','National']],['Service manager',['New','Experienced','Veteran']],['Dispatch board',['Whiteboard','Digital','Live-map']],
   ['Service operations center',['Regional','National','Continental']]]},
- vc:{n:'Service customers',unit:'trucks/s',base:.3,a0:.1,off:lg(3),N:240,items:[
+ vc:{n:'Service customers',unit:'trucks/s',base:.3,a0:.1,off:2.7,N:240,items:[
   ['Free inspection sign',['Paper','Vinyl','Lit']],['Shop flyers',['Truck stop','Fuel island','Truck wash']],['Service coupon',['Oil change','Brake','PM']],
   ['Driver lounge',['=Coffee pot in the lounge','=Driver showers','=Full driver lounge']],['Service website',['Basic','Booking','Fleet']],
   ['Online reviews',['=A few good reviews','=Hundreds of good reviews','=Top-rated shop']],['Loaner truck',['=Loaner day cab','=Loaner sleeper','=Loaner fleet']],
   ['Shuttle service',['Local','Hotel','Citywide']],['Fleet service rep',['Part-time','Full-time','Senior']],['Fleet PM program',['Starter','Growing','Major']],
   ['Authorized service center',['=Cummins authorized service','=PACCAR authorized service','=Allison authorized service','=Eaton authorized service']],
   ['Roadside assistance program',['Local','Regional','National']],['24-hour service',['Weekend','Weeknight','Around-the-clock']],['National service contract',['Regional','National','Coast-to-coast']]]},
- ve:{n:'Tools & equipment',unit:'labor hrs/s',base:2,a0:.5,off:lg(2.5),N:240,items:[
+ ve:{n:'Tools & equipment',unit:'labor hrs/s',base:2,a0:.5,off:3,N:240,items:[
   ['Hand tools',['Basic','Pro','Master']],['Impact gun',['Milwaukee','DeWalt','Ingersoll Rand']],['Creeper',['Basic','Padded','Rolling-seat']],
   ['Oil drain cart',['Lincoln Industrial','Graco','Balcrank']],['Floor jack',['Basic','Air','Long-reach']],['Tire machine',['Coats','Hunter','Hofmann']],
   ['Wheel balancer',['Coats','Hunter','Hofmann']],['Diagnostic laptop',['Basic','Dealer','Multi-brand']],['Brake lathe',['Ammco','Hunter','Ranger']],
@@ -682,7 +702,8 @@ const SHOP_SPEC={
   ['Overhead crane',['Gantry','Bridge','Double-bridge']],['Fluid management system',['Basic','Metered','Automated']],['Robotic lube line',['Pilot','Full']],
   ['Predictive maintenance system',['Pilot','Fleet','Network']]]}};
 const SNEEDU=k=>Math.max(3,(13*k+5)*SVL[k].u),SNEEDF=k=>20+13*k;
-const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb');
+const SCUMU=[],SCUMF=[];{let u=0,f=0;for(const s of SVL){u+=svNeed(s)*s.u;f+=svNeed(s);SCUMU.push(u);SCUMF.push(f)}}
+const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb',(g,k)=>g==='vb'?SCUMF[k]*2:g==='vc'?2*SCUMU[k]/PER_TRUCK:2*SCUMU[k]);
 
 /* ---------- service goals and logbook ---------- */
 A.push({id:'svopen',n:'Open the service shop',ok:()=>S.sv.open});
@@ -992,7 +1013,7 @@ const costL=(baseL,g,n,k)=>baseL+n*lg(g)+lg((g**Math.min(k,2000)-1)/(g-1))+(k>20
 const canPay=cL=>S.cashL>=cL-1e-12;
 const maxAff=(baseL,g,n,room)=>{const x=S.cashL+lg(g-1)-baseL-n*lg(g);const y=x>15?x:lg(10**x+1);return Math.max(0,Math.min(room,Math.floor(y/lg(g)+1e-9)))};
 const skuAmt=s=>{const room=Math.max(1,shelfCap()-FAC),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.f,s.id),room)||1:m,room))};
-const bAmt=b=>{const m=S.ui.mode;return Math.max(1,m==='max'?maxAff(b.baseL,b.g2,L(S.b,b.id),1e6)||1:m)};
+const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(b.baseL,b.g2,L(S.b,b.id),room)||1:m))};
 const cur=()=>LADDER[S.top];
 
 /* ---------- shop math ---------- */
@@ -1005,7 +1026,7 @@ const svTechs=()=>(SHOP_SPEC.vt.base+capOfS('vt'))*(S.inc&&S.inc.type==='sick'?.
 const svTools=()=>(SHOP_SPEC.ve.base+capOfS('ve'))*(S.inc&&S.inc.type==='lift'?.4:1);
 const svCur=()=>SVL[S.sv.top];
 const jobAmt=s=>{const room=Math.max(1,svSlots()-SFAC),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.sv.f,s.id),room)||1:m,room))};
-const shAmt=b=>{const m=S.ui.mode;return Math.max(1,m==='max'?maxAff(b.baseL,b.g2,L(S.sv.b,b.id),1e6)||1:m)};
+const shAmt=b=>{const room=Math.max(1,MAXC-L(S.sv.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(b.baseL,b.g2,L(S.sv.b,b.id),room)||1:m))};
 /* the shop job a parts step is waiting on, or -1 */
 const gateNeed=k=>{const g=gateOf(LADDER[k]);return g>=0&&(!S.sv.open||S.sv.top<g)?g:-1};
 const offCap=()=>12*3600;
@@ -1042,8 +1063,8 @@ function unlock(quiet){while(S.top<NS-1){const s=LADDER[S.top];if(L(S.f,s.id)<ne
 function buySku(s,k){if(s.k>S.top||FAC+k>shelfCap())return false;const c=costL(s.lam,s.g,L(S.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.f[s.id]=L(S.f,s.id)+k;FAC+=k;return true}
 function openShop(){if(S.sv.open||S.top<SV_OPEN_K||!canPay(SV_OPEN_L))return false;S.cashL=subL(S.cashL,SV_OPEN_L);S.sv.open=true;return true}
 function buyJob(s,k){recountSv();if(!S.sv.open||s.k>S.sv.top||SFAC+k>svSlots())return false;const c=costL(s.lam,s.g,L(S.sv.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.f[s.id]=L(S.sv.f,s.id)+k;SFAC+=k;return true}
-function buyShop(b,k){if(!S.sv.open||b.j>S.sv.sTop[b.g])return false;const c=costL(b.baseL,b.g2,L(S.sv.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.b[b.id]=L(S.sv.b,b.id)+k;return true}
-function buyBld(b,k){if(b.j>S.sTop[b.g])return false;const c=costL(b.baseL,b.g2,L(S.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.b[b.id]=L(S.b,b.id)+k;return true}
+function buyShop(b,k){if(!S.sv.open||b.j>S.sv.sTop[b.g]||L(S.sv.b,b.id)+k>MAXC)return false;const c=costL(b.baseL,b.g2,L(S.sv.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.b[b.id]=L(S.sv.b,b.id)+k;return true}
+function buyBld(b,k){if(b.j>S.sTop[b.g]||L(S.b,b.id)+k>MAXC)return false;const c=costL(b.baseL,b.g2,L(S.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.b[b.id]=L(S.b,b.id)+k;return true}
 
 /* ---------- incidents: they clear on their own, tapping clears them sooner ---------- */
 function events(){const t=now();
@@ -1124,8 +1145,8 @@ function capCards(el,o){$(el).innerHTML=Object.entries(o.spec).map(([g,c])=>`<di
   <div class="sprog" id="cp-${g}"></div><div id="ci-${g}"></div><div id="co-${g}"></div></div>`).join('')}
 capCards('caps',STORE_O);capCards('shcaps',SHOP_O);
 const sRow=(s,c,o)=>{const own=o.own(),tops=o.tops();if(s.j>tops[s.g])return `<div class="item locked"><h3 class="bn">${icSvg(s.ic)}${esc(s.n)}</h3><span class="lock">Locked</span><p>+${fmt(s.amt)} ${c.unit} each</p></div>`;
-  const k=o.amt(s),cost=costL(s.baseL,s.g2,L(own,s.id),k);
-  return `<div class="item"><h3 class="bn">${icSvg(s.ic)}<span>${esc(s.n)}</span><span class="ct">×${fmt(L(own,s.id))}</span></h3><button class="btn pri" data-${o.attr}="${s.id}" ${canPay(cost)?'':'disabled'}>+${fmt(k)}<small>${moneyL(cost)}</small></button><p>+${fmt(s.amt)} ${c.unit} each</p></div>`};
+  const n=L(own,s.id),full=n>=MAXC,k=o.amt(s),cost=costL(s.baseL,s.g2,n,k);
+  return `<div class="item"><h3 class="bn">${icSvg(s.ic)}<span>${esc(s.n)}</span><span class="ct">×${fmt(n)} of ${MAXC}</span></h3><button class="btn pri" data-${o.attr}="${s.id}" ${!full&&canPay(cost)?'':'disabled'}>${full?'Full':`+${fmt(k)}<small>${moneyL(cost)}</small>`}</button><p>+${fmt(s.amt)} ${c.unit} each</p></div>`};
 const sItem=(st,it,c,all,o)=>{const tops=o.tops(),rows=st.filter(s=>s.it===it&&(all||s.j<=tops[s.g]+3));const own=rows.filter(s=>s.j<=tops[s.g]).length,tot=st.filter(s=>s.it===it).length;
   return `<div class="ihd"><b class="bn">${icSvg(rows[0].ic)}${esc(rows[0].item)}</b><small>${own} of ${tot} unlocked</small></div>`+rows.slice().reverse().map(s=>sRow(s,c,o)).join('')};
 /* vals: what each group provides now; need: what it has to keep up with; slot: the group measured in slots */
