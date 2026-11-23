@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Parts Counter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calm, tidy, a well-run parts counter
+   IDEA: the parts catalog and the store's dashboard
+   PICTURE: the store itself, drawn small at the top: shelves, counter, customers
+   COLOUR and TYPE: warm paper, white cards, one dealership red; Barlow Condensed numbers, Barlow text
+   LAYOUT: compact header, dashboard strip, content, bottom tab bar */
+:root{color-scheme:light dark;
+--bg:light-dark(#f3f1ed,#111315);--card:light-dark(#ffffff,#1b1e22);--ink:light-dark(#1d1f22,#ecebe8);--mute:light-dark(#6b6f75,#9aa0a6);
+--line:light-dark(#e6e2da,#2a2e33);--soft:light-dark(#f7f5f1,#22262b);--acc:light-dark(#c8371d,#ff6a4d);--acc2:light-dark(#fbe9e5,#3a1d17);
+--good:light-dark(#2e7d32,#66bb6a);--warn:light-dark(#b26a00,#ffb74d);--bad:light-dark(#c62828,#ef5350);--sh:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+.num{font-family:'Barlow Condensed',Barlow,sans-serif;font-variant-numeric:tabular-nums}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;max-width:720px;margin:auto}
+.who{flex:1}.who b{display:block;font:700 17px/1.1 'Barlow Condensed',sans-serif}.who small{color:var(--mute);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.money{text-align:right;flex:none}#cash{font:700 clamp(28px,8vw,38px)/1 'Barlow Condensed',sans-serif;white-space:nowrap}#cps{color:var(--good);font-size:14px;font-weight:600;white-space:nowrap}
+.dash{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:720px;margin:8px auto 0}
+.dash div{background:var(--card);border-radius:10px;padding:5px 8px;box-shadow:var(--sh);border:1.5px solid transparent}
+.dash small{display:block;font-size:11px;color:var(--mute);text-transform:none;letter-spacing:.01em}
+.dash b{font:700 16px/1.2 'Barlow Condensed',sans-serif}
+.dash .lim{border-color:var(--bad)}.dash .lim small{color:var(--bad);font-weight:600}
+.fixrow{max-width:720px;margin:6px auto 0;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute)}
+.fixrow span{flex:1}
+main{max-width:720px;margin:auto;padding:12px 16px calc(96px + env(safe-area-inset-bottom))}
+.stage{position:relative;height:150px;border-radius:14px;overflow:hidden;background:var(--card);box-shadow:var(--sh);margin-bottom:12px}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.banner{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--acc2);border-radius:12px;padding:8px 12px;margin-bottom:12px;font-size:15px}
+h2{font:700 24px/1.1 'Barlow Condensed',sans-serif;margin:18px 0 8px}h2:first-child{margin-top:4px}
+h3{margin:0;font:700 18px/1.15 'Barlow Condensed',sans-serif}
+.sub{color:var(--mute);font-size:14px;margin:0 0 10px}
+.card{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:14px;margin-bottom:10px}
+.btn{min-height:44px;border-radius:10px;border:0;background:var(--soft);color:var(--ink);font:600 15px/1.2 Barlow,sans-serif;padding:8px 14px;cursor:pointer;touch-action:manipulation}
+.btn:disabled{background:var(--soft);color:var(--mute);cursor:default}.btn:disabled small{opacity:1}
+.btn.pri{background:var(--acc);color:#fff}.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn small{display:block;font-weight:500;font-size:12px;opacity:.9;white-space:nowrap}
+.btn:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--acc) 60%,transparent);outline-offset:2px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tools{display:grid;gap:8px;margin-bottom:12px}
+.search{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:16px Barlow,sans-serif;padding:8px 12px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;min-height:36px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Barlow,sans-serif;padding:0 14px;cursor:pointer}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg{display:inline-flex;background:var(--soft);border-radius:10px;padding:3px}.seg button{min-height:36px;border:0;background:none;color:var(--mute);font:600 14px Barlow,sans-serif;padding:0 12px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--sh)}
+details.line{background:var(--card);border-radius:14px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden}
+details.line>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:32px minmax(0,1fr) auto 16px;gap:10px;align-items:center;padding:12px 14px}
+details.line>summary::-webkit-details-marker{display:none}
+details.line>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);margin-top:-4px}
+details.line[open]>summary::after{transform:rotate(-135deg);margin-top:4px}
+.dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.lsum small{display:block;color:var(--mute);font-size:13px}.lval{text-align:right;font:700 16px 'Barlow Condensed',sans-serif;color:var(--good);white-space:nowrap}
+.lbody{padding:0 10px 10px}
+details.part{border-top:1px solid var(--line)}
+details.part>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 4px;font-weight:600}
+details.part>summary::-webkit-details-marker{display:none}
+details.part>summary small{color:var(--mute);font-weight:500;font-size:13px;white-space:nowrap}
+.fit{font:600 13px Barlow,sans-serif;color:var(--mute);margin:8px 4px 4px}
+.sku{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 4px;border-radius:10px}
+.sku:nth-child(odd){background:var(--soft)}
+.star{width:28px;height:28px;border:0;background:none;color:var(--line);font-size:20px;line-height:1;cursor:pointer;padding:0}.star.on{color:#e0a800}
+.sn b{display:block;font-weight:600;font-size:15px;line-height:1.2}.sn small{display:block;color:var(--mute);font-size:13px}
+.sn .p{font-size:11px;font-weight:600;padding:1px 6px;border-radius:6px;margin-left:4px;vertical-align:1px}
+.pV{background:light-dark(#e7f3e8,#1f3321);color:light-dark(#2e7d32,#81c784)}.pO{background:light-dark(#e5eef9,#1a2a40);color:light-dark(#1565c0,#90caf9)}.pP{background:light-dark(#f3e7f7,#33203a);color:light-dark(#7b1fa2,#ce93d8)}
+.sku .btn{min-width:92px;min-height:42px;padding:4px 8px;text-align:center}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}.item p{margin:0;color:var(--mute);font-size:14px}.item .btn{grid-column:2;grid-row:1/3;min-width:104px;text-align:center}
+.item h3 .ct{color:var(--mute);font-weight:600;margin-left:6px;font-size:15px}
+.capg{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.capg b{font:700 20px 'Barlow Condensed',sans-serif}
+.meter{height:6px;background:var(--soft);border-radius:3px;overflow:hidden}.meter i{display:block;height:100%;background:var(--good);border-radius:3px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:15px}.kv span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
+.goal{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:15px}.goal:first-child{border-top:0}
+.goal i{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none}.goal.ok i{background:var(--good);border-color:var(--good)}
+.log p{margin:0;padding:10px 0;border-top:1px solid var(--line);font-size:15px}.log p:first-child{border-top:0}.log small{display:block;color:var(--mute);font-size:12px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;font-size:15px;cursor:pointer}
+.tog input{width:44px;height:26px;appearance:none;background:var(--line);border-radius:13px;position:relative;cursor:pointer;flex:none;transition:background .15s}
+.tog input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tog input:checked{background:var(--good)}.tog input:checked::after{transform:translateX(18px)}
+textarea{width:100%;min-height:70px;font:13px/1.4 ui-monospace,monospace;border:1px solid var(--line);border-radius:10px;background:var(--soft);color:var(--ink);padding:8px}
+nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:12;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:4px 8px calc(4px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+nav.bar button{position:relative;border:0;background:none;color:var(--mute);font:600 12px Barlow,sans-serif;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
+nav.bar button svg{width:24px;height:24px}nav.bar button[aria-selected=true]{color:var(--acc)}
+nav.bar .n{position:absolute;top:4px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:var(--acc);color:#fff;font:600 11px/18px Barlow,sans-serif;padding:0 5px}
+.empty{color:var(--mute);text-align:center;padding:20px 0;font-size:15px}
+.modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
+.mbox{background:var(--card);border-radius:18px;padding:20px;width:min(400px,100%)}
+.big{font:700 40px/1 'Barlow Condensed',sans-serif;color:var(--good);margin:6px 0 12px}
+#toast{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:92vw;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:12px;font-size:14px;display:none;z-index:20;box-shadow:var(--sh)}
+[hidden]{display:none!important}
+@media (max-width:380px){.dash{grid-template-columns:repeat(2,minmax(0,1fr))}.sku .btn{min-width:82px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.sku{grid-template-columns:30px minmax(0,1fr) auto}
+.sku.locked{opacity:.55}.lock{font:600 13px Barlow,sans-serif;color:var(--mute);padding:0 10px}
+.fit{color:var(--ink);font-weight:700;margin-top:12px}
+#prog{border:1.5px solid var(--acc)}
+.ihd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:14px 0 2px;padding-bottom:4px;border-bottom:1.5px solid var(--line)}.ihd b{font:700 17px 'Barlow Condensed',sans-serif;letter-spacing:.02em}.ihd small{color:var(--mute);font-size:13px}
+.sprog{margin:10px 0 4px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}.sprog>small:first-child{grid-column:1/3;color:var(--mute);font-size:14px}.sprog .meter{height:6px}
+.item.locked{opacity:.55}.item .lock{grid-column:2;grid-row:1/3}
+svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block}
+.lic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:#fff;flex:none}.lic svg.ic{width:20px;height:20px;stroke-width:2}
+.bn{display:flex;align-items:center;gap:8px;min-width:0}.bn svg.ic{color:var(--mute)}h3.bn svg.ic,.ihd .bn svg.ic{color:var(--ink)}.capg h3.bn .lic svg.ic{color:#fff}
+.ski{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--card);border:1.5px solid var(--line)}.ski svg.ic{width:18px;height:18px}
+.ski.tV{color:var(--mute)}.ski.tO{color:#2f6fb0}.ski.tP{color:#b8860b}.sku:nth-child(odd) .ski{background:var(--card)}
+.item h3.bn{align-items:flex-start}.item h3.bn svg.ic{margin-top:1px}.item h3.bn .ct{white-space:nowrap}
+#caps .capg{flex-wrap:wrap;row-gap:6px}#caps .capg h3{flex:1 0 100%}
+.gate{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:var(--acc2);font-size:14px}
+.nav5 button{font-size:12px}
+details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mute);font-weight:600;font-size:14px;padding:8px 0}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="hrow"><div class="who"><b id="rank"></b><small id="where"></small></div><div class="money"><div id="cash" class="num">$0</div><div id="cps">$0/s</div></div></div>
+  <div class="dash" id="dash"></div>
+</header>
+<main>
+  <div class="stage" id="stage"><canvas id="scene" aria-label="Your parts store"></canvas></div>
+  <div class="banner" id="inc" hidden><span id="incTxt"></span><button class="btn pri" id="incBtn" hidden></button></div>
+
+  <section id="t-shelves">
+    <div class="card" id="prog"></div>
+    <div class="row" style="margin:4px 0 10px"><div class="seg" id="mode"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><span class="sub" id="shelfTxt" style="margin:0"></span></div>
+    <div id="ladder"></div>
+  </section>
+
+  <section id="t-store" hidden>
+    <p class="sub">You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of a step to unlock the next one, and every copy costs more than the last.</p>
+    <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+    <div id="caps"></div>
+  </section>
+
+  <section id="t-service" hidden>
+    <div id="svClosed"></div>
+    <div id="svOpen" hidden>
+      <div class="card" id="sprog"></div>
+      <div class="row" style="margin:4px 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><span class="sub" id="slotTxt" style="margin:0"></span></div>
+      <div id="sladder"></div>
+    </div>
+  </section>
+
+  <section id="t-shop" hidden>
+    <div id="shClosed"></div>
+    <div id="shOpen" hidden>
+      <div class="card"><div class="capg"><h3 class="bn" id="shHead"></h3></div><div class="kv" id="shFlow" style="margin-top:8px"></div></div>
+      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of a step to unlock the next one.</p>
+      <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+      <div id="shcaps"></div>
+    </div>
+  </section>
+
+  <section id="t-more" hidden>
+    <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
+      <div class="chips" style="margin:8px 0"><button class="chip on" data-af="todo">To do</button><button class="chip" data-af="done">Reached</button></div><div id="goals"></div></div>
+    <h2>Logbook</h2><div class="card log" id="log"></div>
+    <h2>Stats</h2><div class="card"><div class="kv" id="stats"></div></div>
+    <h2>Settings</h2><div class="card">
+      <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
+      <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label></div>
+    <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The store and the shop keep working while you're away (up to 12 hours).</p>
+      <button class="btn" id="copy">Copy save code</button>
+      <textarea id="imp" placeholder="Paste a save code here to load it" style="margin-top:10px"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn" id="load">Load code</button></div></div>
+    <h2>Reset</h2><div class="card"><p class="sub">Erases your saved game on this device and starts over from the first oil filter. This can't be undone.</p><button class="btn pri" id="wipe" style="width:100%">Reset saved data</button></div>
+    <p class="sub" style="margin-top:14px">Fremont Truck &amp; Parts is made up. Brand, engine and truck names are trademarks of their owners and are used here only to name parts. Prices are fictional. Not affiliated with or endorsed by any brand or dealership.</p>
+  </section>
+</main>
+<nav class="bar" id="nav"></nav>
+<div id="toast" role="status"></div>
+<script>
+/* ===== Parts Counter: data =====
+   To add content later: append to BR, LINES or PARTS. Never rename an existing id; saves key on them. */
+const U3=['K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','Ud','Dd','Td','Qad','Qid','Sxd','Spd','Ocd','Nod','Vg'];
+let SCI=false;
+function fmt(n){if(n===undefined||n===null||isNaN(n))return'0';if(!isFinite(n))return'∞';const a=Math.abs(n);
+  if(a<1000)return a<10&&a%1>.05?n.toFixed(1):Math.floor(n).toLocaleString('en-US');
+  const i=Math.floor(Math.log10(a)/3);if(SCI||i>U3.length)return n.toExponential(2).replace('+','');
+  const v=n/10**(3*i);return (Math.abs(v)>=100?v.toFixed(0):Math.abs(v)>=10?v.toFixed(1):v.toFixed(2))+U3[i-1]}
+const fmtL=L=>{if(!isFinite(L))return L>0?'∞':'0';if(L<15)return fmt(10**L);const i=Math.floor(L/3);if(!SCI&&i<=U3.length){const v=10**(L-3*i);return (v>=100?v.toFixed(0):v>=10?v.toFixed(1):v.toFixed(2))+U3[i-1]}
+  const e=Math.floor(L);return (10**(L-e)).toFixed(2)+'e'+fmt(e)};
+const moneyL=L=>L<2?money(10**L):'$'+fmtL(L);
+const money=n=>(n<0?'-$':'$')+(Math.abs(n)<100&&Math.abs(n)%1?Math.abs(n).toFixed(2):fmt(Math.abs(n)));
+const cents=n=>'$'+(n<1e5?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):fmt(n));
+function fmtT(s){if(!isFinite(s))return'a long time';s=Math.max(0,Math.ceil(s));const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),x=s%60;
+  return d>=365?`${fmt(d/365)}y`:d?`${d}d ${h}h`:h?`${h}h ${m}m`:m?`${m}m ${x}s`:`${x}s`}
+const STORE='Fremont Truck & Parts';
+const sumv=o=>Object.values(o||{}).reduce((a,b)=>a+b,0);
+const lc=s=>{const w=s.split(/[ ,]/)[0];return /[A-Z].*[A-Z0-9/]|^[A-Z0-9]+$/.test(w)&&w.length>1?s:s.charAt(0).toLowerCase()+s.slice(1)};
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'');
+
+/* ---------- brands: id: [name, tier]  (V value, O OE, P premium) ---------- */
+const BR={trp:['TRP','V'],pp:['PACCAR Parts','O'],wix:['Wix','V'],bald:['Baldwin','O'],flg:['Fleetguard','O'],don:['Donaldson','P'],lub:['Luber-finer','V'],
+ rot:['Shell Rotella','P'],delo:['Chevron Delo','O'],delv:['Mobil Delvac','P'],val:['Valvoline','O'],ow:['Old World','V'],peak:['Peak','O'],bdef:['BlueDEF','O'],
+ pres:['Prestone','O'],lucas:['Lucas Oil','O'],grote:['Grote','O'],tl:['Truck-Lite','P'],opt:['Optronics','V'],pet:['Peterson','V'],phil:['Phillips Industries','O'],
+ inter:['Interstate','O'],optima:['Optima','P'],deka:['Deka','V'],exide:['Exide','V'],dr:['Delco Remy','P'],prest:['Prestolite','O'],ln:['Leece-Neville','O'],
+ bend:['Bendix','P'],hald:['Haldex','O'],mer:['Meritor','O'],wab:['WABCO','P'],webb:['Webb','V'],gun:['Gunite','O'],mgm:['MGM Brakes','V'],trico:['Trico','O'],bosch:['Bosch','P'],
+ rainx:['Rain-X','V'],bos:['Bostrom','P'],lt:['Little Trees','O'],fire:['Firestik','P'],wil:['Wilson','O'],gates:['Gates','P'],dayco:['Dayco','O'],cont:['Continental','O'],
+ horton:['Horton','P'],kysor:['Kysor','O'],stemco:['Stemco','P'],skf:['SKF','O'],timken:['Timken','P'],conmet:['ConMet','O'],cum:['Cummins','P'],dd:['Detroit','P'],
+ holset:['Holset','P'],bw:['BorgWarner','O'],garrett:['Garrett','O'],delphi:['Delphi','O'],fpd:['FP Diesel','V'],pai:['PAI Industries','V'],eaton:['Eaton','P'],
+ spicer:['Spicer','O'],allison:['Allison','P'],dana:['Dana','O'],dinex:['Dinex','V'],trux:['Trux Accessories','O'],up:['United Pacific','V'],gg:['Grand General','V'],
+ hadley:['Hadley','P'],mich:['Michelin','P'],bs:['Bridgestone','P'],gy:['Goodyear','O'],toyo:['Toyo','O'],dc:['Double Coin','V'],
+ m3:['3M','O'],loc:['Loctite','O'],wd40:['WD-40','O'],crc:['CRC','V'],gojo:['GOJO','O'],kidde:['Kidde','O'],amerex:['Amerex','P'],kine:['Kinedyne','O'],
+ cobra:['Cobra','O'],uniden:['Uniden','O'],espar:['Espar','P'],webasto:['Webasto','P'],accu:['Accuride','O'],alcoa:['Alcoa','P'],monroe:['Monroe','O'],gabriel:['Gabriel','V'],
+ fstone:['Firestone','P'],jost:['JOST','O'],holland:['Holland','P'],parker:['Parker','P'],muncie:['Muncie','O'],chelsea:['Chelsea','P'],jake:['Jacobs','P'],
+ thermo:['Thermo King','P'],snap:['Snap-on','P'],mac:['Mac Tools','O'],milw:['Milwaukee','O'],dew:['DeWalt','O'],ir:['Ingersoll Rand','P'],linc:['Lincoln Industrial','O'],gw:['GearWrench','V'],otc:['OTC','O'],
+ garmin:['Garmin','O'],rand:['Rand McNally','V'],sams:['Samsara','P'],motive:['Motive','O'],rvs:['Rear View Safety','V'],brig:['Brigade','P'],racor:['Racor','P'],stan:['Stanadyne','O'],dorman:['Dorman','V'],min:['Minimizer','P'],
+ jerr:['Jerr-Dan','P'],miller:['Miller Industries','P'],zips:["Zip's",'O'],peer:['Peerless','O'],isuzu:['Isuzu','O'],hino:['Hino','O'],util:['Utility','O'],gdane:['Great Dane','P'],wab2:['Wabash','O'],abb:['ABB','P'],cp:['ChargePoint','O'],carrier:['Carrier Transicold','P'],denso:['Denso','O'],kw:['Kenworth','P'],pb:['Peterbilt','P'],fl:['Freightliner','O'],volvo:['Volvo','O'],intl:['International','V'],mack:['Mack','O']};
+const TIER={V:{n:'Value',pf:.75,mg:.22,ag:.3},O:{n:'OE',pf:1,mg:.3,ag:.6},P:{n:'Premium',pf:1.35,mg:.4,ag:1.2}};
+
+/* ---------- parts lines ---------- */
+const LINES=[
+ ['f','Filters & fluids','#2f6fb0',0,'trp wix bald flg don'],['s','Shop supplies','#6d7a86',0,'trp m3 crc'],['to','Tools & shop equipment','#455a64',0,'gw mac snap'],['sf','Safety & DOT','#e65100',0,'trp grote gg'],['l','Lighting & electrical','#c79100',0,'trp grote tl opt pet'],['el','Electronics','#3949ab',0,'trp garmin cobra'],['b','Brakes & air','#c62828',0,'trp bend hald mer wab'],['c','Cab & interior','#6d4c41',0,'trp pp'],['k','Belts & cooling','#00897b',0,'trp gates dayco cont'],['w','Wheel end & suspension','#546e7a',0,'trp stemco skf timken conmet'],['tr','Trailer parts','#8d6e63',0,'trp grote phil'],['tw','Towing & recovery','#f9a825',0,'trp zips peer'],['hy','Hydraulics & PTO','#0277bd',0,'trp parker muncie'],['fu','Fuel system','#ef6c00',0,'trp racor bosch'],['e','Engine','#d84315',0,'pp cum dd fpd pai'],['d','Drivetrain','#5e35b1',0,'trp eaton spicer mer dana'],['a','Aftertreatment','#43a047',0,'trp pp don flg dinex'],['bd','Body & sheet metal','#607d8b',0,'trp pp dorman'],['x','Chrome & accessories','#78909c',0,'trp trux up gg'],['t','Tires','#37474f',0,'mich bs gy cont toyo dc'],['md','Medium duty','#7cb342',0,'trp wix bald'],['rf','Reefer & HVAC','#00838f',0,'trp thermo carrier'],['h','Heavy rebuild','#ad1457',0,'cum dd eaton mer pai fpd'],['ut','Used trucks & trailers','#4e342e',0,'kw pb fl volvo intl mack'],['nt','New trucks & trailers','#b71c1c',0,'kw pb'],['ev','Electric trucks','#1e88e5',0,'pp cum dana']].map(([id,n,c,cost,brands],i)=>({id,n,c,cost,brands,i}));
+const LI={};LINES.forEach(l=>LI[l.id]=l);
+
+/* ---------- fitments (parts are sold per application, like a real counter) ---------- */
+const FIT={
+ ENG:[['x15','Cummins X15'],['mx13','PACCAR MX-13'],['dd15','Detroit DD15'],['isx','Cummins ISX15'],['x12','Cummins X12'],['mx11','PACCAR MX-11'],['dd13','Detroit DD13'],['l9','Cummins L9'],['b67','Cummins B6.7'],['x10','Cummins X10'],['isl','Cummins ISL9'],['dd16','Detroit DD16']],
+ MOD:[['t680','Kenworth T680'],['t880','Kenworth T880'],['w900','Kenworth W900'],['w990','Kenworth W990'],['t800','Kenworth T800'],['p579','Peterbilt 579'],['p389','Peterbilt 389'],['p567','Peterbilt 567'],['p589','Peterbilt 589'],['t480','Kenworth T480']],
+ TRN:[['f10','Eaton Fuller 10-speed'],['f13','Eaton Fuller 13-speed'],['f18','Eaton Fuller 18-speed'],['end','Eaton Endurant'],['a3k','Allison 3000'],['a4k','Allison 4000'],['tx12','PACCAR TX-12'],['f9','Eaton Fuller 9-speed'],['a25','Allison 2500']],
+ TIRE:[['2957522','295/75R22.5'],['112245','11R22.5'],['112445','11R24.5'],['2857524','285/75R24.5'],['4455022','445/50R22.5'],['2758022','275/80R22.5'],['2257019','225/70R19.5'],['2457019','245/70R19.5']],
+ DRUM:[['165x7','16.5 x 7'],['165x8','16.5 x 8.625'],['15x4','15 x 4']],
+ POS:[['st','steer axle'],['dr','drive axle'],['tr','trailer axle']],
+ WIPE:[['22','22 in'],['24','24 in'],['26','26 in']],
+ MD:[['t280','Kenworth T280'],['p537','Peterbilt 537'],['npr','Isuzu NPR'],['h195','Hino 195'],['m2','Freightliner M2 106']],
+ EV:[['t680e','Kenworth T680E'],['p579ev','Peterbilt 579EV'],['ecas','Freightliner eCascadia'],['vnre','Volvo VNR Electric']],
+ UJ:[['1710','1710 series'],['1760','1760 series'],['1810','1810 series']]};
+
+/* ---------- base parts: id, name, line, price, popularity, fitment set, brand override ---------- */
+const BASE=[
+ ['oilf','Oil filter','f',14,10,'ENG'],['fuelf','Fuel filter','f',21,8,'ENG'],['fws','Fuel water separator','f',38,6,'ENG'],['airf','Air filter','f',65,5,'MOD'],
+ ['cabf','Cabin air filter','f',19,3,'MOD','trp wix bald flg'],['coolf','Coolant filter','f',18,4,'ENG','trp wix bald flg don'],['deff','DEF filter','f',32,3,'ENG','trp flg don bald'],
+ ['hydf','Hydraulic filter','f',45,2,0,'trp wix bald don'],['ccv','Crankcase vent filter','f',55,2,'ENG','trp flg don'],
+ ['oil','15W-40 oil, 1 gal','f',24,9,0,'trp rot delo delv val'],['oil5','15W-40 oil, 5 gal pail','f',98,5,0,'rot delo delv val'],['oil55','15W-40 oil, 55 gal drum','f',980,1,0,'rot delo delv'],
+ ['oil1030','10W-30 oil, 1 gal','f',26,5,0,'rot delo delv val'],['oilsyn','5W-40 synthetic, 1 gal','f',38,3,0,'rot delv val'],['cool','Coolant ELC, 1 gal','f',20,6,0,'ow peak flg pres'],
+ ['coolpm','Coolant 50/50 premix','f',15,5,0,'ow peak pres'],['def','DEF, 2.5 gal','f',16,9,0,'trp bdef peak flg'],['def55','DEF, 55 gal drum','f',220,2,0,'bdef peak flg'],
+ ['wash','Washer fluid','f',5,6,0,'trp pres peak rainx'],['grs','Grease tube','f',8,5,0,'trp lucas delo'],['goil','Gear oil 75W-90, 1 gal','f',40,4,0,'trp delo delv lucas'],
+ ['atf','Transmission fluid, 1 gal','f',35,3,0,'trp delv val'],['fadd','Diesel fuel additive','f',18,4,0,'lucas pres trp'],
+ ['glove','Nitrile gloves, box','s',14,8,0,'trp m3'],['rag','Shop rags, box','s',25,5,0,'trp'],['brkc','Brake cleaner','s',6,8,0,'trp crc m3'],['pen','Penetrating oil','s',8,6,0,'wd40 crc lucas'],
+ ['tloc','Thread locker','s',9,4,0,'loc m3'],['zip','Zip ties, bag','s',7,6,0,'trp gg'],['etape','Electrical tape','s',4,6,0,'m3 trp'],['hsk','Heat shrink kit','s',18,3,0,'m3 trp'],
+ ['absb','Oil absorbent, bag','s',15,4,0,'trp'],['handc','Hand cleaner','s',12,5,0,'gojo trp'],['nba','Nut and bolt assortment','s',35,2,0,'trp'],['silic','RTV silicone','s',11,4,0,'loc m3 crc'],
+ ['contc','Contact cleaner','s',9,4,0,'crc wd40'],['bulbs','Bulb assortment','s',22,3,0,'trp grote'],
+ ['tri','Warning triangle kit','sf',35,4,0,'trp grote gg'],['ext','Fire extinguisher','sf',45,4,0,'trp kidde amerex'],['cone','Safety cone','sf',18,3,0,'trp gg'],['vest','Safety vest','sf',9,4,0,'trp gg'],
+ ['ctape','Conspicuity tape, roll','sf',60,4,0,'m3 trp'],['strap','Ratchet strap','sf',22,6,0,'trp kine'],['chain','Binder chain','sf',45,3,0,'trp kine'],['lbind','Load binder','sf',55,3,0,'trp kine'],
+ ['chock','Wheel chock','sf',25,3,0,'trp gg'],['eldc','ELD cable','sf',30,3,0,'trp'],['fak','First aid kit','sf',28,3,0,'trp m3'],['tchain','Tire chains, pair','sf',380,1,0,'trp kine'],
+ ['head','Headlamp assembly','l',380,2,'MOD','trp pp grote tl'],['hbulb','Headlight bulb','l',13,7,0,'trp grote tl opt'],['mark','Marker light, amber','l',11,8],['markr','Marker light, red','l',11,7],
+ ['clear','Clearance light','l',14,5],['tail','Stop/turn/tail light','l',42,5],['strobe','Strobe light','l',75,2,0,'grote tl gg'],['workl','Work light','l',65,3],
+ ['batt','Battery, Group 31 flooded','l',165,4,0,'trp inter deka exide'],['battagm','Battery, Group 31 AGM','l',285,3,0,'optima deka inter'],
+ ['alt','Alternator','l',390,2,'ENG','trp dr prest ln'],['strt','Starter','l',420,2,'ENG','trp dr prest'],['bcab','Battery cable','l',28,3,0,'trp phil grote'],
+ ['cord','7-way trailer cord','l',58,4,0,'trp phil grote'],['absc','ABS power cord','l',65,2,0,'phil grote'],['tog','Toggle switch','l',13,2],['relay','Relay','l',12,4],
+ ['fuse','Blade fuse assortment','l',15,4,0,'trp grote'],['harn','Trailer harness','l',140,2,0,'trp grote tl phil'],['sock','7-way socket','l',22,4,0,'phil grote trp'],
+ ['shoe','Brake shoe kit','b',125,6,'DRUM','trp mer bend hald'],['drum','Brake drum','b',195,3,'DRUM','trp webb gun conmet'],['rotor','Disc brake rotor','b',260,2,'POS','trp bend mer'],
+ ['pads','Disc brake pads','b',160,3,'POS','trp bend mer'],['ch3030','Spring brake chamber 30/30','b',82,5,0,'trp bend hald mgm'],['ch3036','Spring brake chamber 30/36','b',95,3,0,'trp bend hald mgm'],
+ ['ch24','Service chamber 24','b',45,4,0,'trp bend hald mgm'],['slack','Automatic slack adjuster','b',98,4,0,'trp bend hald mer'],['dryc','Air dryer cartridge','b',88,5,0,'trp bend hald wab'],
+ ['dryer','Air dryer assembly','b',620,1,0,'bend hald wab'],['relv','Relay valve','b',85,3],['qrv','Quick release valve','b',35,3],['tpv','Tractor protection valve','b',120,2],
+ ['ppv','Park control valve','b',110,2],['tread','Brake treadle valve','b',260,1],['comp','Air compressor','b',1100,.7,'ENG','bend hald wab pp'],['gov','Air governor','b',45,3],
+ ['glad','Glad hands, pair','b',24,5,0,'trp phil hald'],['ahose','Air hose coil','b',65,4,0,'trp phil'],['aline','Air brake line, 100 ft','b',85,3,0,'trp phil'],['fit','Air fittings, bag','b',20,5,0,'trp phil'],
+ ['wipe','Wiper blade','c',18,6,'WIPE','trp trico bosch rainx'],['mirr','Mirror glass','c',48,3,'MOD'],['mirra','Mirror assembly','c',320,1,'MOD'],['dhand','Door handle','c',58,2,'MOD'],
+ ['seat','Seat cushion','c',160,1,0,'trp pp bos'],['seata','Air ride seat','c',950,.5,0,'bos trp'],['mat','Floor mat set','c',75,2,'MOD'],['visr','Sun visor','c',54,1,'MOD'],
+ ['fresh','Air freshener','c',2,8,0,'trp lt'],['ant','CB antenna','c',49,2,0,'trp fire wil'],['cb','CB radio','c',140,2,0,'cobra uniden'],['blow','HVAC blower motor','c',180,1,'MOD'],
+ ['bunk','Bunk heater','c',1300,.4,0,'espar webasto'],['strut','Hood strut','c',45,2,'MOD'],['gauge','Dash gauge','c',95,1],['mattr','Sleeper mattress','c',450,.6],
+ ['belt','Serpentine belt','k',52,6,'ENG'],['uhose','Upper radiator hose','k',42,5,'ENG'],['lhose','Lower radiator hose','k',45,4,'ENG'],['therm','Thermostat','k',48,4,'ENG','trp pp gates'],
+ ['wpump','Water pump','k',290,2,'ENG','trp pp cum fpd'],['fclu','Fan clutch','k',460,1,'ENG','trp horton kysor'],['fanb','Fan blade','k',380,1,0,'trp horton kysor'],
+ ['rad','Radiator','k',1550,.6,'MOD','trp pp kysor'],['cac','Charge air cooler','k',1350,.5,'MOD','trp pp kysor'],['tens','Belt tensioner','k',120,3,'ENG','trp gates dayco'],['ctank','Coolant tank','k',140,1,'MOD','trp pp'],
+ ['wseal','Wheel seal','w',35,6,'POS','trp stemco skf'],['hub','Hub bearing kit','w',165,3,'POS'],['hubass','Hub assembly','w',520,1,'POS','conmet trp'],['lug','Lug nuts, box of 10','w',30,4,0,'trp pp'],
+ ['stud','Wheel studs, box','w',45,3,'POS','trp pp'],['hcap','Hub cap','w',40,2,'POS','trp up'],['flap','Mud flaps 24x30, pair','w',58,4,0,'trp pp gg'],['flap36','Mud flaps 24x36, pair','w',68,3,0,'trp pp gg'],
+ ['aseal','Axle seal','w',48,3,0,'trp stemco skf'],['whl','Steel wheel 22.5 x 8.25','w',180,2,0,'accu alcoa trp'],['whla','Aluminum wheel 22.5 x 8.25','w',420,2,0,'alcoa accu'],
+ ['kp','Kingpin kit','w',260,1,0,'trp pp dana'],['tie','Tie rod end','w',110,2,0,'trp pp dana'],['shock','Shock absorber','w',95,4,0,'trp monroe gabriel'],['aspr','Air spring','w',140,3,0,'trp fstone gy'],
+ ['tdseal','Trailer door seal','tr',140,2,0,'trp'],['hinge','Door hinge','tr',45,3,0,'trp'],['lrod','Door lock rod','tr',85,2,0,'trp'],['lgear','Landing gear','tr',780,.6,0,'jost holland trp'],
+ ['fifth','Fifth wheel','tr',1900,.4,0,'jost holland'],['fwk','Fifth wheel rebuild kit','tr',260,1,0,'jost holland'],['tkp','Trailer kingpin','tr',120,1,0,'holland jost trp'],
+ ['tlk','Trailer light kit','tr',110,2,0,'grote tl trp'],['tbk','Trailer brake kit','tr',210,2,0,'mer hald bend trp'],['tsbv','Trailer spring brake valve','tr',140,1,0,'hald bend'],
+ ['tfloor','Trailer floor board','tr',95,1,0,'trp'],['skirt','Side skirt panel','tr',320,.6,0,'trp'],['tsusp','Trailer air suspension kit','tr',1800,.3,0,'holland hald trp'],
+ ['hhose','Hydraulic hose, 1/2 in','hy',45,5,0,'parker gates trp'],['hfit','Hydraulic fitting','hy',12,6,0,'parker trp'],['pto','PTO assembly','hy',1400,.5,'TRN','muncie chelsea'],
+ ['hpump','Hydraulic pump','hy',980,.6,0,'muncie chelsea parker'],['hcyl','Hydraulic cylinder','hy',640,.6,0,'parker trp'],['hval','Control valve','hy',420,.7,0,'parker trp'],
+ ['htank','Hydraulic tank','hy',380,.6,0,'trp muncie'],['wetk','Wet kit','hy',2800,.3,0,'muncie chelsea'],
+ ['inj','Fuel injector','e',720,2,'ENG','bosch delphi cum dd fpd'],['turbo','Turbocharger','e',2600,.8,'ENG','pp holset bw garrett'],['opump','Oil pump','e',540,.7,'ENG'],
+ ['ugask','Upper gasket set','e',260,1.5,'ENG'],['lgask','Lower gasket set','e',240,1.2,'ENG'],['hbolt','Head bolt kit','e',170,1,'ENG'],['egrc','EGR cooler','e',1650,.6,'ENG','pp cum dd bw'],
+ ['fpump','Fuel pump','e',1400,.6,'ENG','bosch cum dd pp'],['cks','Crankshaft sensor','e',85,3,'ENG','pp cum dd bosch'],['cms','Camshaft sensor','e',80,2,'ENG','pp cum dd bosch'],
+ ['ops','Oil pressure sensor','e',70,2,'ENG','pp cum dd bosch'],['cts','Coolant temp sensor','e',55,2,'ENG','pp cum dd bosch'],['vgt','VGT actuator','e',980,.6,'ENG','holset pp bw'],
+ ['oilc','Oil cooler','e',720,.6,'ENG'],['vcg','Valve cover gasket','e',95,2,'ENG'],['ebrk','Engine brake housing','e',1900,.3,'ENG','jake pp'],
+ ['clutch','Clutch kit','d',1600,.8,'TRN','trp eaton spicer'],['uj','U-joint','d',70,4,'UJ','trp spicer dana mer'],['dsh','Driveshaft','d',1150,.5,0,'trp spicer dana'],['yoke','End yoke','d',140,2,0,'spicer dana mer'],
+ ['cbrk','Clutch brake','d',45,3,0,'eaton trp'],['relb','Release bearing','d',140,2,0,'eaton spicer trp'],['knob','Shift knob','d',60,2,0,'trp eaton'],['tfil','Transmission filter','d',58,3,'TRN','trp allison bald'],
+ ['synch','Synchronizer kit','d',640,.6,'TRN','eaton trp'],['csb','Center support bearing','d',110,2,0,'spicer dana trp'],['diff','Differential carrier','d',3200,.3,0,'mer eaton dana'],
+ ['rtrn','Reman transmission','d',6800,.2,'TRN','eaton allison pp'],
+ ['dpf','DPF','a',3100,.6,'ENG'],['doc','DOC','a',2450,.4,'ENG'],['scr','SCR catalyst','a',3800,.3,'ENG','pp cum dd dinex'],['noxi','NOx sensor, inlet','a',460,2,'ENG','pp bosch cum dd'],
+ ['noxo','NOx sensor, outlet','a',460,2,'ENG','pp bosch cum dd'],['defp','DEF pump','a',1250,.7,'ENG','pp bosch cum'],['defh','DEF heater','a',320,1,0,'pp bosch'],['defi','DEF injector','a',520,1,'ENG','pp bosch cum'],
+ ['egr','EGR valve','a',980,.8,'ENG','pp cum dd bw'],['dpfg','DPF gasket and clamp kit','a',85,3,0,'trp don dinex'],['dps','Differential pressure sensor','a',140,2,'ENG','pp bosch'],
+ ['bump','Chrome bumper','x',1700,.4,'MOD'],['stk5','Exhaust stack, 5 in','x',460,.6],['stk7','Exhaust stack, 7 in','x',620,.5],['cvis','Chrome visor','x',1100,.4,'MOD'],
+ ['horn','Air horn','x',230,1.5,0,'trp hadley gg'],['lbar','LED light bar','x',310,1.5,0,'grote tl gg'],['lcov','Lug nut covers, set','x',80,2],['acc','Air cleaner cover','x',380,.6,'MOD'],
+ ['grill','Grille','x',1450,.3,'MOD','pp trux'],['fend','Half fenders, pair','x',520,.6],['deck','Deck plate','x',420,.6],['mfw','Chrome mud flap weights','x',90,2],
+ ['steer','Steer tire','t',620,1.5,'TIRE'],['drive','Drive tire','t',660,2,'TIRE'],['trl','Trailer tire','t',500,2,'TIRE'],['retread','Retread drive tire','t',330,2,'TIRE','bs gy mich'],['vstem','Valve stem kit','t',14,4,0,'trp gy'],
+ ['rbelt','Reefer belt','rf',45,3,0,'thermo carrier trp'],['rfilt','Reefer air filter','rf',35,3,0,'thermo carrier trp'],['rcomp','Reefer compressor','rf',2800,.4,0,'thermo carrier'],
+ ['rfan','Reefer fan motor','rf',380,1,0,'thermo carrier'],['rctl','Reefer controller','rf',1600,.4,0,'thermo carrier'],['acomp','A/C compressor','rf',650,.8,'MOD','trp pp denso'],
+ ['acnd','A/C condenser','rf',420,.7,'MOD','trp pp denso'],['rdry','A/C receiver drier','rf',65,2,0,'trp denso'],
+ ['erk','Engine overhaul kit','h',10500,.15,'ENG','cum dd pp pai fpd'],['reman','Reman engine','h',22000,.08,'ENG','cum dd pp'],['trk','Transmission rebuild kit','h',4800,.2,'TRN','eaton allison pai'],
+ ['rerk','Rear end rebuild kit','h',3800,.2,0,'mer eaton dana pai'],['injs','Injector set','h',4200,.2,'ENG','bosch delphi cum dd fpd'],['cylk','Cylinder kit','h',3200,.2,'ENG','cum dd pai fpd'],['crank','Crankshaft','h',3800,.1,'ENG','cum dd pp'],
+ ['udc','Used day cab tractor','ut',65000,.06,0],['uslp','Used sleeper tractor','ut',85000,.05,0],['udump','Used dump truck','ut',90000,.03,0],['ubox','Used box truck','ut',45000,.05,0],['uhvy','Used heavy hauler','ut',120000,.02,0],
+ ['ndc','New day cab tractor','nt',180000,.04,0],['nslp','New sleeper tractor','nt',215000,.04,0],['nvoc','New vocational truck','nt',230000,.03,0],['nmed','New medium duty truck','nt',120000,.04,0],['nlh','New long-hood tractor','nt',260000,.02,0],
+ ['psf','Power steering filter','f',28,3,0,'trp wix bald'],
+ ['fog','Fog light','l',85,2,'MOD','trp grote tl'],['turn','Turn signal assembly','l',95,2,'MOD','trp pp grote'],
+ ['abss','ABS wheel speed sensor','b',45,4,0,'trp bend wab'],['absv','ABS modulator valve','b',180,2,0,'bend wab hald'],['bhose','Brake hose','b',22,5,0,'trp phil'],
+ ['scam','S-cam kit','b',140,2,'DRUM','trp mer'],['cbk','Cam bushing kit','b',45,3,'DRUM','trp mer'],['lining','Brake lining kit','b',95,3,'DRUM','trp mer bend'],
+ ['dseal','Door seal','c',85,2,'MOD','trp pp'],['wreg','Window regulator','c',160,1,'MOD','trp pp'],['wshield','Windshield','c',650,.6,'MOD','trp pp'],
+ ['hcore','Heater core','c',240,1,'MOD','trp pp'],['cabag','Cab air spring','c',110,2,'MOD','trp fstone'],
+ ['ihose','Intake hose','k',65,3,'MOD','trp gates cont'],['those','Turbo hose','k',85,3,'ENG','trp gates cont'],['acbelt','A/C belt','k',38,3,'ENG'],
+ ['sgear','Steering gear','w',1200,.4,'MOD','trp pp'],['drag','Drag link','w',180,1,'MOD','trp pp dana'],['leaf','Leaf spring','w',320,1,'MOD','trp pp'],
+ ['trod','Torque rod','w',140,2,0,'trp pp'],['ubolt','U-bolt kit','w',45,3,0,'trp pp'],
+ ['opg','Oil pan gasket','e',85,2,'ENG'],['emg','Exhaust manifold gasket','e',65,2,'ENG'],['egrg','EGR gasket kit','e',75,2,'ENG'],['fline','Fuel line kit','e',120,2,'ENG'],
+ ['icup','Injector cup kit','e',140,1,'ENG'],['wpipe','Water pipe kit','e',110,1,'ENG'],
+ ['tmount','Transmission mount','d',140,1,'TRN','trp eaton'],['shiftc','Shift cable','d',180,1,'TRN','trp eaton allison'],
+ ['dpfs','DPF temperature sensor','a',120,2,'ENG','pp bosch cum dd'],
+ ['muff','Muffler','x',380,1,'MOD','trp pp'],['epipe','Exhaust pipe','x',220,1,'MOD','trp pp'],['eclamp','Exhaust clamp','x',28,4,0,'trp pp'],
+ ['turbok','Turbo rebuild kit','h',900,.4,'ENG','holset bw pai'],
+ ['bypf','Bypass oil filter','f',24,4,'ENG'],['prf','Primary fuel filter','f',26,4,'ENG'],['oilfk','Oil change kit','f',120,3,'ENG'],['dexf','Air intake prefilter','f',38,2,'MOD'],
+ ['brkfl','DOT 3 brake fluid','f',9,3,0,'trp pres val'],['psfl','Power steering fluid','f',9,3,0,'trp pres val lucas'],['defg','DEF, 1 gal','f',8,5,0,'trp bdef peak'],['ac134','R-134a refrigerant','f',22,3,0,'trp m3'],
+ ['hydo','Hydraulic oil AW46, 5 gal','f',85,3,0,'trp delo delv'],['grsp','Grease, 35 lb pail','f',110,2,0,'lucas delo trp'],['oil25','15W-40 oil, 2.5 gal','f',55,4,0,'rot delo delv val'],['sae50','SAE 50 transmission oil, 5 gal','f',120,2,0,'delo delv'],
+ ['shrink','Shrink wrap roll','s',30,2,0,'trp m3'],['cpins','Cotter pin assortment','s',16,3,0,'trp'],['hclamp','Hose clamp assortment','s',28,4,0,'trp gates'],['wconn','Wire connector kit','s',24,4,0,'trp grote phil'],
+ ['dgr','Dielectric grease','s',8,4,0,'trp m3 lucas'],['pwsol','Parts washer solvent, 5 gal','s',65,2,0,'crc trp'],['shopt','Shop towels, roll','s',18,5,0,'trp m3'],['dtape','Duct tape','s',9,5,0,'m3 trp'],
+ ['solder','Solder seal connectors','s',22,3,0,'trp m3'],['anti','Anti-seize','s',14,3,0,'loc crc'],['pwire','Primary wire, 100 ft','s',38,3,0,'trp grote phil'],['sloom','Split loom, 100 ft','s',26,2,0,'trp phil'],
+ ['tsock','Socket set','to',180,3,0,'gw mac snap'],['wrs','Wrench set','to',220,3,0,'gw mac snap'],['iwr','Impact wrench, 1/2 in','to',380,2,0,'milw dew ir snap'],['iwr1','Impact wrench, 1 in','to',650,1,0,'ir milw snap'],
+ ['tqw','Torque wrench','to',260,2,0,'gw mac snap'],['ggun','Grease gun','to',65,4,0,'linc milw trp'],['bjack','Bottle jack, 20 ton','to',140,2,0,'otc trp'],['fjack','Floor jack','to',420,1,0,'otc snap'],
+ ['jst','Jack stands, pair','to',160,2,0,'otc trp'],['scan','Diagnostic scan tool','to',2400,.4,0,'snap otc mac'],['mmeter','Multimeter','to',120,2,0,'milw snap'],['tgauge','Tire inflator gauge','to',45,4,0,'trp milw'],
+ ['bchg','Battery charger','to',280,2,0,'trp milw dew'],['jumps','Jump starter','to',320,2,0,'trp milw dew'],['acmach','A/C recovery machine','to',4200,.2,0,'snap otc'],['tchgr','Tire changer','to',6800,.1,0,'snap'],
+ ['ltest','Trailer light tester','to',65,2,0,'trp phil'],['dolly','Brake drum dolly','to',380,.5,0,'otc'],['pwash','Pressure washer','to',900,.5,0,'dew milw'],['scomp','Shop air compressor','to',1800,.3,0,'ir dew'],
+ ['tchest','Rolling tool chest','to',1600,.3,0,'snap mac gw'],['slight','Shop light','to',55,3,0,'milw dew'],['wstand','Work stand','to',140,1,0,'trp otc'],['spress','Shop press, 20 ton','to',780,.3,0,'otc'],
+ ['hhat','Hard hat','sf',22,3,0,'trp gg'],['sglass','Safety glasses','sf',8,5,0,'trp m3'],['eplug','Ear plugs, box','sf',18,3,0,'m3 trp'],['flare','Emergency flares','sf',30,2,0,'trp gg'],
+ ['tarp','Tarp, 20 x 20','sf',95,3,0,'trp kine'],['edgep','Edge protectors, 10 pack','sf',35,3,0,'trp kine'],['cbar','Cargo bar','sf',55,3,0,'trp kine'],['etrack','E-track rail','sf',40,3,0,'kine trp'],
+ ['lock','Load lock','sf',45,2,0,'kine trp'],['wstrap','Winch strap','sf',28,4,0,'kine trp'],['spill','Spill kit','sf',140,1,0,'trp m3'],['blank','Moving blankets, 12 pack','sf',120,2,0,'trp'],
+ ['ledhl','LED headlight conversion','l',260,2,'MOD','grote tl trp'],['battd','Battery, Group 31 deep cycle','l',230,2,0,'inter deka optima'],['bdisc','Battery disconnect switch','l',45,3,0,'trp phil grote'],
+ ['cbrkr','Circuit breaker','l',18,3,0,'trp grote'],['dlite','Dome light','l',35,2,0,'grote tl trp'],['lplate','License plate light','l',14,3,0,'grote tl trp'],['bkup','Backup alarm','l',38,3,0,'trp gg grote'],
+ ['lcab','Cab marker light set','l',85,2,'MOD','grote tl trp'],['jbox','Junction box','l',120,1,0,'phil grote'],['vreg','Voltage regulator','l',90,1,'ENG','trp dr ln'],['gplug','Glow plug','l',28,2,'ENG','bosch trp'],
+ ['inv','Power inverter','l',180,2,0,'trp cobra'],
+ ['gps','Truck GPS','el',300,2,0,'garmin rand'],['dcam','Dash camera','el',220,2,0,'garmin rvs brig'],['bcam','Backup camera system','el',340,2,0,'rvs brig'],['eld','ELD unit','el',250,3,0,'sams motive'],
+ ['tpms','Tire pressure monitor','el',420,1,0,'trp'],['bsd','Blind spot sensor kit','el',780,.6,0,'brig rvs'],['tablet','Rugged tablet','el',600,.8,0,'sams motive garmin'],['track','Trailer tracker','el',180,2,0,'sams motive'],
+ ['usbc','USB charger','el',18,6,0,'trp cobra'],['btset','Bluetooth headset','el',90,3,0,'cobra uniden'],['srad','Satellite radio kit','el',140,1,0,'cobra trp'],['ecm','Engine control module','el',1900,.3,'ENG','pp cum dd'],
+ ['ccm','Cab control module','el',780,.4,'MOD','pp'],['clust','Instrument cluster','el',1100,.3,'MOD','pp trp'],['vss','Vehicle speed sensor','el',60,3,'TRN','pp trp eaton'],
+ ['govk','Compressor governor kit','b',60,2,'ENG','bend hald'],['sbv','Spring brake valve','b',130,2,0,'bend hald'],['flex','Air brake flex line','b',30,4,0,'trp phil'],['atank','Air tank','b',240,1,0,'trp bend'],
+ ['dval','Drain valve','b',35,3,0,'trp bend hald'],['ppvl','Pressure protection valve','b',40,2,0,'trp bend hald'],['calip','Disc brake caliper','b',520,1,'POS','bend mer trp'],['bhk','Brake hardware kit','b',38,4,'DRUM','trp mer bend'],
+ ['rspr','Brake return spring kit','b',22,4,'DRUM','trp mer'],['purge','Air dryer purge valve','b',75,2,0,'bend hald wab'],
+ ['sboot','Shift boot','c',38,2,'MOD','trp pp'],['cstep','Cab step','c',140,2,'MOD','trp pp'],['grab','Grab handle','c',45,3,'MOD','trp pp'],['wmot','Window motor','c',140,1,'MOD','trp pp'],
+ ['dlock','Door lock actuator','c',90,2,'MOD','trp pp'],['fridge','Sleeper refrigerator','c',650,.4,0,'trp'],['curt','Sleeper curtain','c',180,1,'MOD','pp'],['scov','Seat cover','c',90,2,0,'trp bos'],
+ ['sbelt','Seat belt assembly','c',120,2,'MOD','trp pp'],['carpet','Cab carpet kit','c',260,.6,'MOD','pp trp'],['apu','Auxiliary power unit','c',9500,.1,0,'thermo carrier'],
+ ['shroud','Fan shroud','k',220,1,'MOD','trp pp'],['rcap','Radiator cap','k',18,4,0,'trp gates'],['hhk','Heater hose kit','k',75,3,'MOD','trp gates cont'],['idler','Idler pulley','k',60,3,'ENG','trp gates dayco'],
+ ['ovfh','Coolant overflow hose','k',25,3,0,'trp gates'],['cacb','Charge air cooler boot','k',55,3,'ENG','trp gates cont'],['fbelt','Fan belt','k',45,3,'ENG','trp gates dayco cont'],['fhub','Fan drive hub','k',380,1,'ENG','horton kysor trp'],
+ ['snut','Spindle nut kit','w',35,4,'POS','trp stemco'],['ashaft','Axle shaft','w',420,1,0,'mer dana trp'],['eqb','Equalizer beam','w',380,.6,0,'trp holland'],['hcg','Hub cap gasket','w',8,4,0,'trp stemco'],
+ ['hocap','Hub oil cap','w',22,4,0,'stemco trp'],['sdamp','Steering damper','w',140,1,'MOD','trp monroe'],['pitman','Pitman arm','w',220,1,'MOD','trp pp'],['sbush','Spring bushing kit','w',60,3,'MOD','trp pp'],
+ ['cshock','Cab shock','w',75,2,'MOD','trp monroe gabriel'],['wsk','Wheel bearing and seal kit','w',55,3,'POS','skf timken'],['hcv','Height control valve','w',90,3,0,'trp hald'],
+ ['tdh','Trailer door handle','tr',60,2,0,'trp'],['rollup','Roll-up door','tr',1400,.3,0,'trp'],['icc','ICC bumper','tr',380,.5,0,'trp'],['xmem','Trailer crossmember','tr',140,1,0,'trp'],
+ ['slpin','Trailer slider pin kit','tr',75,2,0,'trp holland'],['ttail','Trailer tail light','tr',38,4,0,'grote tl'],['troof','Trailer roof patch kit','tr',65,2,0,'trp'],['tabs','Trailer ABS kit','tr',420,.6,0,'bend wab hald'],
+ ['tlens','Trailer lens kit','tr',30,3,0,'grote tl'],['bulkh','Bulkhead','tr',520,.3,0,'trp'],
+ ['tchn','Tow chain','tw',95,3,0,'peer trp'],['tstrp','Tow strap','tw',65,4,0,'trp zips'],['snatch','Snatch block','tw',180,2,0,'zips miller'],['wcab','Winch cable','tw',140,2,0,'jerr miller zips'],
+ ['tlbar','Tow light bar','tw',260,2,0,'zips trp'],['wlift','Wheel lift','tw',3800,.2,0,'jerr miller'],['wdol','Wheel dollies','tw',1200,.3,0,'zips'],['tbar','Tow bar','tw',650,.5,0,'zips trp'],
+ ['winch','Winch','tw',2600,.3,0,'miller jerr'],['ghook','Grab hook kit','tw',75,3,0,'peer trp'],['schain','Safety chain set','tw',110,2,0,'peer zips'],['tair','Tow air supply kit','tw',220,1,0,'zips trp'],
+ ['rback','Rollback bed','tw',38000,.03,0,'jerr miller'],['wbody','Wrecker body','tw',65000,.02,0,'jerr miller'],
+ ['hreel','Hose reel','hy',380,.6,0,'trp parker'],['hrf','Hydraulic return filter','hy',55,3,0,'parker don trp'],['hcool','Hydraulic oil cooler','hy',620,.4,0,'parker trp'],['pshaft','PTO shaft','hy',280,1,0,'muncie chelsea'],
+ ['psw','PTO switch','hy',85,2,0,'muncie chelsea trp'],['dvlv','Diverter valve','hy',340,.6,0,'parker trp'],['hseal','Cylinder seal kit','hy',60,3,0,'parker trp'],['hqc','Quick coupler','hy',35,4,0,'parker trp'],
+ ['fcap','Fuel cap','fu',25,5,0,'trp pp'],['fstrap','Fuel tank strap','fu',75,3,'MOD','trp pp'],['fsend','Fuel sending unit','fu',140,2,'MOD','trp pp'],['wifs','Water in fuel sensor','fu',60,3,'ENG','racor trp'],
+ ['fprim','Fuel primer pump','fu',90,2,'ENG','racor stan trp'],['frv','Fuel return valve','fu',85,2,'ENG','bosch trp'],['fpres','Fuel pressure sensor','fu',110,2,'ENG','bosch pp trp'],['fhtr','Fuel heater','fu',220,1,'ENG','racor don trp'],
+ ['fxv','Fuel crossover valve','fu',140,1,0,'trp pp'],['racor','Fuel filter housing','fu',380,1,0,'racor'],['xfer','Fuel transfer pump','fu',420,.6,0,'trp'],['frail','Fuel rail','fu',680,.5,'ENG','bosch delphi'],
+ ['ftank','Fuel tank, 100 gal','fu',1100,.5,'MOD','trp pp'],['hpp','High-pressure fuel pump','fu',2800,.3,'ENG','bosch delphi stan'],
+ ['tcg','Timing cover gasket','e',65,2,'ENG'],['imap','Intake manifold pressure sensor','e',85,2,'ENG','pp bosch cum dd'],['lifter','Cam follower','e',140,1,'ENG'],['vspr','Valve spring kit','e',190,.8,'ENG'],
+ ['rocker','Rocker arm','e',260,1,'ENG'],['liner','Cylinder liner','e',320,.6,'ENG'],['rodb','Rod bearing set','e',320,.6,'ENG'],['mainb','Main bearing set','e',380,.6,'ENG'],
+ ['piston','Piston','e',480,.6,'ENG'],['conrod','Connecting rod','e',540,.4,'ENG'],['damp','Vibration damper','e',780,.4,'ENG'],['fwh','Flywheel','e',980,.3,'ENG'],
+ ['fwhh','Flywheel housing','e',1400,.2,'ENG'],['ehead','Cylinder head','e',3600,.2,'ENG','cum dd pp pai fpd'],
+ ['ashs','Axle shaft seal','d',38,3,0,'stemco skf trp'],['slave','Clutch slave cylinder','d',140,1,'TRN','trp eaton'],['sfork','Shift fork','d',180,.6,'TRN','eaton trp'],['rcyl','Range cylinder kit','d',220,.6,'TRN','eaton trp'],
+ ['tcool','Transmission cooler','d',520,.4,'TRN','trp eaton allison'],['ishaft','Input shaft','d',780,.3,'TRN','eaton pai'],['ipd','Inter-axle differential kit','d',980,.3,0,'mer eaton dana'],['mshaft','Mainshaft','d',1400,.2,'TRN','eaton pai'],
+ ['vclamp','Exhaust V-band clamp','a',45,4,0,'trp don dinex'],['dhrel','DEF heater relay','a',45,2,0,'pp bosch'],['defl','DEF line','a',120,2,'ENG','pp bosch'],['scrt','SCR temperature sensor','a',140,2,'ENG','pp bosch cum dd'],
+ ['dpfc','DPF cleaning exchange','a',450,1,'ENG','don dinex pp'],['deft','DEF tank','a',780,.4,'MOD','pp trp'],['acm','Aftertreatment control module','a',1600,.3,'ENG','pp cum dd'],
+ ['bbrk','Bumper bracket','bd',140,1,'MOD','pp trp'],['hhng','Hood hinge','bd',120,1,'MOD','pp trp dorman'],['bbox','Battery box cover','bd',160,1,'MOD','pp trp'],['tbox','Frame tool box','bd',380,1,0,'trp dorman'],
+ ['qfen','Poly quarter fenders, pair','bd',260,1,0,'min trp'],['sext','Sleeper extender','bd',580,.3,'MOD','pp trp'],['sbump','Steel bumper','bd',620,.5,'MOD','pp trp'],['fndr','Fender','bd',780,.4,'MOD','pp trp min'],
+ ['chf','Chassis fairing','bd',900,.3,'MOD','pp trp'],['rfair','Roof fairing','bd',1600,.2,'MOD','pp trp'],['cdoor','Cab door','bd',2600,.2,'MOD','pp'],['hood','Hood','bd',4200,.2,'MOD','pp trp'],
+ ['vlite','Visor light','x',30,3,0,'grote tl up'],['slite','Stack light','x',45,2,0,'up gg'],['orn','Hood ornament','x',90,2,0,'up gg'],['mcov','Chrome mirror cover','x',120,1,'MOD','up trux'],
+ ['hsh','Exhaust heat shield','x',140,1,0,'up trux trp'],['gtrim','Chrome grille trim','x',240,.6,'MOD','up trux'],['tcov','Chrome tank cover','x',380,.5,0,'up trux'],['rlbar','Rear light bar','x',540,.5,0,'up trux'],
+ ['tbead','Tire balancing beads','t',30,3,0,'trp'],['trk2','Tire repair kit','t',45,3,0,'trp gy'],['spc','Spare tire carrier','t',220,1,0,'trp'],['msteer','Mixed service steer tire','t',650,1,'TIRE'],
+ ['offr','On/off-road drive tire','t',720,.6,'TIRE','mich bs gy toyo'],['wide','Wide-base drive tire','t',780,1,0,'mich bs gy cont'],
+ ['mdof','Medium duty oil filter','md',12,6,'MD','trp wix flg isuzu hino'],['mdff','Medium duty fuel filter','md',18,5,'MD','trp wix bald isuzu hino'],['mdaf','Medium duty air filter','md',45,4,'MD','trp wix don hino'],
+ ['mdshk','Medium duty shock','md',70,3,'MD','trp monroe gabriel'],['mdbp','Medium duty brake pads','md',90,3,'MD','trp bend isuzu'],['mdrot','Medium duty brake rotor','md',140,2,'MD','trp bend'],
+ ['mdwp','Medium duty water pump','md',180,1,'MD','trp gates hino'],['mdhl','Medium duty headlight','md',220,2,'MD','trp grote isuzu'],['mdst','Medium duty starter','md',300,1,'MD','trp dr prest'],
+ ['mdalt','Medium duty alternator','md',320,1,'MD','trp dr prest'],['mdlm','Liftgate motor','md',420,.5,0,'trp'],['mdrad','Medium duty radiator','md',780,.4,'MD','trp kysor'],
+ ['mdrd','Box truck roll-up door','md',1600,.2,0,'trp'],['mdlg','Liftgate','md',3800,.1,0,'trp'],
+ ['rsens','Reefer temperature sensor','rf',65,2,0,'thermo carrier'],['achose','A/C hose','rf',85,2,'MOD','trp pp denso'],['acexp','A/C expansion valve','rf',75,2,'MOD','trp denso'],['rdg','Reefer door gasket','rf',120,1,0,'thermo carrier trp'],
+ ['rbat','Reefer battery','rf',180,1,0,'thermo carrier inter'],['acclu','A/C clutch','rf',260,1,'MOD','trp denso'],['ralt','Reefer alternator','rf',420,.6,0,'thermo carrier'],['revap','Reefer evaporator coil','rf',1400,.3,0,'thermo carrier'],
+ ['bunkac','Sleeper A/C unit','rf',3600,.2,0,'thermo carrier'],
+ ['trem','Reman turbocharger','h',1900,.3,'ENG','holset bw garrett'],['crem','Reman crankshaft','h',3200,.1,'ENG','cum dd pai'],['dfrem','Reman differential','h',4200,.1,0,'mer eaton dana'],
+ ['hdrem','Reman cylinder head','h',4800,.15,'ENG','cum dd pp'],['inframe','In-frame overhaul kit','h',14000,.1,'ENG','cum dd pai fpd'],['outf','Out-of-frame overhaul kit','h',16000,.08,'ENG','cum dd pai'],
+ ['uvan','Used dry van trailer','ut',22000,.05,0,'util gdane wab2'],['uflat','Used flatbed trailer','ut',28000,.04,0,'util gdane wab2'],['ureef','Used reefer trailer','ut',45000,.04,0,'util gdane wab2'],
+ ['utow','Used tow truck','ut',75000,.02,0,'kw pb intl'],['umix','Used mixer truck','ut',95000,.02,0,'kw pb mack'],['ugar','Used refuse truck','ut',110000,.02,0,'mack pb intl'],
+ ['nvan','New dry van trailer','nt',48000,.04,0,'util gdane wab2'],['nflat','New flatbed trailer','nt',55000,.03,0,'util gdane wab2'],['nreef','New reefer trailer','nt',85000,.03,0,'util gdane wab2'],
+ ['ndump','New dump truck','nt',240000,.02,0,'kw pb mack'],['nmix','New mixer truck','nt',260000,.02,0,'kw pb mack'],['ntow','New heavy wrecker','nt',420000,.01,0,'kw pb'],
+ ['evcab','High-voltage cable','ev',680,.4,'EV','pp eaton'],['evcp','Battery coolant pump','ev',540,.4,'EV','pp bosch'],['evdc','DC-DC converter','ev',2600,.2,'EV','eaton pp'],['evobc','Onboard charger','ev',4800,.1,'EV','pp eaton'],
+ ['evinv','Traction inverter','ev',9000,.08,'EV','dana eaton cum'],['evmot','Traction motor','ev',18000,.05,'EV','dana mer allison'],['evaxle','Electric axle','ev',38000,.04,'EV','dana mer allison'],
+ ['evbat','Battery pack','ev',42000,.05,'EV','pp cum'],['evchg','Depot charger, 150 kW','ev',65000,.03,0,'abb cp'],['evchg2','Depot charger, 350 kW','ev',140000,.02,0,'abb cp'],
+ ['nevbox','New electric box truck','ev',260000,.02,0,'kw pb'],['nev','New electric tractor','ev',420000,.02,0,'kw pb']];
+
+
+/* ---------- build the catalog ---------- */
+const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h/4294967295};
+const BRANDS=Object.entries(BR).map(([id,[n,t]])=>({id,n,t}));const BI={};BRANDS.forEach(b=>BI[b.id]=b);
+const TORD={V:0,O:1,P:2};
+const PARTS=[],PI={};
+BASE.map((b,i)=>[b,i]).sort((x,y)=>LI[x[0][2]].i-LI[y[0][2]].i||x[1]-y[1]).forEach(([[bid,n,line,mkt,w,fit,br]])=>{
+  const vs=(fit?FIT[fit]:[[null,null]]).map(([vk,vn])=>{const id=vk?bid+'-'+vk:bid;return {id,base:bid,n:vn?`${n}, ${vn}`:n,short:n,fit:vn||'',line,mkt:vk?Math.round(mkt*(.85+.3*hash(id))*100)/100:mkt,
+    brands:(br||LI[line].brands).split(' ').filter(x=>BI[x])}});
+  vs.sort((a,b)=>a.mkt-b.mkt).forEach(p=>{PARTS.push(p);PI[p.id]=p})});
+const BASES=[];for(const p of PARTS)if(!BASES.includes(p.base))BASES.push(p.base);
+const BASE_NAME={};for(const p of PARTS)BASE_NAME[p.base]=p.short;
+
+/* ---------- the ladder: every product in order, cheapest to best ----------
+   Within a part: house brand TRP first, then value, OE and premium brands; each brand runs through its fitments.
+   Owning NEED facings of a step unlocks the next one. Finishing a part takes BASE_NEED of its last step. */
+const NEED=10,BASE_NEED=25;
+const LADDER=[],SI={};
+for(const base of BASES){const ps=PARTS.filter(p=>p.base===base),brands=[...new Set(ps.flatMap(p=>p.brands))]
+    .sort((a,b)=>(a==='trp'?-1:b==='trp'?1:0)||TORD[BI[a].t]-TORD[BI[b].t]||BI[a].n.localeCompare(BI[b].n));
+  for(const b of brands)for(const p of ps)if(p.brands.includes(b)){const t=TIER[BI[b].t];
+    const s={id:p.id+'.'+b,p:p.id,b,base,line:p.line,t:BI[b].t,price:Math.round(p.mkt*t.pf*100)/100};s.k=LADDER.length;LADDER.push(s);SI[s.id]=s}}
+for(let k=0;k<LADDER.length;k++){const s=LADDER[k];s.first=k===0||LADDER[k-1].base!==s.base;s.last=k===LADDER.length-1||LADDER[k+1].base!==s.base}
+/* economy (all in log10 so prices can climb past 1e308):
+   each product starts above what the one before it costs once you've stocked enough to unlock it */
+const lg=Math.log10,G=1.15,LG=lg(G);
+const needOf=s=>s.last?BASE_NEED:NEED;
+let lam=1;for(const s of LADDER){if(s.k>0){const p=LADDER[s.k-1];lam+=needOf(p)*LG+lg(1.12)}s.lam=lam;s.pay=18*10**(2.35*s.k/LADDER.length);s.incL=lam-lg(s.pay);s.u=.25*10**(.07*(lam-1)/(1+(lam-1)/3000));s.g=G}
+const NB=BASES.length,NS=LADDER.length;
+const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
+
+/* ---------- the store: four ladders, built like the parts list ----------
+   Each aisle is a list of items, each item comes in a few makes or sizes.
+   Own 10 of a step to unlock the next one. Every step is priced at the point
+   on the parts ladder where the store will need it, and each copy costs more,
+   so the 11th copy of a step costs more than the first copy of the next. */
+const AISLE_SPEC={
+ ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:lg(3),N:300,items:[
+  ['Counter bell',['Brass','Chrome','Desk']],['Cash drawer',['APG','MMF','Star Micronics']],['Cash register',['Casio','Sharp','Royal']],
+  ['Card reader',['Square','Clover','Verifone','Ingenico']],['Barcode scanner',['Honeywell','Zebra','Datalogic']],['Receipt printer',['Epson','Star Micronics','Bixolon']],
+  ['Label printer',['Zebra','Brother','DYMO']],['Counter mat',['Rubber','Anti-fatigue','Gel']],['Parts catalog',['=Paper parts catalog','=Catalog binder set','=Catalog library']],
+  ['Part-time counter clerk',['Weekend','Evening','Morning']],['Counter stool',['Shop','Padded','Ergonomic']],['POS terminal',['Square','Clover','NCR','Lightspeed','Epicor']],
+  ['Parts catalog terminal',['Single-screen','Dual-screen','Counter-wide']],['Full-time counter clerk',['Trainee','Experienced','Senior']],['Checkout lane',['Second','Third','Fourth']],
+  ['Express counter',['One-lane','Two-lane','Four-lane']],['Counter salesperson',['Junior','Seasoned','Top-selling']],['Core return desk',['Small','Busy','Full-service']],
+  ['Warranty desk',['Part-time','Full-time','Dedicated']],['Phone order desk',['One-line','Four-line','Twelve-line']],['Headset system',['Wired','Wireless','Multi-line']],
+  ['Will-call window',['Walk-up','Drive-up','24-hour']],['Night drop box',['Small','Large','Secure']],['Online order desk',['Part-time','Full-time','Around-the-clock']],
+  ['Parts runner',['Part-time','Full-time','Lead']],['Runner truck',['=Ford F-150 runner truck','=Ram 1500 runner truck','=Chevrolet Silverado runner truck']],
+  ['Delivery van',['Ford Transit','Ram ProMaster','Mercedes-Benz Sprinter']],['Delivery route',['Local','County','Two-county']],['Box truck',['Isuzu NPR','Hino 195','Kenworth T280']],
+  ['Dispatcher',['Part-time','Full-time','Lead']],['Pick-up lockers',['=Bank of 12 pick-up lockers','=Bank of 48 pick-up lockers','=Wall of 200 pick-up lockers']],
+  ['Self-serve kiosk',['Lobby','Drive-through','Outdoor 24-hour']],['Mobile ordering app',['Basic','Catalog','Fleet']],['Fleet ordering portal',['Local','Regional','National']],
+  ['Inside sales team',['Small','Mid-size','Large']],['Satellite counter',['Truck stop','Fleet yard','Port']],['Order hub',['City','State','Regional']],
+  ['Call center',['Day-shift','Two-shift','Around-the-clock']],['Shuttle fleet',['Small','Medium','Large']],['Automated order system',['Pilot','Full','Next-generation']],
+  ['Same-day delivery network',['Metro','State','Regional']],['Parts network',['Regional','National','Continental']],['Overnight air freight',['Regional','National','International']],
+  ['Global order platform',['Pilot','Full','Worldwide']]]},
+ sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:lg(2.5),N:300,items:[
+  ['Box cutter',['Basic','Safety','Auto-retract']],['Step stool',['Plastic','Steel','Rolling']],['Hand truck',['Harper','Magliner','Wesco']],['Stock cart',['Rubbermaid','Uline','Akro-Mils']],
+  ['Price gun',['Single-line','Two-line','Thermal']],['Part-time stock crew',['Weekend','Evening','Overnight']],['Rolling ladder',['Cotterman','Louisville','Werner']],
+  ['Shelf labels',['Paper','Magnetic','Electronic']],['Inventory scanner',['Zebra','Honeywell','Datalogic']],['Pallet jack',['Crown','Raymond','Toyota']],
+  ['Full-time stock crew',['Trainee','Experienced','Senior']],['Stockroom manager',['New','Experienced','Veteran']],['Walkie stacker',['Crown','Raymond','Big Joe']],
+  ['Forklift',['Toyota','Hyster','Yale','Crown']],['Receiving dock',['One-door','Three-door','Six-door']],['Receiving clerk',['Part-time','Full-time','Lead']],
+  ['Cycle count team',['Small','Night','Full']],['Order picker',['Crown','Raymond','Hyster']],['Reach truck',['Crown','Raymond','Yale']],['Pallet wrapper',['Manual','Semi-automatic','Automatic']],
+  ['Dock leveler',['Mechanical','Hydraulic','Air-powered']],['Warehouse management system',['Basic','Pro','Enterprise']],['Pick-to-light system',['One-aisle','Half-store','Full-store']],
+  ['Conveyor',['Gravity','Belt','Sortation']],['Carousel',['Horizontal','Vertical','Robotic']],['Vertical lift module',['Single','Twin','Quad']],
+  ['Warehouse robots',['Starter fleet of','Fleet of','Swarm of']],['Sortation system',['Small','Mid-size','Large']],['Automated storage system',['Shuttle','Crane','Cube']],
+  ['Cross-dock',['Small','Regional','National']],['Distribution center',['Local','Regional','National']],['Truck fleet',['Small','Mid-size','Large']],
+  ['Rail spur',['Short','Long','Double-track']],['Freight network',['Regional','National','Continental']],['Automated port',['River','Lake','Ocean']],
+  ['Global logistics network',['Pilot','Full','Worldwide']]]},
+ cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:lg(4),N:300,items:[
+  ['Business cards',['Plain','Two-sided','Embossed']],['Flyers',['Truck stop','Feed store','Fuel island']],['Window sign',['Paper','Vinyl','Neon']],
+  ['Free coffee',['=Free coffee pot','=Coffee bar','=Espresso machine']],['Newspaper ad',['Classified','Quarter-page','Full-page']],['Phone book ad',['Line','Box','Full-page']],
+  ['Radio spot',['Farm report','Morning drive','Ballgame']],['Yard sign',['Small','Lit','Digital']],['Parts website',['Basic','Catalog','Ordering']],
+  ['Search ads',['=Google Ads campaign','=Microsoft Ads campaign']],['Social media',['=Facebook page','=Instagram account','=YouTube channel','=TikTok account']],
+  ['Email newsletter',['Monthly','Weekly','Daily']],['Store merch',['=Branded hats','=Branded shirts','=Branded jackets']],['Billboard',['Highway','Interstate','Digital']],
+  ['Outside sales rep',['Part-time','Full-time','Senior']],['Customer appreciation day',['Spring','Summer','Fall']],['Fleet account manager',['Local','Regional','National']],
+  ['Trade show booth',['County fair','State show','Mid-America Trucking Show']],['Sponsorship',['Little league','Truck pull','Racing']],['Regional TV ad',['Late-night','Prime-time','Big-game']],
+  ['Loyalty program',['Punch card','Points','Fleet rewards']],['Podcast ad',['Trucking','Business','National']],['Streaming ad',['Regional','National','Prime-time']],
+  ['National fleet program',['Starter','Growing','Major']],['Truck stop chain deal',['Regional','National','Coast-to-coast']],['Spokesperson',['Local','Regional','National']],
+  ['Nationwide campaign',['Spring','Year-round','Coast-to-coast']],['Household name',['Known','Famous','Legendary']],
+  ['International campaign',['=Canada campaign','=Mexico campaign','=Worldwide campaign']]]},
+ sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:lg(6),N:720,items:[
+  ['Pegboard',['Small','Large','Wall']],['Slatwall',['4-foot','8-foot','16-foot']],['Wire shelving',['Edsal','Tennsco','Lyon']],['Bin shelving',['Akro-Mils','Lyon','Penco']],
+  ['Steel shelving',['Lyon','Tennsco','Penco','Republic']],['Gondola',['Lozier','Madix']],['Endcap display',['Single','Double','Lit']],['Spinner rack',['Small','Tall','Double']],
+  ['Drawer cabinet',['Lista','Stanley Vidmar','Lyon']],['Cantilever rack',['Light','Medium','Heavy']],['Tire rack',['Wall','Stacking','Mobile']],['Filter wall',['Small','Medium','Full']],['Battery rack',['Two-tier','Four-tier','Rolling']],['Hose reel rack',['Single','Double','Wall']],['Drum rack',['Two-drum','Four-drum','Bulk']],
+  ['Bulk fluid tank',['=Bulk oil tank','=Bulk coolant tank','=Bulk DEF tank']],
+  ['Pallet racking',['Frazier','Interlake Mecalux','Unarco']],['Drive-in racking',['Small','Medium','Large']],['Tall racking',['16-foot','20-foot','24-foot']],['High-bay racking',['30-foot','40-foot','60-foot']],['Yard storage',['Fenced','Paved','Covered']],
+  ['Mezzanine',['Small','Half-store','Full-store']],['Storage container',['20-foot','40-foot','High-cube']],['Pole barn',['Small','Large','Heated']],
+  ['Warehouse annex',['Small','Large']],['New wing',['East','West','North']],['Second building',['Small','Large']],['Off-site warehouse',['Small','Large','Twin']],
+  ['Parts campus',['Starter','Full']],['Mega warehouse',['Single-floor','Multi-floor']],['Regional depot',['North','South','West']],
+  ['National depot',['Central','Coastal','Mountain']],['Parts city',['Planned','Full','Mega']]]}};
+const ROMAN=['','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
+const genTag=n=>n<=20?ROMAN[n-1]:'No. '+n;
+const PER_CUST=3,UNLOCK_N=10;
+/* what each aisle has to keep up with at a point on the parts ladder */
+const NEEDU=k=>Math.max(3,(13*k+5)*LADDER[k].u),NEEDF=k=>40+13*k;
+const STEP={};
+/* builds a set of capacity ladders (store aisles or shop sections) along a product ladder.
+   needAt(g,k) is what group g has to keep up with at product step k; slot groups are spaced evenly. */
+function buildAisles(SPEC,LAD,needAt,slot){const OUT={},NL=LAD.length;
+ for(const [g,c] of Object.entries(SPEC)){
+  /* names: the listed items, then later generations of the last ten items */
+  const names=[];c.items.forEach(([it,vs],i)=>vs.forEach(v=>names.push({it:i,item:it,n:v[0]==='='?v.slice(1):`${v} ${lc(it)}`})));
+  const tail=c.items.slice(-10);let gen=2,ii=c.items.length;
+  while(names.length<c.N){for(const [it,vs] of tail){const tag=genTag(gen);for(const v of vs)names.push({it:ii,item:`${it} ${tag}`,n:`${v[0]==='='?v.slice(1):v+' '+lc(it)} ${tag}`});ii++}gen++}
+  names.length=Math.max(c.N,c.items.reduce((a,x)=>a+x[1].length,0));
+  const isSlot=g===slot;
+  /* need curve (never falls) */
+  const need=[];let mx=0;for(let k=0;k<NL;k++){mx=Math.max(mx,needAt(g,k));need.push(mx)}
+  const n0=Math.log10(need[0]),n1=Math.log10(need[NL-1]),M=names.length,out=[];let cap=c.base,k=0,prevL=-1,prevA=0;
+  const ks=[];for(let j=0;j<M;j++){if(isSlot)k=Math.round(j*(NL-1)/(M-1));else{const f=j/(M-1);while(k<NL-1&&.5*(Math.log10(need[k])-n0)/(n1-n0)+.5*k/(NL-1)<f-1e-9)k++}ks.push(k)}
+  for(let j=0;j<M;j++){k=ks[j];
+    /* 10 copies of a step carry you about halfway to where the next step opens */
+    const tgt=.9*Math.sqrt(need[k]*need[ks[Math.min(j+1,M-1)]]);
+    let a=j===0?c.a0:Math.max(prevA*(isSlot?1:1.08),(tgt-cap)/UNLOCK_N);if(isSlot)a=Math.ceil(a);
+    let baseL=LAD[k].lam+c.off;if(j>0)baseL=Math.max(baseL,prevL+UNLOCK_N*lg(1.12)+lg(1.1));
+    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,amt:a,baseL,g2:1.12};if(j>0){const p=out[j-1];p.g2=10**((baseL-p.baseL)/10.5)}
+    out.push(s);STEP[s.id]=s;cap+=UNLOCK_N*a;prevL=baseL;prevA=a}
+  out[M-1].g2=out[M-2].g2;OUT[g]=out}
+ return OUT}
+const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh');
+
+
+const RANKS=[[-99,'Counter salesperson'],[4,'Senior counter salesperson'],[6,'Parts specialist'],[9,'Lead parts specialist'],[14,'Assistant parts manager'],[22,'Parts manager'],
+ [35,'Service and parts director'],[55,'General manager'],[85,'Regional parts manager'],[130,'Regional vice president'],[200,'Vice president of parts'],[300,'President'],[450,'Owner'],
+ [650,'Chairman of the board'],[900,'Industry legend'],[1300,'Living legend'],[1800,'Parts counter royalty'],[2400,'The one everyone calls'],[3200,'Founder of a parts empire'],[4200,'Parts tycoon'],[5400,'The parts counter itself']];
+const rankOf=L=>(RANKS.filter(r=>L>=r[0]).pop()||RANKS[0])[1];
+
+/* ---------- logbook and goals ---------- */
+const LOG=[
+ ['l0',()=>true,'First day behind the counter at Fremont Truck & Parts. The coffee is bad and the phone never stops. You love it.'],
+ ['l1',()=>S.st.incidents>=1,'First mess of the day handled. Nobody even noticed.'],
+ ['l2',()=>S.st.shop>0,'Caught a shoplifter at the door. He was trying to walk out with a light bar.'],
+ ...LINES.slice(1).map(l=>['line_'+l.id,()=>S.top>=LADDER.findIndex(s=>s.line===l.id),`The first ${lc(l.n)} arrived. Rearranged half the back room to make space.`]),
+ ...RANKS.slice(1).map(([v,r],i)=>['rank'+i,()=>S.st.totalL>=v,`New title: ${r}.`]),
+ ['end',()=>S.top>=NS-1,'The last product on the list is on your shelf. There is nothing in the catalog you don\'t carry.']];
+const A=[];
+BASES.forEach((b,i)=>{const last=LADDER.filter(s=>s.base===b).pop();A.push({id:'m'+b,n:`Master ${lc(BASE_NAME[b])}`,ok:()=>L(S.f,last.id)>=BASE_NEED,i:last.k})});
+[3,6,9,12,15,20,30,50,75,100,150,200,300,500,750,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500].forEach(v=>A.push({id:'c'+v,n:`Earn ${moneyL(v)} in total`,ok:()=>S.st.totalL>=v}));
+LINES.forEach(l=>A.push({id:'ln'+l.id,n:`Stock every ${lc(l.n)} product`,ok:()=>{const last=LADDER.filter(s=>s.line===l.id).pop();return S.top>last.k}}));
+for(const g of Object.keys(AISLE))[5,15,30,60,100,150,200,300,500].forEach(j=>{const st=AISLE[g][j];if(st)A.push({id:'cap'+g+j,n:`Own one: ${st.n}`,ok:()=>L(S.b,st.id)>0})});
+[100,1000,1e4,5e4,1e5].forEach(v=>A.push({id:'fac'+v,n:`Own ${fmt(v)} facings`,ok:()=>FAC>=v}));
+[1,10,100,1000].forEach(v=>A.push({id:'ic'+v,n:`Handle ${fmt(v)} incident${v>1?'s':''}`,ok:()=>S.st.incidents>=v}));
+
+</script><script>
+/* ===== Parts Counter: the service side =====
+   A shop next to the parts counter. Jobs climb like parts do: each job runs through
+   service levels, and each level through the trucks or engines it applies to.
+   Own 10 of a job step to unlock the next; finish a job with 25 of its last step. */
+
+const SV_LV={wi:['Walk-in','V'],ap:['Appointment','O'],mo:['Mobile','O'],rc:['Road call','O'],wa:['Warranty','P'],ex:['Extended plan','P'],fc:['Fleet contract','P']};
+const SV_LINES=[
+ ['pm','Preventive maintenance','#2f6fb0','wi ap fc'],['in','Inspections','#6d7a86','wi ap fc'],['ti','Tires & wheels','#37474f','wi ap fc'],
+ ['br','Brakes','#c62828','wi ap fc'],['el','Electrical','#c79100','wi ap fc'],['co','Cooling & A/C','#00897b','wi ap fc'],
+ ['dg','Diagnostics','#3949ab','ap wa fc'],['su','Suspension & steering','#546e7a','wi ap fc'],['tr','Trailer service','#8d6e63','wi ap fc'],
+ ['rd','Road service','#f9a825','rc mo fc'],['up','Upfits & installs','#78909c','wi ap fc'],['af','Aftertreatment','#43a047','ap wa fc'],
+ ['dt','Drivetrain','#5e35b1','ap wa fc'],['en','Engine repair','#d84315','ap wa fc'],['bd','Body & collision','#607d8b','wi ap fc'],
+ ['md','Medium duty service','#7cb342','wi ap fc'],['fl','Fleet programs','#455a64','ap fc ex'],['hv','Heavy repair','#ad1457','ap wa ex fc'],
+ ['ev','Electric truck service','#1e88e5','ap wa ex fc']].map(([id,n,c,lv],i)=>({id,n,c,lv:lv.split(' '),i}));
+const SLI={};SV_LINES.forEach(l=>SLI[l.id]=l);
+const SV_JOBS=[
+ ['oil','Oil change','pm','ENG'],['lube','Chassis lube','pm','MOD'],['ffs','Fuel filter service','pm','ENG'],['afs','Air filter service','pm','MOD'],['cfl','Coolant flush','pm','ENG'],
+ ['tfs','Transmission fluid service','pm','TRN'],['dfs','Differential fluid service','pm','MOD'],['pma','PM-A service','pm','MOD'],['pmb','PM-B service','pm','MOD'],['pmc','PM-C service','pm','MOD'],
+ ['dot','DOT annual inspection','in','MOD'],['brki','Brake inspection','in','MOD'],['tdot','Trailer DOT inspection','in',0],['rfi','Reefer inspection','in',0],['emis','Emissions test','in','ENG'],
+ ['ppi','Pre-purchase inspection','in','MOD'],['tank','Tank inspection','in',0],
+ ['tmb','Tire mount and balance','ti','TIRE'],['flat','Flat repair','ti','TIRE'],['trot','Tire rotation','ti','MOD'],['aln','Alignment','ti','MOD'],['tral','Trailer alignment','ti',0],
+ ['wsr','Wheel seal replacement','ti','MOD'],['hubs','Hub service','ti','MOD'],['rim','Wheel replacement','ti',0],
+ ['badj','Brake adjustment','br','MOD'],['bshoe','Brake shoe replacement','br','MOD'],['bdrum','Brake drum replacement','br','MOD'],['disc','Disc brake service','br','MOD'],
+ ['air','Air leak repair','br','MOD'],['dry','Air dryer service','br','MOD'],['cham','Brake chamber replacement','br','MOD'],['comp','Air compressor replacement','br','ENG'],
+ ['batt','Battery replacement','el','MOD'],['chg','Charging system test','el','ENG'],['str','Starter replacement','el','ENG'],['alt','Alternator replacement','el','ENG'],
+ ['lite','Lighting repair','el','MOD'],['wire','Wiring repair','el','MOD'],['tlr','Trailer light repair','el',0],
+ ['therm','Thermostat replacement','co','ENG'],['wp','Water pump replacement','co','ENG'],['rad','Radiator replacement','co','MOD'],['fan','Fan clutch replacement','co','ENG'],
+ ['acr','A/C recharge','co','MOD'],['acc','A/C compressor replacement','co','MOD'],['hcr','Heater core replacement','co','MOD'],
+ ['cel','Check engine diagnosis','dg','ENG'],['eldg','Electrical diagnosis','dg','MOD'],['absd','ABS diagnosis','dg','MOD'],['atd','Aftertreatment diagnosis','dg','ENG'],
+ ['trd','Transmission diagnosis','dg','TRN'],['swu','Software update','dg','ENG'],['ecm','ECM programming','dg','ENG'],
+ ['shk','Shock replacement','su','MOD'],['asp','Air spring replacement','su','MOD'],['kp','Kingpin job','su','MOD'],['trod','Tie rod replacement','su','MOD'],
+ ['sg','Steering gear replacement','su','MOD'],['leaf','Leaf spring replacement','su','MOD'],['fw','Fifth wheel service','su',0],['trq','Torque rod replacement','su','MOD'],
+ ['tpm','Trailer PM','tr',0],['tbj','Trailer brake job','tr',0],['tdr','Trailer door repair','tr',0],['tfl','Trailer floor repair','tr',0],['tlg','Landing gear replacement','tr',0],
+ ['tsus','Trailer suspension rebuild','tr',0],['troof','Trailer roof repair','tr',0],['rfs','Reefer unit service','tr',0],
+ ['jump','Jump start','rd',0],['trc','Tire road call','rd',0],['fuel','Fuel delivery','rd',0],['lock','Lockout service','rd',0],['ltow','Light-duty tow','rd',0],
+ ['htow','Heavy tow','rd',0],['wout','Winch-out','rd',0],['roll','Rollover recovery','rd',0],
+ ['lbi','Light bar install','up',0],['bhi','Bunk heater install','up','MOD'],['apui','APU install','up','MOD'],['cami','Camera system install','up','MOD'],['eldi','ELD install','up','MOD'],
+ ['lgi','Liftgate install','up',0],['wki','Wet kit install','up','MOD'],['ptoi','PTO install','up','TRN'],['chr','Chrome package install','up','MOD'],
+ ['regen','Forced regen','af','ENG'],['dpfc','DPF cleaning','af','ENG'],['noxr','NOx sensor replacement','af','ENG'],['defp','DEF pump replacement','af','ENG'],['egrc','EGR valve cleaning','af','ENG'],
+ ['docr','DOC replacement','af','ENG'],['dpfr','DPF replacement','af','ENG'],['scrr','SCR replacement','af','ENG'],
+ ['cadj','Clutch adjustment','dt','TRN'],['ujr','U-joint replacement','dt','MOD'],['slr','Shift linkage repair','dt','TRN'],['clu','Clutch replacement','dt','TRN'],
+ ['dsr','Driveshaft replacement','dt','MOD'],['trr','Transmission R&R','dt','TRN'],['drb','Differential rebuild','dt','MOD'],
+ ['ovh','Overhead adjustment','en','ENG'],['leak','Oil leak repair','en','ENG'],['fs','Front seal replacement','en','ENG'],['inj','Injector replacement','en','ENG'],['oc','Oil cooler replacement','en','ENG'],
+ ['turbo','Turbo replacement','en','ENG'],['egr','EGR cooler replacement','en','ENG'],['ebr','Engine brake repair','en','ENG'],['rms','Rear main seal replacement','en','ENG'],['hg','Head gasket job','en','ENG'],
+ ['touch','Paint touch-up','bd','MOD'],['mir','Mirror replacement','bd','MOD'],['ws','Windshield replacement','bd','MOD'],['fen','Fender repair','bd','MOD'],['door','Door repair','bd','MOD'],
+ ['bmp','Bumper replacement','bd','MOD'],['hood','Hood replacement','bd','MOD'],['coll','Collision repair','bd','MOD'],['paint','Full repaint','bd','MOD'],
+ ['mdo','Medium duty oil change','md','MD'],['mdp','Medium duty PM','md','MD'],['mdb','Medium duty brake job','md','MD'],['mda','Medium duty A/C service','md','MD'],
+ ['lgr','Liftgate repair','md',0],['boxr','Box body repair','md',0],
+ ['muni','Municipal fleet service','fl',0],['rent','Rental fleet service','fl','MOD'],['fpm','Fleet PM contract','fl','MOD'],['rec','Recall campaign','fl','ENG'],
+ ['warr','Extended warranty work','fl','ENG'],['lease','Full-service lease maintenance','fl','MOD'],['natl','National account service','fl',0],
+ ['rer','Rear end rebuild','hv',0],['trb','Transmission rebuild','hv','TRN'],['frame','Frame straightening','hv','MOD'],['cab','Cab replacement','hv','MOD'],
+ ['inf','In-frame overhaul','hv','ENG'],['oof','Out-of-frame overhaul','hv','ENG'],['eswap','Engine swap','hv','ENG'],['glider','Glider kit build','hv','MOD'],
+ ['hvi','High-voltage inspection','ev','EV'],['bhc','Battery health check','ev','EV'],['chgi','Depot charger install','ev',0],['invr','Inverter replacement','ev','EV'],
+ ['motr','Traction motor replacement','ev','EV'],['eaxr','E-axle replacement','ev','EV'],['bpr','Battery pack replacement','ev','EV']];
+const JOB_NAME={},JOB_LINE={};SV_JOBS.forEach(([id,n,l])=>{JOB_NAME[id]=n;JOB_LINE[id]=l});
+
+/* ---------- the service ladder ---------- */
+const SVL=[],SVI={};
+for(const l of SV_LINES)for(const [jid,jn,line,fit] of SV_JOBS){if(line!==l.id)continue;const fits=fit?FIT[fit]:[[null,null]];
+  for(const lv of l.lv)for(const [fk,fn] of fits){const s={id:`v.${jid}${fk?'.'+fk:''}.${lv}`,job:jid,line,lv,t:SV_LV[lv][1],fit:fn||'',k:SVL.length};SVL.push(s);SVI[s.id]=s}}
+for(let k=0;k<SVL.length;k++){const s=SVL[k];s.first=k===0||SVL[k-1].job!==s.job;s.last=k===SVL.length-1||SVL[k+1].job!==s.job}
+const NSV=SVL.length,SV_JOBS_N=SV_JOBS.length;
+const svNeed=s=>s.last?BASE_NEED:NEED;
+const svName=s=>`${SV_LV[s.lv][0]} ${lc(JOB_NAME[s.job])}${s.fit?', '+s.fit:''}`;
+
+/* where the shop opens: once part 5 is on the shelves, and it costs about 300 times that part's price */
+const SV_OPEN_K=LADDER.findIndex(s=>s.base===BASES[4]);
+const SV_OPEN_L=LADDER[SV_OPEN_K].lam+2.5;
+/* each job step is pinned to a point further up the parts list and priced well above it */
+const SV_OFF=1,SV_MINC=NEED*lg(1.25)+lg(1.15);
+{let prev=-1;SVL[0].lam=LADDER[SV_OPEN_K].lam+SV_OFF;for(const s of SVL){s.kp=Math.round(SV_OPEN_K+s.k*(NS-1-SV_OPEN_K)/(NSV-1));const p=LADDER[s.kp];
+  s.lam=Math.max(p.lam+SV_OFF,prev+SV_MINC);prev=s.lam;const x=s.lam-SVL[0].lam;s.u=.25*10**(.07*x/(1+x/3000));
+  /* a job costs about 10 times a part at the same point and pays the same per copy, so it pays back far slower */
+  s.pay=p.pay*.5;s.incL=s.lam-lg(s.pay)}
+ for(const s of SVL){const n=SVL[s.k+1];s.g=n?Math.max(1.25,10**((n.lam-s.lam)/(svNeed(s)+.5))):SVL[s.k-1].g}}
+/* once the shop exists, every new part needs the shop to keep up: you can't sell what nobody installs.
+   The shop must have unlocked the last job step priced at or below the new part's price. */
+const SV_GAP=.7,SV_GATE={};{let j=0;for(const s of LADDER){if(!s.first||s.k<=SV_OPEN_K)continue;while(j<NSV-1&&SVL[j+1].lam<=s.lam-SV_GAP)j++;SV_GATE[s.k]=j}}
+/* -1 when a parts step has no shop requirement, otherwise the job step the shop must have unlocked */
+const gateOf=s=>SV_GATE[s.k]===undefined?-1:SV_GATE[s.k];
+
+/* ---------- the shop: five sections, built like the store aisles ---------- */
+const PER_TRUCK=4;
+const SHOP_SPEC={
+ vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:lg(2),N:900,items:[
+  ['Outdoor work pad',['Gravel','Paved','Covered']],['Service bay',['Single','Drive-through','Heated']],['Truck lift',['Rotary','Stertil-Koni','Mohawk']],
+  ['Lube pit',['Single','Double','Express']],['Tire bay',['Single','Double','Express']],['Alignment bay',['Standard','Wide','Drive-on']],['Wash bay',['Manual','Brush','Touchless']],
+  ['Trailer bay',['Single','Double','Pull-through']],['Paint booth',['Small','Truck-size','Downdraft']],['Body shop',['Small','Large','Full']],
+  ['Heavy repair bay',['Single','Double','Crane-equipped']],['Shop building',['Steel','Insulated','Heated']],['Second shop',['Small','Large']],['Mobile service yard',['Small','Large']],
+  ['Truck center',['Regional','Flagship']],['Service campus',['Starter','Full']],['Mega service center',['Single','Twin']],['National service network',['Regional','Coast-to-coast']]]},
+ vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:lg(3),N:240,items:[
+  ['Shop helper',['Weekend','Evening','Day']],['Apprentice technician',['First-year','Second-year','Third-year']],['Lube technician',['Part-time','Full-time','Lead']],
+  ['Tire technician',['Part-time','Full-time','Lead']],['Trailer technician',['Part-time','Full-time','Lead']],['Brake technician',['Junior','Certified','Senior']],
+  ['Diesel technician',['Level 1','Level 2','Level 3']],['Electrical specialist',['Junior','Senior','Master']],['A/C technician',['Certified','Senior','Lead']],
+  ['Mobile technician',['One-truck','Two-truck','Fleet']],['Body technician',['Junior','Senior','Master']],['Night shift',['Small','Full','Double']],
+  ['Master technician',['Certified','Senior','Shop-leading']],['Shop foreman',['Day','Night','Lead']],['Technician school partnership',['Local','State','National']],
+  ['Service team',['Regional','National']],['Technician network',['Regional','National','Continental']]]},
+ vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:lg(3),N:240,items:[
+  ['Service counter',['Small','Busy','Full']],['Repair order forms',['Paper','Carbon copy','Digital']],['Service writer',['Trainee','Experienced','Senior']],
+  ['Shop management system',['Fullbay','Karmak','Decisiv']],['Estimate software',['Basic','Pro','Fleet']],['Service advisor',['Junior','Senior','Lead']],
+  ['Warranty clerk',['Part-time','Full-time','Lead']],['Shop parts runner',['Part-time','Full-time','Lead']],['Appointment desk',['One-line','Four-line','Call-ahead']],
+  ['Fleet coordinator',['Local','Regional','National']],['Service manager',['New','Experienced','Veteran']],['Dispatch board',['Whiteboard','Digital','Live-map']],
+  ['Service operations center',['Regional','National','Continental']]]},
+ vc:{n:'Service customers',unit:'trucks/s',base:.3,a0:.1,off:lg(3),N:240,items:[
+  ['Free inspection sign',['Paper','Vinyl','Lit']],['Shop flyers',['Truck stop','Fuel island','Truck wash']],['Service coupon',['Oil change','Brake','PM']],
+  ['Driver lounge',['=Coffee pot in the lounge','=Driver showers','=Full driver lounge']],['Service website',['Basic','Booking','Fleet']],
+  ['Online reviews',['=A few good reviews','=Hundreds of good reviews','=Top-rated shop']],['Loaner truck',['=Loaner day cab','=Loaner sleeper','=Loaner fleet']],
+  ['Shuttle service',['Local','Hotel','Citywide']],['Fleet service rep',['Part-time','Full-time','Senior']],['Fleet PM program',['Starter','Growing','Major']],
+  ['Authorized service center',['=Cummins authorized service','=PACCAR authorized service','=Allison authorized service','=Eaton authorized service']],
+  ['Roadside assistance program',['Local','Regional','National']],['24-hour service',['Weekend','Weeknight','Around-the-clock']],['National service contract',['Regional','National','Coast-to-coast']]]},
+ ve:{n:'Tools & equipment',unit:'labor hrs/s',base:2,a0:.5,off:lg(2.5),N:240,items:[
+  ['Hand tools',['Basic','Pro','Master']],['Impact gun',['Milwaukee','DeWalt','Ingersoll Rand']],['Creeper',['Basic','Padded','Rolling-seat']],
+  ['Oil drain cart',['Lincoln Industrial','Graco','Balcrank']],['Floor jack',['Basic','Air','Long-reach']],['Tire machine',['Coats','Hunter','Hofmann']],
+  ['Wheel balancer',['Coats','Hunter','Hofmann']],['Diagnostic laptop',['Basic','Dealer','Multi-brand']],['Brake lathe',['Ammco','Hunter','Ranger']],
+  ['A/C machine',['Robinair','Mahle','Snap-on']],['Alignment system',['Hunter','Bee Line','Josam']],['Parts washer',['Small','Heated','Aqueous']],
+  ['DPF cleaning machine',['FSX','Donaldson']],['Engine stand',['Light','Heavy','Rotating']],['Chassis dyno',['Single-axle','Tandem','Full']],
+  ['Overhead crane',['Gantry','Bridge','Double-bridge']],['Fluid management system',['Basic','Metered','Automated']],['Robotic lube line',['Pilot','Full']],
+  ['Predictive maintenance system',['Pilot','Fleet','Network']]]}};
+const SNEEDU=k=>Math.max(3,(13*k+5)*SVL[k].u),SNEEDF=k=>20+13*k;
+const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb');
+
+/* ---------- service goals and logbook ---------- */
+A.push({id:'svopen',n:'Open the service shop',ok:()=>S.sv.open});
+SV_JOBS.forEach(([jid,jn])=>{const last=SVL.filter(s=>s.job===jid).pop();A.push({id:'sv'+jid,n:`Master the ${lc(jn)}`,ok:()=>L(S.sv.f,last.id)>=BASE_NEED})});
+SV_LINES.forEach(l=>A.push({id:'svl'+l.id,n:`Offer every ${lc(l.n)} job`,ok:()=>{const last=SVL.filter(s=>s.line===l.id).pop();return S.sv.top>last.k}}));
+for(const g of Object.keys(SHOP))[5,15,30,60,100,200].forEach(j=>{const st=SHOP[g][j];if(st)A.push({id:'shop'+g+j,n:`Own one: ${st.n}`,ok:()=>L(S.sv.b,st.id)>0})});
+LOG.push(['sv0',()=>S.sv.open,'Opened the service shop out back. Two bays, one lift, and a coffee pot that already smells burnt.'],
+ ...SV_LINES.slice(1).map(l=>['svline_'+l.id,()=>S.sv.open&&S.sv.top>=SVL.findIndex(s=>s.line===l.id),`The shop started taking ${lc(l.n)} work.`]));
+
+</script><script>
+/* ===== Parts Counter: icons =====
+   Simple line icons on a 24x24 grid. Each icon is a list of shapes separated by "|":
+   "c cx cy r" is a circle, "r x y w h rx" is a rectangle, anything else is a path. */
+const IC={
+ filter:'r6 6 12 15 2|M5 3h14v3H5z|M6 11h12M6 15h12',
+ jug:'M8 3h5v3h3l2 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9l2-3zM9 14h6',
+ barrel:'r5 3 14 18 3|M5 9h14M5 15h14',
+ can:'r8 8 8 13 1.5|M10 5h4v3h-4zM12 5V3h3',
+ tube:'M4 9h11l4 3-4 3H4zM19 12h2M7 9v6',
+ glove:'M7 21v-6l-3-5 1.5-1L9 12V5a1 1 0 0 1 2 0v6V4a1 1 0 0 1 2 0v7V5a1 1 0 0 1 2 0v7-3a1 1 0 0 1 2 0v6c0 3-1 4-2 5v1z',
+ box:'M3 8l9-5 9 5v9l-9 5-9-5zM3 8l9 5 9-5M12 13v9',
+ tape:'c12 12 8|c12 12 3',
+ tie:'M5 19L17 7|M15 5h4v4h-4z|M8 16l-2-2M11 13l-2-2',
+ bolt:'M12 3l7.8 4.5v9L12 21l-7.8-4.5v-9z|c12 12 3',
+ triangle:'M12 3l9.5 17h-19z|M12 10v4M12 17h.01',
+ ext:'r8 8 7 13 1.5|M10 4h3v4h-3zM13 5h4l2 3',
+ cone:'M10 4h4l4.5 15h-13zM3 19h18M8.6 10h6.8M7.4 14h9.2',
+ vest:'M8 3l4 4 4-4 3 3v15H5V6zM12 7v14M5 13h4M15 13h4',
+ strap:'M2 12h20|r8 8 8 8 1.5|M10 12h4',
+ chain:'r2 9 11 6 3|r11 9 11 6 3',
+ chock:'M3 19h18L15 7zM9 19l6-12',
+ aid:'r3 6 18 14 2|M9 6V4h6v2M12 10v6M9 13h6',
+ bulb:'M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.8.8 1 1.5 1 2.5h6c0-1 .2-1.7 1-2.5A6 6 0 0 0 12 3z',
+ headlight:'M3 6h7a6 6 0 0 1 0 12H3zM16 8h5M16 12h5M16 16h5',
+ light:'r4 8 16 8 3|M8 12h8M8 5l1 2M16 5l-1 2M12 4v2',
+ battery:'r3 7 18 13 1.5|M6 4h3v3H6zM15 4h3v3h-3zM6 13h4M14 13h4M16 11v4',
+ motor:'c12 12 7|c12 12 2|M12 2v3M12 19v3M2 12h3M19 12h3',
+ plug:'M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0zM12 17v4',
+ switch:'r4 8 16 8 4|c9 12 2',
+ fuse:'r7 3 10 9 1.5|M10 12v9M14 12v9',
+ shoe:'M3 15a9 9 0 0 1 18 0h-3a6 6 0 0 0-12 0z|M7 19h10',
+ rotor:'c12 12 9|c12 12 3|M12 5.5h.01M12 18.5h.01M5.5 12h.01M18.5 12h.01',
+ drum:'c12 12 9|c12 12 6|c12 12 2',
+ chamber:'r5 7 11 10 3|M16 12h5M2 10v4',
+ valve:'M4 9l8 3-8 3zM20 9l-8 3 8 3zM12 12V6M9 6h6',
+ gauge:'c12 13 8|M12 13l4-4M8 17h8',
+ comp:'r3 11 18 9 1.5|M6 11V6h5v5M13 11V6h5v5M6 15h12',
+ hose:'M3 12c2.5-5 5.5 5 9 0s6.5 5 9 0|M3 16c2.5-5 5.5 5 9 0s6.5 5 9 0',
+ fitting:'M3 10h5v4H3zM8 8h8v8H8zM16 10h5v4h-5z',
+ wiper:'M3 18a12 12 0 0 1 18 0|M12 18l6-11M12 18h.01',
+ mirror:'r6 3 12 14 3|M12 17v4M9 21h6',
+ handle:'M5 10h10a3 3 0 0 1 0 6H5zM5 7v13',
+ seat:'M7 3h6l1 10H6zM4 13h13l1 4H4zM7 17v4M15 17v4',
+ mat:'r4 4 16 16 2|M8 8h8M8 12h8M8 16h8',
+ visor:'M3 7h18l-2 7H5z|M7 10h10',
+ tree:'M12 2l5 7h-3l4 6h-5v6h-2v-6H6l4-6H7z',
+ antenna:'M12 21V5M8 21h8|c12 4 1.5|M8 8a6 6 0 0 1 0-6M16 8a6 6 0 0 0 0-6',
+ radio:'r3 8 18 12 2|c8 14 2.5|M14 12h4M14 15h4M7 8l10-5',
+ fan:'c12 12 1.6|M12 10.4C12 6 10 3 7.5 4.5S8 9.5 12 10.4M13.4 12.8c3.8 2.2 7.3 2.2 7.3-.7s-4.6-3-7.3.7M10.6 12.8c-3.8 2.2-5.6 5.3-3 6.7s4.4-2.8 3-6.7',
+ flame:'M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 2 2 2 3 0-3 1-5 1-7z',
+ strut:'M12 2v5M9 7h6v7H9zM12 14v8M10 22h4',
+ bed:'M3 19V7M3 15h18v4M21 15v-2a3 3 0 0 0-3-3h-7v5|c7 12 1.6',
+ belt:'c7 12 4|c17 12 3|M7 8l10 1M7 16l10-1',
+ thermo:'M10 4a2 2 0 0 1 4 0v10a4 4 0 1 1-4 0zM12 9v8',
+ pump:'c10 13 6|M10 13l3.5-3.5M16 13h5M10 7V3M7 3h6',
+ radiator:'r4 4 16 16 1.5|M8 4v16M12 4v16M16 4v16',
+ wheel:'c12 12 9|c12 12 3|M12 3v6M12 15v6M3 12h6M15 12h6',
+ bearing:'c12 12 9|c12 12 4|c12 5.5 1.3|c12 18.5 1.3|c5.5 12 1.3|c18.5 12 1.3',
+ flap:'r6 3 12 18 1|M9 15h6M9 18h6',
+ tire:'c12 12 9|c12 12 4.5|M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1',
+ spring:'M6 3h12M6 21h12M7 3l10 3-10 3 10 3-10 3 10 3-10 3',
+ shock:'M12 2v4M9 6h6v8H9zM10 14h4v5h-4zM12 19v3',
+ trailer:'M2 5h17v11H2zM19 13h3|c6 19 2|c11 19 2',
+ truck:'M2 6h12v11H2zM14 9h4l3 4v4h-7z|c6 18 2|c17 18 2',
+ gear:'c12 12 6|c12 12 2|M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8',
+ landing:'M8 3v14M16 3v14M5 17h6M13 17h6M8 9h8|M5 20h6M13 20h6',
+ fifth:'M3 8a9 9 0 0 0 18 0V6h-6v3a3 3 0 0 1-6 0V6H3z',
+ cyl:'r3 9 12 6 1|M15 12h6M6 9V6M12 9V6M5 6h8',
+ injector:'M10 2h4v4h-4zM9 6h6v8H9zM11 14h2v5h-2zM12 19v3',
+ turbo:'c13 11 7|c13 11 3|M6 11v9h6M20 11h2',
+ gasket:'r3 6 18 12 3|c8 12 2|c16 12 2',
+ sensor:'M9 3h6v6H9zM10 9h4v7h-4zM12 16v5M9 6H5M19 6h-4',
+ crank:'M2 12h4l2-5h3l2 10h3l2-5h4',
+ clutch:'c12 12 9|c12 12 3|M12 3v4M12 17v4M3 12h4M17 12h4',
+ ujoint:'M12 4v16M4 12h16|c12 4 2|c12 20 2|c4 12 2|c20 12 2',
+ shaft:'r2 10 20 4 1|M7 8v8M17 8v8',
+ knob:'c12 7 4|M12 11v10M9 21h6',
+ cat:'r6 7 12 10 2|M2 12h4M18 12h4M9 7v10M12 7v10M15 7v10',
+ stack:'M9 21V7l4-4h2v18zM9 13h6',
+ bumper:'r2 9 20 6 2|M5 15v3M19 15v3',
+ horn:'M3 10h4l11-6v16L7 14H3z',
+ lightbar:'r2 9 20 6 3|M6 12h.01M10 12h.01M14 12h.01M18 12h.01',
+ grille:'r4 3 16 18 2|M4 8h16M4 13h16M4 18h16',
+ snow:'M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M9 4l3 2 3-2M9 20l3-2 3 2',
+ engine:'M3 10h3V8h7v2h2l2 2h3v6h-3l-2 2H6l-3-3z|M8 8V5h4M10 5v3',
+ trans:'M3 7h11l7 5-7 5H3z|M8 7v10M3 12h5',
+ wrench:'M15 3a5 5 0 0 0-4.6 7L3 17.4 6.6 21 14 13.6A5 5 0 0 0 21 9l-3 2-3-1-1-3z',
+ socket:'r6 7 12 14 2|c12 14 3|M9 3h6v4H9z',
+ jack:'M3 20h18M7 20v-4h10v4M12 16V6M9 6h6',
+ meter:'r5 3 14 18 2|r8 6 8 5 1|c12 16 2.5',
+ tablet:'r5 3 14 18 2|M11 18h2',
+ pin:'M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z|c12 9 2.5',
+ camera:'r3 7 18 12 2|c12 13 3.5|M8 7l2-3h4l2 3',
+ nozzle:'M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h12M7 7h4M14 9h3l2 2v6a1.5 1.5 0 0 0 3 0V8l-3-3',
+ tank:'r3 7 18 11 5|M8 7V4h3v3',
+ body:'M2 16l2-6h9l4 6h5v3H2z|c7 19 1.6|c17 19 1.6',
+ door:'r5 3 14 18 1|M14 12h1M5 9h14',
+ hook:'M12 3v9a4 4 0 1 1-4 4|M9 3h6',
+ zap:'M13 2L4 14h7l-1 8 9-12h-7z',
+ charger:'r4 3 10 18 2|M14 9h2a2 2 0 0 1 2 2v5a1.5 1.5 0 0 0 3 0V7|M10 7l-2 4h4l-2 4',
+ /* store */
+ bell:'M6 16V11a6 6 0 0 1 12 0v5l2 2H4z|M10 20a2 2 0 0 0 4 0',
+ drawer:'M3 11h18v9H3zM3 11l2-6h14l2 6M10 15h4',
+ register:'M4 12h16v8H4zM6 12V6h8v6M14 9h4v3M7 16h2M11 16h2M15 16h2',
+ card:'r2 5 20 14 2|M2 10h20M6 15h4',
+ barcode:'M4 5v14M7 5v14M9 5v14M12 5v14M15 5v14M17 5v14M20 5v14',
+ printer:'M6 9V3h12v6M6 17H4V9h16v8h-2|r7 14 10 7 1',
+ label:'M3 12V4h8l10 10-8 8z|c7.5 8 1.5',
+ matc:'r3 8 18 10 2|M7 8v10M11 8v10M15 8v10',
+ book:'M4 4h6a3 3 0 0 1 3 3v14a3 3 0 0 0-3-2H4zM20 4h-6a1 1 0 0 0-1 1M20 4v15h-6',
+ person:'c12 7 4|M4 21a8 8 0 0 1 16 0',
+ people:'c9 8 3.5|c17 9 2.5|M2 20a7 7 0 0 1 14 0M15.5 14.5A5 5 0 0 1 22 19',
+ stool:'M5 6h14M8 6L6 21M16 6l2 15M7 14h10',
+ monitor:'r3 4 18 12 1.5|M9 20h6M12 16v4',
+ counter:'M2 10h20M4 10v10M20 10v10M4 15h16M8 10V6h8v4',
+ phone:'M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z',
+ headset:'M4 15v-3a8 8 0 0 1 16 0v3M4 15h3v5H4zM17 15h3v5h-3zM20 20a4 4 0 0 1-4 2h-3',
+ window:'r3 3 18 18 1.5|M3 12h18M12 3v18',
+ dropbox:'r5 8 14 13 1.5|M8 8V5h8v3M9 13h6',
+ globe:'c12 12 9|M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18',
+ van:'M2 7h13l4 4h3v6H2zM15 7v4h4|c6 18 2|c17 18 2',
+ route:'c6 18 2.5|c18 6 2.5|M8 17h5a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h4',
+ locker:'r4 3 16 18 1|M12 3v18M4 9h16M4 15h16',
+ kiosk:'r6 2 12 12 1.5|M9 14v5h6v-5M7 21h10',
+ app:'r7 2 10 20 2|M11 18h2M10 6h4',
+ building:'M4 21V7l8-4 8 4v14M9 21v-5h6v5M8 10h2M14 10h2',
+ hub:'c12 12 3|c4 5 2|c20 5 2|c4 19 2|c20 19 2|M6 6.5l4 3.5M18 6.5l-4 3.5M6 17.5l4-3.5M18 17.5l-4-3.5',
+ network:'c12 5 2.5|c5 18 2.5|c19 18 2.5|M11 7.2l-4.8 8.6M13 7.2l4.8 8.6M7.5 18h9',
+ robot:'r5 8 14 11 2|M12 4v4M9 13h.01M15 13h.01M9 16h6|c12 3 1',
+ plane:'M2 13l9-2 1-8h1l1 8 8 2v2l-8-1-1 6 2 1v1l-3-1-3 1v-1l2-1-1-6-8 1z',
+ cutter:'M3 16l12-10 6 3-12 10z|M15 6l2 4',
+ handtruck:'M6 3l3 15M9 18h10|c9 19 2|r11 8 7 9 1',
+ cart:'M3 4h2l2 12h11|c8 20 1.5|c17 20 1.5|M6 8h14l-2 6H7',
+ ladder:'M7 3v18M17 3v18M7 7h10M7 12h10M7 17h10',
+ pricegun:'M4 6h12l-3 6h-3l-1 8H6l1-8H4z|M16 6h4v4',
+ pjack:'M3 17h14M4 17v-2h12M17 17V5h3|c6 20 1.5|c14 20 1.5',
+ forklift:'M3 18v-8h6l2 5v3M15 4v14h6M3 14h8|c6 19 2|c12 19 2',
+ dock:'M3 21V8l9-5 9 5v13M7 21v-9h10v9M7 15h10M7 18h10',
+ conveyor:'M3 16h18|c5 19 1.5|c12 19 1.5|c19 19 1.5|M5 9h5v7H5zM13 11h4v5h-4z',
+ carousel:'c12 12 8|c12 12 2|M12 4v6M12 14v6M4 12h6M14 12h6',
+ vlm:'r5 2 14 20 1|M5 7h14M5 12h14M5 17h14',
+ sort:'M3 6h8l4 6-4 6H3M15 12h6M18 9l3 3-3 3',
+ cross:'M3 8h7M14 8h7M3 16h7M14 16h7M10 8l4 8M10 16l4-8',
+ wrap:'r6 4 12 16 1|M6 9l12-3M6 14l12-3M6 19l12-3',
+ clip:'M8 3h8v3H8z|M6 5H5v16h14V5h-1M9 12h6M9 16h4',
+ rail:'M7 3L5 21M17 3l2 18M6 7h12M5.5 12h13M5 17h14',
+ ship:'M3 15h18l-3 5H6zM6 15V9h12v6M10 9V5h4v4',
+ megaphone:'M3 10v4h3l9 5V5L6 10zM18 9a4 4 0 0 1 0 6',
+ news:'r3 4 18 16 1|M7 8h10M7 12h4M7 16h4|r13 12 4 4 0',
+ flyer:'M6 3h9l4 4v14H6zM15 3v4h4M9 12h7M9 16h7',
+ sign:'r4 4 16 10 1|M12 14v7M8 8h8M8 11h5',
+ billboard:'r2 3 20 11 1|M8 14v7M16 14v7M6 8h8',
+ search:'c10 10 6|M14.5 14.5L21 21',
+ chat:'M4 5h16v11H9l-5 4z|M8 10h8',
+ mail:'r3 5 18 14 1.5|M3 7l9 6 9-6',
+ shirt:'M8 3L3 7l3 3 2-1v12h8V9l2 1 3-3-5-4c-1 2-2 3-4 3S9 5 8 3z',
+ tent:'M2 20L12 4l10 16zM12 4v16M8 20l4-6 4 6',
+ trophy:'M8 3h8v6a4 4 0 0 1-8 0zM8 5H4a3 3 0 0 0 4 4M16 5h4a3 3 0 0 1-4 4M12 13v4M8 21h8M10 17h4v4h-4z',
+ tv:'r3 6 18 12 2|M8 21h8M9 2l3 3 3-3',
+ star:'M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.3L12 17.5 6.5 20.4l1-6.3L3 9.7l6.2-.9z',
+ coffee:'M4 9h12v6a5 5 0 0 1-10 0V9M16 11h2a2 2 0 0 1 0 4h-2M8 3v3M12 3v3',
+ mic:'r9 3 6 11 3|M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6',
+ play:'r3 5 18 14 2|M10 9l5 3-5 3z',
+ hand:'M3 13l4-4 4 2 3-2 4 2 3 3-6 6-4-3-4 2z',
+ peg:'r3 3 18 18 1.5|M7 7h.01M12 7h.01M17 7h.01M7 12h.01M12 12h.01M17 12h.01M7 17h.01M12 17h.01M17 17h.01',
+ slat:'r3 3 18 18 1|M3 7h18M3 11h18M3 15h18M3 19h18',
+ shelving:'r4 3 16 18 1|M4 9h16M4 15h16',
+ bins:'M3 6h8v6H3zM13 6h8v6h-8zM3 14h8v6H3zM13 14h8v6h-8z',
+ gondola:'M3 21h18M5 21V5h14v16M5 10h14M5 15h14M12 5v16',
+ spinner:'M12 3v18M8 21h8M6 6h12M6 10h12M6 14h12',
+ cabinet:'r4 3 16 18 1|M4 8h16M4 13h16M10 5.5h4M10 10.5h4M10 15.5h4',
+ cantilever:'M6 3v18M3 21h6M6 7h13M6 12h13M6 17h13',
+ rack:'M3 3v18M21 3v18M3 8h18M3 14h18M5 8V5h6v3M13 14v-3h6v3',
+ mezz:'M2 11h20M4 11v10M20 11v10M8 21l5-7h4M7 11V5h10v6',
+ container:'r2 7 20 11 1|M6 7v11M10 7v11M14 7v11M18 7v11',
+ barn:'M3 21V10l9-6 9 6v11zM9 21v-6h6v6',
+ warehouse:'M2 21V9l10-6 10 6v12M6 21v-8h12v8M6 17h12',
+ campus:'M2 21h20M4 21V9h5v12M9 21V5h6v16M15 21v-9h5v9',
+ city:'M2 21h20M4 21V11h4v10M8 21V4h5v17M13 21V8h4v13M17 21v-6h3v6',
+ yard:'M3 21V10M21 21V10M3 10h18M3 15h18M7 10v11M11 10v11M15 10v11M19 10v11'};
+const icSvg=(k,cls='ic')=>{const d=IC[k]||IC.box;return `<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true">`+d.split('|').map(p=>{
+  if(p[0]==='c'&&/^c[\d.]/.test(p)){const [x,y,r]=p.slice(1).split(' ');return `<circle cx="${x}" cy="${y}" r="${r}"/>`}
+  if(p[0]==='r'&&/^r[\d.]/.test(p)){const [x,y,w,h,rx]=p.slice(1).split(' ');return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx||0}"/>`}
+  return `<path d="${p}"/>`}).join('')+'</svg>'};
+
+/* which icon each part gets: first rule that matches the part name wins, then the department's icon */
+const PART_RULES=[
+ [/55 gal/,'barrel'],[/brake drum|drum dolly/,'drum'],[/glow plug|heater\b|heater,|apu|power unit/,'flame'],[/turbo/,'turbo'],[/cylinder head/,'engine'],[/bulkhead/,'trailer'],
+ [/rags|towels|absorbent|blanket|tarp|shrink wrap/,'box'],[/\btow\b|winch|snatch|hook|rollback|wrecker|wheel lift|dollies/,'hook'],
+ [/sensor|sending unit|cluster|module/,'sensor'],[/connector|zip ties|loom|wire\b|heat shrink/,'tie'],[/socket set|wrench|tool chest|scan tool|press,/,'wrench'],
+ [/gasket|seal\b|seal kit|door seal/,'gasket'],[/air cleaner cover|filter housing|filter|separator|prefilter|dryer|cartridge/,'filter'],[/pump/,'pump'],
+ [/hose|line\b|line,|lines/,'hose'],[/cooler|radiator|condenser|evaporator|heater core/,'radiator'],[/chain/,'chain'],[/chock/,'chock'],
+ [/tire|retread|valve stem|balancing/,'tire'],[/fan\b|fan |shroud/,'fan'],[/clutch|flywheel/,'clutch'],[/fifth wheel|kingpin/,'fifth'],
+ [/bearing|hub assembly|hub bearing|spindle/,'bearing'],[/\blug|stud|bolt|cotter/,'bolt'],[/wheel|hub cap|hub oil cap/,'wheel'],
+ [/cleaner|penetrating|solvent/,'can'],[/\boil\b|fluid|coolant|def,|additive|refrigerant|premix|synthetic/,'jug'],[/grease|anti-seize|silicone|thread locker/,'tube'],
+ [/glove/,'glove'],[/tape/,'tape'],[/triangle|flare/,'triangle'],[/extinguisher/,'ext'],[/cone/,'cone'],[/vest|hard hat|glasses|ear plugs/,'vest'],
+ [/strap|binder|e-track|cargo bar|load lock|edge protector/,'strap'],[/first aid|spill kit/,'aid'],[/headlamp|headlight|fog light/,'headlight'],[/light bar/,'lightbar'],
+ [/bulb/,'bulb'],[/light|lens|strobe|marker|clearance|turn signal/,'light'],[/battery pack/,'zap'],[/battery|jump starter/,'battery'],[/usb/,'plug'],
+ [/depot charger|onboard charger/,'charger'],[/alternator|starter|motor|blower|regulator|inverter|converter|charger$/,'motor'],
+ [/shift|knob|boot/,'knob'],[/valve spring/,'spring'],[/valve|governor|treadle/,'valve'],[/cord|cable|harness|socket|plug|junction/,'plug'],[/switch|breaker|relay|fuse|toggle/,'switch'],
+ [/shoe|lining|brake hardware|return spring|s-cam|cam bushing/,'shoe'],[/rotor|pads|caliper/,'rotor'],[/chamber|air tank/,'chamber'],[/slack adjuster/,'gear'],
+ [/compressor/,'comp'],[/fitting|glad hands|coupler/,'fitting'],[/wiper/,'wiper'],[/windshield/,'window'],[/mirror/,'mirror'],[/handle|grab|door lock/,'handle'],
+ [/seat/,'seat'],[/cab step/,'ladder'],[/mat\b|carpet/,'mat'],[/visor/,'visor'],[/freshener/,'tree'],[/antenna/,'antenna'],[/radio|headset/,'radio'],
+ [/strut|damper|shock/,'shock'],[/mattress|curtain|refrigerator/,'bed'],[/belt|pulley|tensioner/,'belt'],[/thermostat|temp/,'thermo'],[/spring|leaf/,'spring'],
+ [/mud flap|flap/,'flap'],[/landing gear/,'landing'],[/cylinder\b|cylinder kit|liner|slave/,'cyl'],[/injector|injection/,'injector'],
+ [/crankshaft|connecting rod|rocker|follower|piston/,'crank'],[/u-joint/,'ujoint'],[/shaft|tie rod|drag link|pitman|equalizer|torque rod/,'shaft'],
+ [/pto|gear\b|synchron|fork|yoke/,'gear'],[/dpf|doc\b|scr|catalyst|muffler/,'cat'],[/stack|exhaust/,'stack'],[/bumper|crossmember/,'bumper'],[/horn|alarm/,'horn'],[/grille/,'grille'],
+ [/reefer|a\/c/,'snow'],[/engine|overhaul|block/,'engine'],[/transmission|differential|rear end|axle|carrier|mount/,'trans'],[/jack/,'jack'],
+ [/multimeter|tester|gauge/,'meter'],[/tablet|\beld\b/,'tablet'],[/gps|tracker/,'pin'],[/camera|blind spot/,'camera'],[/fuel cap|fuel tank|tank strap/,'tank'],[/fuel/,'nozzle'],[/tank/,'tank'],
+ [/hood|fender|fairing|extender|box cover|tool box|bracket|hinge|ornament|trim|cover|heat shield/,'body'],[/door/,'door'],[/trailer|skirt|floor board/,'trailer'],[/truck|tractor/,'truck'],
+ [/pressure washer|shop light|work stand|tire changer|recovery machine/,'wrench']];
+const LINE_IC={f:'filter',s:'box',to:'wrench',sf:'triangle',l:'bulb',el:'tablet',b:'shoe',c:'seat',k:'belt',w:'wheel',tr:'trailer',tw:'hook',hy:'cyl',fu:'nozzle',
+ e:'engine',d:'gear',a:'cat',bd:'body',x:'stack',t:'tire',md:'truck',rf:'snow',h:'engine',ut:'truck',nt:'truck',ev:'zap'};
+const BASE_IC={};for(const b of BASES){const n=BASE_NAME[b].toLowerCase(),line=PARTS.find(p=>p.base===b).line;
+  if(line==='ut'||line==='nt'||(line==='ev'&&/new /.test(n))){BASE_IC[b]=/trailer/.test(n)?'trailer':'truck';continue}
+  const r=PART_RULES.find(([re])=>re.test(n));BASE_IC[b]=r?r[1]:LINE_IC[line]}
+
+/* store items */
+const STORE_RULES=[
+ [/bell/,'bell'],[/cash drawer/,'drawer'],[/register/,'register'],[/card reader/,'card'],[/barcode|inventory scanner/,'barcode'],[/receipt printer/,'printer'],
+ [/label printer|shelf labels/,'label'],[/counter mat/,'matc'],[/parts catalog$/,'book'],[/stool/,'stool'],[/pos terminal|catalog terminal/,'monitor'],
+ [/lane|express counter|satellite counter|desk|window$/,'counter'],[/phone/,'phone'],[/headset|call center/,'headset'],[/will-call/,'window'],[/night drop/,'dropbox'],
+ [/runner truck|box truck|truck fleet/,'truck'],[/van/,'van'],[/route|same-day/,'route'],[/lockers/,'locker'],[/kiosk/,'kiosk'],[/app\b/,'app'],
+ [/portal|platform|global|international/,'globe'],[/order hub|cross-dock/,'hub'],[/shuttle/,'van'],[/automated order|robot/,'robot'],[/network/,'network'],
+ [/air freight/,'plane'],[/clerk|salesperson|runner|dispatcher|manager|rep\b|spokesperson/,'person'],[/team|crew/,'people'],
+ [/box cutter/,'cutter'],[/step stool/,'stool'],[/hand truck/,'handtruck'],[/stock cart/,'cart'],[/ladder/,'ladder'],[/price gun/,'pricegun'],[/pallet jack|walkie/,'pjack'],
+ [/forklift|order picker|reach truck/,'forklift'],[/dock/,'dock'],[/wrapper/,'wrap'],[/management system|pick-to-light/,'monitor'],[/conveyor/,'conveyor'],[/carousel/,'carousel'],
+ [/lift module|storage system/,'vlm'],[/sortation/,'sort'],[/distribution center/,'warehouse'],[/rail/,'rail'],[/port/,'ship'],
+ [/business cards/,'card'],[/flyers/,'flyer'],[/window sign|yard sign/,'sign'],[/coffee/,'coffee'],[/newspaper|phone book/,'news'],[/radio/,'radio'],[/website/,'monitor'],
+ [/search ads/,'search'],[/social/,'chat'],[/newsletter/,'mail'],[/merch/,'shirt'],[/billboard/,'billboard'],[/appreciation/,'star'],[/trade show/,'tent'],[/sponsorship/,'trophy'],
+ [/tv ad/,'tv'],[/loyalty/,'star'],[/podcast/,'mic'],[/streaming/,'play'],[/fleet program|chain deal/,'hand'],[/campaign/,'megaphone'],[/household name/,'star'],
+ [/pegboard/,'peg'],[/slatwall/,'slat'],[/bin shelving/,'bins'],[/shelving/,'shelving'],[/gondola|endcap/,'gondola'],[/spinner/,'spinner'],[/drawer cabinet/,'cabinet'],
+ [/cantilever|hose reel/,'cantilever'],[/tire rack/,'tire'],[/filter wall/,'filter'],[/battery rack/,'battery'],[/drum rack/,'barrel'],[/bulk fluid/,'tank'],
+ [/racking/,'rack'],[/yard/,'yard'],[/mezzanine/,'mezz'],[/container/,'container'],[/pole barn/,'barn'],[/annex|wing|building|warehouse|depot/,'warehouse'],[/campus/,'campus'],[/parts city/,'city']];
+const AISLE_IC={ck:'register',sk:'handtruck',cu:'megaphone',sh:'shelving'};
+for(const g in AISLE)for(const s of AISLE[g]){const n=s.item.toLowerCase().replace(/ (no\. \d+|[ivx]+)$/,'');const r=STORE_RULES.find(([re])=>re.test(n));s.ic=r?r[1]:AISLE_IC[g]}
+
+/* service jobs and shop sections */
+const SV_LINE_IC={pm:'jug',in:'clip',ti:'tire',br:'shoe',el:'battery',co:'radiator',dg:'tablet',su:'shock',tr:'trailer',rd:'hook',up:'lightbar',af:'cat',dt:'gear',en:'engine',bd:'body',md:'truck',fl:'hand',hv:'engine',ev:'zap'};
+const JOB_RULES=[[/oil change|lube|fluid service/,'jug'],[/filter/,'filter'],[/coolant/,'thermo'],[/pm\b|pm-|pm /,'clip'],[/inspection|test\b|emissions/,'clip'],[/tire|flat/,'tire'],
+ [/alignment/,'wheel'],[/wheel|hub/,'bearing'],[/brake|chamber/,'shoe'],[/air leak|air dryer/,'valve'],[/compressor/,'comp'],[/battery pack/,'zap'],[/battery|charging/,'battery'],
+ [/starter|alternator|motor/,'motor'],[/light/,'light'],[/wiring|electrical/,'plug'],[/thermostat/,'thermo'],[/water pump|pump/,'pump'],[/radiator|heater core|cooler/,'radiator'],
+ [/fan/,'fan'],[/a\/c/,'snow'],[/diagnosis|software|ecm|programming/,'tablet'],[/shock|spring/,'shock'],[/kingpin|fifth wheel/,'fifth'],[/tie rod|torque rod|driveshaft/,'shaft'],
+ [/steering gear|differential|rear end|transmission|r&r|e-axle/,'trans'],[/landing gear/,'landing'],[/door|floor|roof|box body|liftgate/,'trailer'],[/reefer/,'snow'],
+ [/jump/,'battery'],[/fuel delivery/,'nozzle'],[/lockout/,'handle'],[/tow|winch|rollover/,'hook'],[/light bar/,'lightbar'],[/bunk heater|apu/,'flame'],[/camera/,'camera'],[/eld/,'tablet'],
+ [/wet kit|pto/,'cyl'],[/chrome/,'stack'],[/regen|dpf|doc|scr|egr valve/,'cat'],[/nox/,'sensor'],[/def/,'pump'],[/clutch/,'clutch'],[/u-joint/,'ujoint'],[/shift/,'knob'],
+ [/overhead|head gasket|seal|leak/,'gasket'],[/injector/,'injector'],[/turbo/,'turbo'],[/egr cooler/,'radiator'],[/engine brake|overhaul|engine swap/,'engine'],
+ [/paint|touch-up/,'can'],[/mirror/,'mirror'],[/windshield/,'window'],[/fender|bumper|hood|collision|cab replacement|frame|glider/,'body'],[/fleet|lease|national|municipal|rental/,'hand'],
+ [/recall|warranty/,'clip'],[/high-voltage|inverter/,'zap'],[/charger/,'charger']];
+const JOB_IC={};SV_JOBS.forEach(([id,n,l])=>{const r=JOB_RULES.find(([re])=>re.test(n.toLowerCase()));JOB_IC[id]=r?r[1]:SV_LINE_IC[l]});
+const SHOP_RULES=[[/work pad|yard/,'yard'],[/lift/,'jack'],[/pit/,'barrel'],[/tire bay|tire machine|balancer/,'tire'],[/alignment/,'wheel'],[/wash/,'nozzle'],[/trailer bay/,'trailer'],
+ [/paint booth|body shop/,'body'],[/bay|shop building|second shop/,'dock'],[/truck center|campus|mega/,'warehouse'],[/network|operations center|contract/,'network'],
+ [/helper|apprentice|technician|shift|foreman|team|writer|advisor|clerk|runner|coordinator|manager|rep\b/,'person'],[/school/,'book'],
+ [/counter/,'counter'],[/forms/,'flyer'],[/management system|software|laptop|dispatch board/,'monitor'],[/appointment/,'phone'],
+ [/sign/,'sign'],[/flyers/,'flyer'],[/coupon/,'label'],[/lounge/,'coffee'],[/website/,'globe'],[/reviews/,'star'],[/loaner|shuttle/,'truck'],[/program|authorized/,'hand'],
+ [/roadside|24-hour/,'hook'],[/hand tools/,'wrench'],[/impact/,'wrench'],[/creeper/,'bed'],[/drain cart/,'barrel'],[/floor jack/,'jack'],[/brake lathe/,'drum'],[/a\/c machine/,'snow'],
+ [/parts washer/,'can'],[/dpf/,'cat'],[/engine stand/,'engine'],[/dyno/,'gauge'],[/crane/,'hook'],[/fluid management|lube line/,'jug'],[/predictive/,'tablet']];
+const SHOP_IC={vb:'dock',vt:'person',vw:'clip',vc:'truck',ve:'wrench'};
+for(const g in SHOP)for(const s of SHOP[g]){const n=s.item.toLowerCase().replace(/ (no\. \d+|[ivx]+)$/,'');const r=SHOP_RULES.find(([re])=>re.test(n));s.ic=r?r[1]:SHOP_IC[g]}
+
+</script>
+<script>
+/* ===== Parts Counter: state and simulation =====
+   One store and its service shop. No boosts, no bonuses, no multipliers.
+   Money is kept as log10 (cashL, totalL) so it can grow far past 1e308. */
+const KEY='parts-counter-v6',VERSION=6;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const L=(o,k)=>(o&&o[k])||0;
+const now=()=>Date.now();
+const NEG=-1e9;
+const addL=(a,b)=>{if(a<=NEG/2)return b;if(b<=NEG/2)return a;const m=Math.max(a,b);return m+lg(10**(a-m)+10**(b-m))};
+const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)return a;return a+lg(1-10**d)};
+const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
+const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false},
+  st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now()},t:Date.now()});
+function load(d){if(!d||typeof d!=='object'||(d.v||0)<VERSION)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st),ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
+  {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});
+   for(const k of Object.keys(s.sv.f))if(!SVI[k])delete s.sv.f[k];for(const k of Object.keys(s.sv.b))if(!STEP[k])delete s.sv.b[k];s.sv.top=Math.min(s.sv.top||0,NSV-1)}
+  for(const k of Object.keys(s.b))if(!STEP[k])delete s.b[k];
+  for(const k of Object.keys(s.f))if(!SI[k])delete s.f[k];s.top=Math.min(s.top||0,NS-1);if(!isFinite(s.cashL))s.cashL=NEG;s.v=VERSION;return s}
+try{for(const k of ['parts-counter-v4','parts-counter-v5'])localStorage.removeItem(k)}catch(e){}
+let S=fresh();
+try{const raw=localStorage.getItem(KEY);if(raw)S=load(JSON.parse(raw))}catch(e){S=fresh()}
+SCI=S.ui.sci;
+
+/* ---------- store math ---------- */
+let FAC=0;const recount=()=>{FAC=0;for(const k in S.f)FAC+=S.f[k]};
+const lineFac=l=>{let n=0;for(const k in S.f)if(SI[k].line===l)n+=S.f[k];return n};
+const capOf=g=>{let a=0;for(const id in S.b)if(id.slice(0,2)===g&&S.b[id])a+=S.b[id]*STEP[id].amt;return a};
+const customers=()=>AISLE_SPEC.cu.base+capOf('cu');
+const checkoutCap=()=>(2+capOf('ck'))*(S.inc&&S.inc.type==='spill'?.6:S.inc&&S.inc.type==='jam'?.3:1);
+const stockCap=()=>2+capOf('sk');
+const shelfCap=()=>AISLE_SPEC.sh.base+capOf('sh');
+const onShelf=s=>s.k<=S.top&&!(S.inc&&S.inc.type==='back'&&S.inc.line===s.line);
+/* cost of k more when you own n, in log10 */
+const costL=(baseL,g,n,k)=>baseL+n*lg(g)+lg((g**Math.min(k,2000)-1)/(g-1))+(k>2000?(k-2000)*lg(g):0);
+const canPay=cL=>S.cashL>=cL-1e-12;
+const maxAff=(baseL,g,n,room)=>{const x=S.cashL+lg(g-1)-baseL-n*lg(g);const y=x>15?x:lg(10**x+1);return Math.max(0,Math.min(room,Math.floor(y/lg(g)+1e-9)))};
+const skuAmt=s=>{const room=Math.max(1,shelfCap()-FAC),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.f,s.id),room)||1:m,room))};
+const bAmt=b=>{const m=S.ui.mode;return Math.max(1,m==='max'?maxAff(b.baseL,b.g2,L(S.b,b.id),1e6)||1:m)};
+const cur=()=>LADDER[S.top];
+
+/* ---------- shop math ---------- */
+let SFAC=0;const recountSv=()=>{SFAC=0;for(const k in S.sv.f)SFAC+=S.sv.f[k]};
+const capOfS=g=>{let a=0;for(const id in S.sv.b)if(id.slice(0,2)===g&&S.sv.b[id])a+=S.sv.b[id]*STEP[id].amt;return a};
+const svSlots=()=>SHOP_SPEC.vb.base+capOfS('vb');
+const svTrucks=()=>SHOP_SPEC.vc.base+capOfS('vc');
+const svWriters=()=>SHOP_SPEC.vw.base+capOfS('vw');
+const svTechs=()=>(SHOP_SPEC.vt.base+capOfS('vt'))*(S.inc&&S.inc.type==='sick'?.6:1);
+const svTools=()=>(SHOP_SPEC.ve.base+capOfS('ve'))*(S.inc&&S.inc.type==='lift'?.4:1);
+const svCur=()=>SVL[S.sv.top];
+const jobAmt=s=>{const room=Math.max(1,svSlots()-SFAC),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.sv.f,s.id),room)||1:m,room))};
+const shAmt=b=>{const m=S.ui.mode;return Math.max(1,m==='max'?maxAff(b.baseL,b.g2,L(S.sv.b,b.id),1e6)||1:m)};
+/* the shop job a parts step is waiting on, or -1 */
+const gateNeed=k=>{const g=gateOf(LADDER[k]);return g>=0&&(!S.sv.open||S.sv.top<g)?g:-1};
+const offCap=()=>12*3600;
+
+/* ---------- simulation ---------- */
+const R={incL:NEG,pIncL:NEG,supply:0,dem:0,ck:0,sk:0,moved:0,E:1,line:{},lim:'shelf',sv:{incL:NEG,work:0,dem:0,wr:0,tech:0,tools:0,moved:0,E:1,line:{},lim:'vb'}};
+function earnL(v){if(v<=NEG/2||!isFinite(v))return;S.cashL=addL(S.cashL,v);S.st.totalL=addL(S.st.totalL,v)}
+function tick(dt,quiet){recount();
+  let supply=0;for(const k in S.f){const s=SI[k];if(S.f[k]>0&&onShelf(s))supply+=S.f[k]*s.u}
+  const dem=customers()*PER_CUST,ck=checkoutCap(),sk=stockCap(),moved=Math.min(supply,dem,ck,sk),E=supply>0?moved/supply:1;
+  let inc=NEG;const line={};const lE=lg(Math.max(E,1e-300));
+  for(const k in S.f){const s=SI[k],n=S.f[k];if(!n||!onShelf(s))continue;const v=lg(n)+s.incL+lE;inc=addL(inc,v);if(!quiet)line[s.line]=addL(line[s.line]===undefined?NEG:line[s.line],v)}
+  /* the shop: labor hours of booked work vs trucks coming in, writers, technicians and tools */
+  let sInc=NEG;if(S.sv.open){recountSv();let work=0;for(const k in S.sv.f){const n=S.sv.f[k];if(n>0)work+=n*SVI[k].u}
+    const sd=svTrucks()*PER_TRUCK,wr=svWriters(),tech=svTechs(),tools=svTools(),sm=Math.min(work,sd,wr,tech,tools),sE=work>0?sm/work:1,slE=lg(Math.max(sE,1e-300));const sl={};
+    for(const k in S.sv.f){const n=S.sv.f[k];if(!n)continue;const j=SVI[k],v=lg(n)+j.incL+slE;sInc=addL(sInc,v);if(!quiet)sl[j.line]=addL(sl[j.line]===undefined?NEG:sl[j.line],v)}
+    if(!quiet)R.sv={incL:sInc,work,dem:sd,wr,tech,tools,moved:sm,E:sE,line:sl,lim:work<=0?'vb':sm>=work-1e-9?'vb':sm>=sd-1e-9?'vc':sm>=wr-1e-9?'vw':sm>=tech-1e-9?'vt':'ve'}}
+  R.pIncL=inc;inc=addL(inc,sInc);
+  if(dt>0)earnL(inc+lg(dt));unlock(quiet);
+  R.incL=inc;
+  if(!quiet){S.st.play+=dt;const lim=supply<=0?'shelf':moved>=supply-1e-9?'shelf':moved>=dem-1e-9?'cu':moved>=ck-1e-9?'ck':'sk';
+    Object.assign(R,{supply,dem,ck,sk,moved,E,line,lim})}}
+function unlock(quiet){while(S.top<NS-1){const s=LADDER[S.top];if(L(S.f,s.id)<needOf(s)||gateNeed(S.top+1)>=0)break;S.top++;const n=LADDER[S.top];
+    if(!quiet)note(n.first?`New part unlocked: ${BASE_NAME[n.base]}!`:`Unlocked: ${skuName(n)}.`)}
+  for(const g in AISLE){const st=AISLE[g];while(S.sTop[g]<st.length-1&&L(S.b,st[S.sTop[g]].id)>=UNLOCK_N){S.sTop[g]++;if(!quiet)note(`New in the store: ${st[S.sTop[g]].n}.`)}}
+  if(!S.sv.open)return;
+  while(S.sv.top<NSV-1){const s=SVL[S.sv.top];if(L(S.sv.f,s.id)<svNeed(s))break;S.sv.top++;const n=SVL[S.sv.top];
+    if(!quiet)note(n.first?`New job in the shop: ${JOB_NAME[n.job]}!`:`Shop unlocked: ${svName(n)}.`)}
+  for(const g in SHOP){const st=SHOP[g];while(S.sv.sTop[g]<st.length-1&&L(S.sv.b,st[S.sv.sTop[g]].id)>=UNLOCK_N){S.sv.sTop[g]++;if(!quiet)note(`New for the shop: ${st[S.sv.sTop[g]].n}.`)}}}
+
+/* ---------- buying ---------- */
+function buySku(s,k){if(s.k>S.top||FAC+k>shelfCap())return false;const c=costL(s.lam,s.g,L(S.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.f[s.id]=L(S.f,s.id)+k;FAC+=k;return true}
+function openShop(){if(S.sv.open||S.top<SV_OPEN_K||!canPay(SV_OPEN_L))return false;S.cashL=subL(S.cashL,SV_OPEN_L);S.sv.open=true;return true}
+function buyJob(s,k){recountSv();if(!S.sv.open||s.k>S.sv.top||SFAC+k>svSlots())return false;const c=costL(s.lam,s.g,L(S.sv.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.f[s.id]=L(S.sv.f,s.id)+k;SFAC+=k;return true}
+function buyShop(b,k){if(!S.sv.open||b.j>S.sv.sTop[b.g])return false;const c=costL(b.baseL,b.g2,L(S.sv.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.b[b.id]=L(S.sv.b,b.id)+k;return true}
+function buyBld(b,k){if(b.j>S.sTop[b.g])return false;const c=costL(b.baseL,b.g2,L(S.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.b[b.id]=L(S.b,b.id)+k;return true}
+
+/* ---------- incidents: they clear on their own, tapping clears them sooner ---------- */
+function events(){const t=now();
+  if(S.inc&&t>S.inc.end){const i=S.inc;S.inc=null;S.st.incidents++;
+    if(i.type==='thief'){const lossL=Math.min(S.cashL-2,R.incL+lg(15));S.cashL=subL(S.cashL,lossL);note(`A shoplifter got away with ${moneyL(lossL)} worth of parts.`)}
+    if(i.type==='comeback'){const lossL=Math.min(S.cashL-2,R.sv.incL+lg(30));S.cashL=subL(S.cashL,lossL);note(`The comeback was redone for free. It cost ${moneyL(lossL)}.`)}
+    S.nextInc=t+3e5+Math.random()*3e5}
+  if(!S.inc&&t>S.nextInc&&S.st.play>300&&FAC>0){const r=Math.random(),ls=[...new Set(LADDER.slice(0,S.top+1).map(s=>s.line))];
+    if(S.sv.open&&SFAC>0&&Math.random()<.4){const q=Math.random();if(q<.4)S.inc={type:'lift',end:t+9e4};else if(q<.7)S.inc={type:'sick',end:t+6e4};else S.inc={type:'comeback',end:t+3e4};return}
+    if(r<.3)S.inc={type:'spill',end:t+9e4};else if(r<.5)S.inc={type:'thief',end:t+2e4};else if(r<.75)S.inc={type:'jam',end:t+6e4};else S.inc={type:'back',line:pick(ls),end:t+6e4}}}
+function fixInc(){const i=S.inc;if(!i||i.type==='back'||i.type==='sick')return;S.inc=null;S.st.incidents++;if(i.type==='thief')S.st.shop++;S.nextInc=now()+3e5+Math.random()*3e5}
+function away(sec){sec=Math.min(sec,offCap());const c0=S.cashL,n=Math.min(2000,Math.ceil(sec)),h=sec/n;for(let i=0;i<n;i++)tick(h,true);tick(1e-6,false);
+  if(sec>60&&S.cashL>c0+1e-9)note(`Away ${fmtT(sec)}. The ${S.sv.open?'store and shop':'store'} made ${moneyL(subL(S.cashL,c0))}.`)}
+function checkGoals(){for(const a of A)if(!S.ach[a.id]&&a.ok()){S.ach[a.id]=1;note('Goal reached: '+a.n)}
+  for(const [id,c] of LOG)if(!S.log[id]&&c()){S.log[id]=now();if(id!=='l0')note('New logbook entry.')}}
+
+</script>
+<script>
+/* ===== Parts Counter: interface ===== */
+const $=id=>document.getElementById(id);
+let oldOpen={},tab='shelves',busy=false,afilt='todo',openBase={},openLine={},built={};
+document.addEventListener('pointerdown',()=>busy=true,true);
+document.addEventListener('pointerup',()=>setTimeout(()=>busy=false,80),true);
+document.addEventListener('pointercancel',()=>busy=false,true);
+function setHTML(el,h){if(typeof el==='string')el=$(el);if(!el||el._h===h||busy)return;el._h=h;el.innerHTML=h}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const kv=rows=>rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+let tt;function note(m){const el=$('toast');el.textContent=m;el.style.display='block';clearTimeout(tt);tt=setTimeout(()=>el.style.display='none',3500)}
+const BASE_STEPS={};for(const s of LADDER)(BASE_STEPS[s.base]=BASE_STEPS[s.base]||[]).push(s);
+const LINE_BASES={};for(const b of BASES){const l=BASE_STEPS[b][0].line;(LINE_BASES[l]=LINE_BASES[l]||[]).push(b)}
+
+/* ---------- navigation ---------- */
+const ICON={shelves:'<path d="M4 4h16v4H4zM4 10h16v4H4zM4 16h16v4H4z" fill="none" stroke="currentColor" stroke-width="2"/>',
+ store:'<path d="M3 10l2-6h14l2 6M4 10v10h16V10M9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>',
+ more:'<circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/>'};
+ICON.service=IC.wrench.split('|').map(d=>`<path d="${d}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>`).join('');
+ICON.shop='<path d="M3 21V8l9-5 9 5v13M7 21v-9h10v9M7 15h10M7 18h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>';
+const TABS=[['shelves','Shelves'],['store','Store'],['service','Service'],['shop','Shop'],['more','More']];
+$('nav').classList.add('nav5');$('nav').innerHTML=TABS.map(([id,n])=>`<button data-tab="${id}" aria-selected="${id==='shelves'}" id="tab-${id}"><svg viewBox="0 0 24 24" aria-hidden="true">${ICON[id]}</svg>${n}</button>`).join('');
+
+/* ---------- shelves: the ladder ---------- */
+function buildBase(b){const steps=BASE_STEPS[b],upto=Math.min(S.top+1,steps[steps.length-1].k);if(built[b]===upto)return;built[b]=upto;
+  let h='',fit=null;for(const s of steps){if(s.k>upto)break;const p=PI[s.p];
+    if(s.k===steps[0].k||BI[s.b]!==BI[LADDER[s.k-1].b]){h+=`<div class="fit">${esc(BI[s.b].n)} · ${TIER[s.t].n}</div>`}
+    const ik=`<i class="ski t${s.t}">${icSvg(BASE_IC[b])}</i>`;
+    h+=s.k>S.top?`<div class="sku locked">${ik}<div class="sn"><b>${esc(p.fit||p.short)}</b><small>Own ${needOf(LADDER[s.k-1])} of the one above to unlock</small></div><span class="lock">Locked</span></div>`:
+      `<div class="sku" id="r-${s.id}">${ik}<div class="sn"><b>${esc(p.fit||p.short)}</b><small id="ki-${s.id}"></small></div><button class="btn pri" data-sku="${s.id}" id="kb-${s.id}"></button></div>`}
+  $('bb-'+b).innerHTML=h}
+function updRow(s){const b=$('kb-'+s.id);if(!b)return;const n=L(S.f,s.id),k=skuAmt(s),c=costL(s.lam,s.g,n,k),need=s.k===S.top?needOf(s):0;
+  $('ki-'+s.id).textContent=`Retail ${cents(s.price)} · ×${fmt(n)}${need&&n<need?` of ${need}`:''}${n?` · ${moneyL(lg(n)+s.incL+lg(Math.max(R.E,1e-300)))}/s`:` · ${moneyL(s.incL+lg(Math.max(R.E,1e-300)))}/s each`}`;
+  b.innerHTML=`+${fmt(k)}<small>${moneyL(c)}</small>`;b.disabled=!canPay(c)||FAC+k>shelfCap()||!onShelf(s)}
+function baseLvl(b){const st=BASE_STEPS[b];return st[0].k<=S.top}
+function renderLadder(){const c=cur(),bi=BASES.indexOf(c.base),steps=BASE_STEPS[c.base],have=L(S.f,c.id),need=needOf(c);
+  let nextTxt;if(S.top>=NS-1)nextTxt='You carry every product in the catalog.';
+  else{const n=LADDER[S.top+1];nextTxt=c.last?`Stock ${need} of ${skuName(c)} to unlock ${lc(BASE_NAME[n.base])}`:`Stock ${need} of ${skuName(c)} to unlock ${skuName(n)}`}
+  const gq=S.top<NS-1?gateOf(LADDER[S.top+1]):-1,gTxt=gq<0?'':!S.sv.open?`<p class="gate">The next part also needs the service shop. Open it in the Service tab.</p>`:S.sv.top<gq?`<p class="gate">The next part also needs the shop to keep up: unlock <b>${esc(svName(SVL[gq]))}</b> in the Service tab (job step ${fmt(gq+1)}, you're on ${fmt(S.sv.top+1)}).</p>`:'';
+  $('prog').innerHTML=`<div class="capg"><h3 class="bn">${icSvg(BASE_IC[c.base])}${esc(BASE_NAME[c.base])}</h3><span class="sub" style="margin:0">Part ${bi+1} of ${NB}</span></div>
+    <p class="sub" style="margin:4px 0 8px">Step ${c.k-steps[0].k+1} of ${steps.length} in this part · ${esc(LI[c.line].n)}</p>
+    <div class="meter"><i style="width:${Math.min(100,have/need*100)}%"></i></div><p style="margin:8px 0 0;font-size:15px">${esc(nextTxt)} <b class="num">${fmt(Math.min(have,need))} / ${need}</b></p>${gTxt}`;
+  const reached=new Set(LADDER.slice(0,S.top+1).map(s=>s.line));
+  for(const l of LINES){const el=$('ln-'+l.id);el.hidden=!reached.has(l.id);if(el.hidden)continue;
+    let f=0;for(const b of LINE_BASES[l.id])for(const s of BASE_STEPS[b])f+=L(S.f,s.id);
+    $('ls-'+l.id).textContent=`${fmt(f)} facings`;$('lv-'+l.id).textContent=moneyL(R.line[l.id]===undefined?NEG:R.line[l.id])+'/s';
+    if(!el.open)continue;
+    for(const b of LINE_BASES[l.id]){const be=$('bd-'+b);be.hidden=!baseLvl(b);if(be.hidden)continue;
+      const st=BASE_STEPS[b],last=st[st.length-1],done=L(S.f,last.id)>=BASE_NEED;let f2=0,v2=NEG;for(const s of st){const n=L(S.f,s.id);if(n){f2+=n;v2=addL(v2,lg(n)+s.incL+lg(Math.max(R.E,1e-300)))}}
+      $('bs-'+b).textContent=`${done?'Mastered · ':''}${fmt(f2)} facings · ${moneyL(v2)}/s`;
+      if(be.open){buildBase(b);for(const s of st){if(s.k>S.top)break;updRow(s)}}}}}
+$('ladder').innerHTML=LINES.map(l=>`<details class="line" id="ln-${l.id}" data-line="${l.id}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="ls-${l.id}"></small></div><span class="lval" id="lv-${l.id}"></span></summary><div class="lbody">${
+  (LINE_BASES[l.id]||[]).map(b=>`<details class="part" id="bd-${b}" data-base="${b}" hidden><summary><span class="bn">${icSvg(BASE_IC[b])}${esc(BASE_NAME[b])}</span><small id="bs-${b}"></small></summary><div id="bb-${b}"></div></details>`).join('')}</div></details>`).join('');
+function openCurrent(){const c=cur();const ln=$('ln-'+c.line),bd=$('bd-'+c.base);if(!ln.open)ln.open=true;if(!bd.open)bd.open=true}
+
+/* ---------- store and shop: capacity ladders ---------- */
+/* o: {spec, ais, own, tops, attr} — the store uses S.b / S.sTop, the shop S.sv.b / S.sv.sTop */
+const STORE_O={spec:AISLE_SPEC,ais:AISLE,own:()=>S.b,tops:()=>S.sTop,attr:'bld',amt:b=>bAmt(b),ic:AISLE_IC};
+const SHOP_O={spec:SHOP_SPEC,ais:SHOP,own:()=>S.sv.b,tops:()=>S.sv.sTop,attr:'shop',amt:b=>shAmt(b),ic:SHOP_IC};
+function capCards(el,o){$(el).innerHTML=Object.entries(o.spec).map(([g,c])=>`<div class="card"><div class="capg"><h3 class="bn"><i class="lic" style="background:var(--acc)">${icSvg(o.ic[g])}</i>${c.n}</h3><span id="cg-${g}"></span></div><div class="meter" style="margin:8px 0 2px"><i id="cm-${g}"></i></div>
+  <div class="sprog" id="cp-${g}"></div><div id="ci-${g}"></div><div id="co-${g}"></div></div>`).join('')}
+capCards('caps',STORE_O);capCards('shcaps',SHOP_O);
+const sRow=(s,c,o)=>{const own=o.own(),tops=o.tops();if(s.j>tops[s.g])return `<div class="item locked"><h3 class="bn">${icSvg(s.ic)}${esc(s.n)}</h3><span class="lock">Locked</span><p>+${fmt(s.amt)} ${c.unit} each</p></div>`;
+  const k=o.amt(s),cost=costL(s.baseL,s.g2,L(own,s.id),k);
+  return `<div class="item"><h3 class="bn">${icSvg(s.ic)}<span>${esc(s.n)}</span><span class="ct">×${fmt(L(own,s.id))}</span></h3><button class="btn pri" data-${o.attr}="${s.id}" ${canPay(cost)?'':'disabled'}>+${fmt(k)}<small>${moneyL(cost)}</small></button><p>+${fmt(s.amt)} ${c.unit} each</p></div>`};
+const sItem=(st,it,c,all,o)=>{const tops=o.tops(),rows=st.filter(s=>s.it===it&&(all||s.j<=tops[s.g]+3));const own=rows.filter(s=>s.j<=tops[s.g]).length,tot=st.filter(s=>s.it===it).length;
+  return `<div class="ihd"><b class="bn">${icSvg(rows[0].ic)}${esc(rows[0].item)}</b><small>${own} of ${tot} unlocked</small></div>`+rows.slice().reverse().map(s=>sRow(s,c,o)).join('')};
+/* vals: what each group provides now; need: what it has to keep up with; slot: the group measured in slots */
+function renderCaps(o,vals,need,lim,slot,used,lbl){const own=o.own(),tops=o.tops();
+  for(const [g,c] of Object.entries(o.spec)){const v=vals[g],isLim=lim===g,st=o.ais[g],top=tops[g],cs=st[top];
+    $('cg-'+g).innerHTML=g===slot?`<b class="num">${fmt(used)} / ${fmt(v)}</b> ${c.unit}`:`<b class="num" style="color:${isLim?'var(--bad)':'inherit'}">${fmt(v)}</b> / ${fmt(need)} ${lbl[g]||'needed'}`;
+    const pct=g===slot?used/v:Math.min(1,v/Math.max(need,1e-9)),m=$('cm-'+g);m.style.width=Math.min(100,pct*100)+'%';m.style.background=(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)';
+    const n=L(own,cs.id);
+    setHTML('cp-'+g,top<st.length-1?`<small>Step ${top+1} of ${st.length} · Own ${UNLOCK_N} ${esc(cs.n)} to unlock ${esc(st[top+1].n)}</small><div class="meter"><i style="width:${Math.min(1,n/UNLOCK_N)*100}%"></i></div><small class="num">${fmt(Math.min(n,UNLOCK_N))} / ${UNLOCK_N}</small>`
+      :`<small>Step ${st.length} of ${st.length} · Everything here is unlocked.</small>`);
+    setHTML('ci-'+g,sItem(st,cs.it,c,false,o));
+    const older=[...new Set(st.filter(s=>s.j<=top&&s.it<cs.it).map(s=>s.it))].reverse();
+    let h='';if(older.length&&oldOpen[g])h=older.map(it=>sItem(st,it,c,true,o)).join('');
+    setHTML('co-'+g,older.length?`<details class="older" ${oldOpen[g]?'open':''} data-old="${g}"><summary>${older.length} earlier item${older.length>1?'s':''}</summary>${h}</details>`:'')}}
+function renderStore(){renderCaps(STORE_O,{ck:R.ck,sk:R.sk,cu:R.dem,sh:shelfCap()},R.supply,R.lim,'sh',FAC,{cu:'units wanted'})}
+
+/* ---------- service: the shop's job ladder ---------- */
+const SV_STEPS={};for(const s of SVL)(SV_STEPS[s.job]=SV_STEPS[s.job]||[]).push(s);
+const LINE_JOBS={};for(const [jid,,l] of SV_JOBS)(LINE_JOBS[l]=LINE_JOBS[l]||[]).push(jid);
+const JOB_ORDER=SV_LINES.flatMap(l=>LINE_JOBS[l.id]||[]);
+let sbuilt={};
+$('sladder').innerHTML=SV_LINES.map(l=>`<details class="line" id="sln-${l.id}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(SV_LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="sls-${l.id}"></small></div><span class="lval" id="slv-${l.id}"></span></summary><div class="lbody">${
+  (LINE_JOBS[l.id]||[]).map(j=>`<details class="part" id="sjd-${j}" hidden><summary><span class="bn">${icSvg(JOB_IC[j])}${esc(JOB_NAME[j])}</span><small id="sjs-${j}"></small></summary><div id="sjb-${j}"></div></details>`).join('')}</div></details>`).join('');
+function buildJob(j){const steps=SV_STEPS[j],upto=Math.min(S.sv.top+1,steps[steps.length-1].k);if(sbuilt[j]===upto)return;sbuilt[j]=upto;
+  let h='';for(const s of steps){if(s.k>upto)break;
+    if(s.k===steps[0].k||SVL[s.k-1].lv!==s.lv)h+=`<div class="fit">${esc(SV_LV[s.lv][0])} · ${TIER[s.t].n} rate</div>`;
+    const ik=`<i class="ski t${s.t}">${icSvg(JOB_IC[j])}</i>`,nm=esc(s.fit||'All trucks');
+    h+=s.k>S.sv.top?`<div class="sku locked">${ik}<div class="sn"><b>${nm}</b><small>Book ${svNeed(SVL[s.k-1])} of the one above to unlock</small></div><span class="lock">Locked</span></div>`:
+      `<div class="sku" id="sr-${s.id}">${ik}<div class="sn"><b>${nm}</b><small id="si-${s.id}"></small></div><button class="btn pri" data-job="${s.id}" id="sb-${s.id}"></button></div>`}
+  $('sjb-'+j).innerHTML=h}
+function updJob(s){const b=$('sb-'+s.id);if(!b)return;const n=L(S.sv.f,s.id),k=jobAmt(s),c=costL(s.lam,s.g,n,k),need=s.k===S.sv.top?svNeed(s):0,lE=lg(Math.max(R.sv.E,1e-300));
+  $('si-'+s.id).textContent=`×${fmt(n)}${need&&n<need?` of ${need}`:''} booked · ${n?moneyL(lg(n)+s.incL+lE)+'/s':moneyL(s.incL+lE)+'/s each'}`;
+  b.innerHTML=`+${fmt(k)}<small>${moneyL(c)}</small>`;b.disabled=!canPay(c)||SFAC+k>svSlots()}
+function openJob(){const c=svCur(),ln=$('sln-'+c.line),jd=$('sjd-'+c.job);if(!ln.open)ln.open=true;if(!jd.open)jd.open=true}
+function closedCard(){const reach=S.top>=SV_OPEN_K,pct=Math.min(1,S.top/SV_OPEN_K);
+  return `<div class="card" id="prog"><div class="capg"><h3 class="bn"><i class="lic" style="background:var(--acc)">${icSvg('wrench')}</i>Service shop</h3></div>
+  <p class="sub" style="margin:8px 0">There's an empty building out back. Open a shop and you can sell labor too: oil changes and inspections first, overhauls and electric trucks much later. Jobs cost far more than parts and pay back slower, the shop has its own bottlenecks to manage, and later parts won't unlock unless the shop keeps up.</p>
+  <p style="margin:0 0 6px;font-size:15px">${reach?'You have enough of the parts list on the shelves.':`Get ${esc(lc(BASE_NAME[LADDER[SV_OPEN_K].base]))} on the shelves (part ${BASES.indexOf(LADDER[SV_OPEN_K].base)+1}).`}</p>
+  <div class="meter"><i style="width:${pct*100}%"></i></div>
+  <button class="btn pri" data-open="1" style="width:100%;margin-top:12px" ${reach&&canPay(SV_OPEN_L)?'':'disabled'}>Open the service shop<small>${moneyL(SV_OPEN_L)}</small></button></div>`}
+function renderService(){const open=S.sv.open;$('svOpen').hidden=!open;$('svClosed').hidden=open;if(!open){setHTML('svClosed',closedCard());return}
+  recountSv();$('slotTxt').textContent=`Bay slots ${fmt(SFAC)} of ${fmt(svSlots())}`;
+  const c=svCur(),steps=SV_STEPS[c.job],have=L(S.sv.f,c.id),need=svNeed(c),ji=JOB_ORDER.indexOf(c.job);
+  let nx;if(S.sv.top>=NSV-1)nx='The shop offers every job there is.';else{const n=SVL[S.sv.top+1];nx=c.last?`Book ${need} of ${svName(c)} to start offering ${lc(JOB_NAME[n.job])}`:`Book ${need} of ${svName(c)} to unlock ${svName(n)}`}
+  $('sprog').innerHTML=`<div class="capg"><h3 class="bn">${icSvg(JOB_IC[c.job])}${esc(JOB_NAME[c.job])}</h3><span class="sub" style="margin:0">Job ${ji+1} of ${SV_JOBS_N}</span></div>
+    <p class="sub" style="margin:4px 0 8px">Step ${c.k-steps[0].k+1} of ${steps.length} in this job · ${esc(SLI[c.line].n)} · Shop earns ${moneyL(R.sv.incL)}/s</p>
+    <div class="meter"><i style="width:${Math.min(100,have/need*100)}%"></i></div><p style="margin:8px 0 0;font-size:15px">${esc(nx)} <b class="num">${fmt(Math.min(have,need))} / ${need}</b></p>`;
+  const reached=new Set(SVL.slice(0,S.sv.top+1).map(s=>s.line));
+  for(const l of SV_LINES){const el=$('sln-'+l.id);el.hidden=!reached.has(l.id);if(el.hidden)continue;
+    let f=0;for(const j of LINE_JOBS[l.id])for(const s of SV_STEPS[j])f+=L(S.sv.f,s.id);
+    $('sls-'+l.id).textContent=`${fmt(f)} booked`;$('slv-'+l.id).textContent=moneyL(R.sv.line[l.id]===undefined?NEG:R.sv.line[l.id])+'/s';
+    if(!el.open)continue;
+    for(const j of LINE_JOBS[l.id]){const je=$('sjd-'+j),st=SV_STEPS[j];je.hidden=st[0].k>S.sv.top;if(je.hidden)continue;
+      const last=st[st.length-1],done=L(S.sv.f,last.id)>=BASE_NEED;let f2=0,v2=NEG;for(const s of st){const n=L(S.sv.f,s.id);if(n){f2+=n;v2=addL(v2,lg(n)+s.incL+lg(Math.max(R.sv.E,1e-300)))}}
+      $('sjs-'+j).textContent=`${done?'Mastered · ':''}${fmt(f2)} booked · ${moneyL(v2)}/s`;
+      if(je.open){buildJob(j);for(const s of st){if(s.k>S.sv.top)break;updJob(s)}}}}}
+function renderShop(){const open=S.sv.open;$('shOpen').hidden=!open;$('shClosed').hidden=open;
+  if(!open){setHTML('shClosed',`<div class="card"><p class="sub" style="margin:0">Open the service shop in the Service tab to start building bays, hiring technicians and buying tools.</p></div>`);return}
+  recountSv();const v=R.sv;$('shHead').innerHTML=`${icSvg('dock')}Shop floor`;
+  const limN={vb:'Booked work',vc:'Trucks coming in',vw:'Service writers',vt:'Technicians',ve:'Tools & equipment'}[v.lim];
+  $('shFlow').innerHTML=kv([['Booked work',fmt(v.work)+' hrs/s'],['Trucks coming in',fmt(v.dem)+' hrs/s'],['Service writers',fmt(v.wr)+' hrs/s'],['Technicians',fmt(v.tech)+' hrs/s'],['Tools & equipment',fmt(v.tools)+' hrs/s'],
+    ['Getting done',`${fmt(v.moved)} hrs/s (${Math.round(v.E*100)}%)`],['Holding the shop back',v.work>0?limN:'Nothing booked yet'],['Shop earns',moneyL(v.incL)+'/s']]);
+  renderCaps(SHOP_O,{vb:svSlots(),vt:v.tech,vw:v.wr,vc:v.dem,ve:v.tools},v.work,v.lim==='vb'?null:v.lim,'vb',SFAC,{vc:'hrs wanted'})}
+
+/* ---------- more ---------- */
+function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent=`${done} of ${A.length} goals reached`;$('achm').style.width=done/A.length*100+'%';
+  const list=A.filter(a=>afilt==='done'?S.ach[a.id]:!S.ach[a.id]).slice(0,afilt==='done'?400:12);
+  setHTML('goals',list.map(a=>`<div class="goal ${S.ach[a.id]?'ok':''}"><i></i>${esc(a.n)}</div>`).join('')||'<div class="empty">Nothing yet.</div>');
+  setHTML('log',LOG.filter(([id])=>S.log[id]).sort((a,b)=>S.log[b[0]]-S.log[a[0]]).slice(0,30).map(([id,,tx])=>`<p><small>${new Date(S.log[id]).toLocaleDateString()}</small>${esc(tx)}</p>`).join(''));
+  const mastered=BASES.filter(b=>{const st=BASE_STEPS[b];return L(S.f,st[st.length-1].id)>=BASE_NEED}).length;
+  $('stats').innerHTML=kv([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
+    ['Products unlocked',`${fmt(S.top+1)} of ${fmt(NS)}`],['Parts mastered',`${mastered} of ${NB}`],['Facings',fmt(FAC)],['Incidents handled',fmt(S.st.incidents)],
+    ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]);
+  $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci}
+
+/* ---------- header ---------- */
+function renderHeader(){$('cash').textContent=moneyL(S.cashL);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=STORE;
+  const cells=[['shelf','Shelf',R.supply],['cu','Customers',R.dem],['ck','Checkout',R.ck],['sk','Stocking',R.sk]];
+  $('dash').innerHTML=cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}"><small>${n}</small><b class="num">${fmt(v)}/s</b></div>`).join('');
+  const i=S.inc;$('inc').hidden=!i;if(i){const t=now(),m={spill:['Coffee spilled by the counter. Checkout is slower.','Mop it up'],jam:['A register jammed. Checkout is crawling.','Fix it'],thief:['A shoplifter is heading for the door.','Stop him'],
+    back:[i.line?`Backorder: ${lc(LI[i.line].n)} can't restock for ${fmtT((i.end-t)/1000)}.`:'',''],lift:['A truck lift went down. The shop is short on equipment.','Call for repair'],
+    sick:[`A technician called in sick. The shop is short-handed for ${fmtT((i.end-t)/1000)}.`,''],comeback:['A customer brought a truck back. The job has to be redone.','Fix it right']}[i.type];$('incTxt').textContent=m[0];$('incBtn').hidden=!m[1];$('incBtn').textContent=m[1]}}
+function render(){recount();SCI=S.ui.sci;renderHeader();document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',String(S.ui.mode)===x.dataset.m));
+  if(tab==='shelves'){$('shelfTxt').textContent=`Shelf space ${fmt(FAC)} of ${fmt(shelfCap())} facings`;renderLadder()}
+  if(tab==='store')renderStore();if(tab==='service')renderService();if(tab==='shop')renderShop();if(tab==='more')renderMore()}
+function forceRender(){busy=false;for(const id of ['goals','log','svClosed','shClosed',...['ck','sk','cu','sh','vb','vt','vw','vc','ve'].flatMap(g=>['ci-'+g,'co-'+g,'cp-'+g])])$(id)._h=null;render()}
+
+/* ---------- input ---------- */
+let lastTop=S.top,lastJob=S.sv.top;
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.tab){tab=d.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));for(const [s] of TABS)$('t-'+s).hidden=s!==tab;scrollTo({top:0})}
+  else if(d.sku){const s=SI[d.sku];buySku(s,skuAmt(s));unlock(false)}
+  else if(d.bld){const x=STEP[d.bld];if(x){buyBld(x,bAmt(x));unlock(false);tick(1e-6,false)}}
+  else if(d.shop){const x=STEP[d.shop];if(x){buyShop(x,shAmt(x));unlock(false);tick(1e-6,false)}}
+  else if(d.job){const s=SVI[d.job];if(s){buyJob(s,jobAmt(s));unlock(false);tick(1e-6,false)}}
+  else if(d.open){if(openShop()){note('The service shop is open!');tick(1e-6,false);openJob()}}
+  else if(d.m){S.ui.mode=d.m==='max'?'max':+d.m}
+  else if(d.af){afilt=d.af;document.querySelectorAll('[data-af]').forEach(x=>x.classList.toggle('on',x===b))}
+  else return;
+  forceRender()});
+document.addEventListener('toggle',e=>{const el=e.target;if(el.tagName!=='DETAILS')return;if(el.dataset.old){if(oldOpen[el.dataset.old]!==el.open){oldOpen[el.dataset.old]=el.open;$('co-'+el.dataset.old)._h=null;render()}}else render()},true);
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='sAnim')S.ui.anim=t.checked;if(t.id==='sSci')S.ui.sci=t.checked;forceRender()});
+$('incBtn').addEventListener('click',()=>{fixInc();forceRender()});
+function arm(btn,fn){if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l;fn()}else{btn.dataset.l=btn.textContent;btn.dataset.arm=1;btn.textContent='Tap again to confirm';setTimeout(()=>{if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l}},3000)}}
+function save(){S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
+$('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
+$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
+$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();save();resetLadder();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender()}));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{const gap=(now()-S.t)/1000;if(gap>30){away(gap);S.t=now()}}});
+
+/* ---------- loop ---------- */
+tick(1e-6,false);
+{const gap=(now()-S.t)/1000;if(gap>10)away(gap);S.t=now()}
+openCurrent();if(S.sv.open)openJob();checkGoals();
+let ln=0;
+setInterval(()=>{const t=now(),dt=Math.min(30,(t-S.t)/1000);S.t=t;if(dt>0)tick(dt);
+  if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){openCurrent()}}
+  if(S.sv.top!==lastJob){const prev=SVL[lastJob];lastJob=S.sv.top;if(svCur().job!==prev.job&&S.sv.open)openJob()}
+  if(++ln%5===0)events();if(ln%20===0)checkGoals();if(ln%3===0)render()},100);
+setInterval(save,5000);
+render();
+
+</script>
+<script>
+/* ===== Parts Counter Idle: store scene ===== */
+{
+const cv=$('scene'),cx=cv.getContext('2d');let W=0,H=0,last=0,ph=0,peeps=[],spawn=0,hit=null;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function resize(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
+const ro=new ResizeObserver(resize);ro.observe(cv);
+const BODY=['#c62828','#1565c0','#2e7d32','#ef6c00','#6d4c41','#455a64'];
+function person(x,y,body,hat,bob){y+=bob;cx.fillStyle='rgba(0,0,0,.15)';cx.beginPath();cx.ellipse(x,y+30,10,3,0,0,7);cx.fill();
+  cx.fillStyle=body;cx.beginPath();cx.moveTo(x-9,y+30);cx.lineTo(x-8,y+12);cx.quadraticCurveTo(x,y+6,x+8,y+12);cx.lineTo(x+9,y+30);cx.fill();
+  cx.fillStyle='#d8a47f';cx.beginPath();cx.arc(x,y+3,6,0,7);cx.fill();cx.fillStyle=hat;cx.beginPath();cx.arc(x,y,6.5,Math.PI,0);cx.fill();cx.fillRect(x-1,y-1,10,2.5)}
+function semi(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);cx.fillStyle=c;cx.fillRect(0,-22,22,16);cx.fillRect(22,-34,18,28);cx.fillRect(40,-26,22,20);
+  cx.fillStyle='#cfe3f2';cx.fillRect(26,-30,10,8);cx.fillStyle='#9aa5b1';cx.fillRect(18,-44,3,22);cx.fillStyle='#1b1d20';for(const wx of [10,30,52]){cx.beginPath();cx.arc(wx,-5,5,0,7);cx.fill()}cx.restore()}
+function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
+  const floorY=Math.round(H*.62);
+  cx.fillStyle='#d9d2c3';cx.fillRect(0,0,W,floorY);cx.fillStyle='#b7ab95';cx.fillRect(0,floorY-6,W,6);cx.fillStyle='#8d8270';cx.fillRect(0,floorY,W,H-floorY);
+  const wx=8,wy=14,ww=Math.min(110,W*.26),wh=floorY-34;cx.fillStyle='#9fc8e8';cx.fillRect(wx,wy,ww,wh);cx.fillStyle='#7d8c6a';cx.fillRect(wx,wy+wh*.7,ww,wh*.3);
+  const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=['#c62828','#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)semi(wx+4+i*(ww/3),wy+wh-2,tc[i],ww/220);
+  cx.strokeStyle='#5d5446';cx.lineWidth=4;cx.strokeRect(wx,wy,ww,wh);cx.lineWidth=1;
+  cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=8;cx.font='700 12px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('OPEN',wx+ww/2,wy+14);cx.shadowBlur=0;
+  // shelving: one unit per aisle (plus the starter), bins coloured by the lines you stock
+  const sx=wx+ww+12,sw=W-sx-44,unitW=26,units=Math.max(1,Math.min(1+Math.floor(shelfCap()/40),Math.floor(sw/unitW))),bh=(floorY-28)/4;
+  const cols=[];const seen=new Set(LADDER.slice(0,S.top+1).map(x=>x.line));for(const c of LINES){if(!seen.has(c.id))continue;const n=lineFac(c.id);for(let i=0;i<Math.min(40,Math.ceil(n/10));i++)cols.push(c.c)}
+  for(let u=0;u<units;u++){const x=sx+u*unitW;cx.fillStyle='#6d6455';cx.fillRect(x,10,unitW-3,floorY-20);
+    for(let k=0;k<4;k++){const i=u*4+k,y=14+k*bh;cx.fillStyle='#4a4338';cx.fillRect(x+2,y,unitW-7,bh-4);
+      if(i<cols.length){cx.fillStyle=cols[i];const f=R.E<1?.35+.65*R.E:1;cx.fillRect(x+3,y+(bh-6)*(1-f)+1,unitW-9,(bh-6)*f)}}}
+  if(1+Math.floor(shelfCap()/40)>units){cx.fillStyle='#1b1d20';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(1+Math.floor(shelfCap()/40)-units)}`,sx+units*unitW,24)}
+  if(S.sv.open){/* the service bay out back: a roll-up door with a truck nosed in */
+    const bx=W-40,bw=34,by=floorY-70;cx.fillStyle='#5d5446';cx.fillRect(bx-3,by-3,bw+6,73);cx.fillStyle='#e9e4da';cx.fillRect(bx,by,bw,70);
+    const up=R.sv.work>0?.55:.1;cx.fillStyle='#b9b2a4';for(let i=0;i<70*(1-up);i+=6)cx.fillRect(bx,by+i,bw,3);
+    if(R.sv.work>0){cx.fillStyle=S.inc&&S.inc.type==='lift'?'#7a7a7a':'#c62828';cx.fillRect(bx+4,by+70-30,bw-8,26);cx.fillStyle='#cfe3f2';cx.fillRect(bx+8,by+70-26,bw-16,8);
+      cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+10,by+68,4,0,7);cx.arc(bx+bw-10,by+68,4,0,7);cx.fill()}
+    cx.fillStyle='#1b1d20';cx.font='700 9px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('SERVICE',bx+bw/2,by-6)}
+  else{cx.fillStyle='#5d5446';cx.fillRect(W-38,floorY-80,30,80);cx.fillStyle='#9fc8e8';cx.fillRect(W-34,floorY-74,22,40)}
+  // counter and registers
+  const lanes=Object.keys(S.b).filter(k=>k.startsWith('ck')).reduce((a,k)=>a+S.b[k],0),regs=Math.min(lanes,Math.max(1,Math.floor((W-sx-70)/34))),cy=floorY+10,cl=sx,cr=Math.min(W-60,sx+regs*34+40),rx=i=>cl+22+i*34;
+  for(let i=0;i<regs;i++)person(rx(i),cy-46,i===0?'#c8371d':'#2f5d7c',i===0?'#1b1d20':'#2f5d7c',mv?Math.sin(ph*4+i)*1.2:0);
+  cx.fillStyle='#6b4f3a';cx.fillRect(cl,cy,cr-cl,22);cx.fillStyle='#8b6b52';cx.fillRect(cl-2,cy-4,cr-cl+4,6);
+  for(let i=0;i<regs;i++){cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)-8,cy-14,16,10);cx.fillStyle=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff6b5e':'#5cc98a';cx.fillRect(rx(i)-6,cy-12,12,4)}
+  if(lanes>regs){cx.fillStyle='#fff';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(lanes-regs)} more`,cr+4,cy+14)}
+  // customers walking in and out
+  if(mv&&FAC){spawn+=dt*Math.min(3,.3+Math.log10(1+R.moved)*.6);while(spawn>1){spawn--;if(peeps.length<10)peeps.push({x:W-20,tx:rx(Math.floor(Math.random()*regs)),y:cy+18,c:pick(BODY),st:0,w:0})}}
+  for(const p of peeps){if(p.st===0){p.x+=(p.tx-p.x)*Math.min(1,dt*2);if(Math.abs(p.x-p.tx)<2){p.st=1;p.w=1.2}}else if(p.st===1){p.w-=dt*(R.E<1?.5:1);if(p.w<=0)p.st=2}else p.x+=dt*120;
+    person(p.x,p.y-30,p.c,'#333',p.st!==1?Math.sin(ph*12)*2:0)}
+  peeps=peeps.filter(p=>p.x<W+20);
+  hit=null;
+  if(S.inc&&S.inc.type==='spill'){const x=cl+(cr-cl)*.6,y=H-14;cx.fillStyle='rgba(110,70,30,.75)';cx.beginPath();cx.ellipse(x,y,16,5,0,0,7);cx.fill();hit={x,y}}
+  if(S.inc&&S.inc.type==='thief'){const f=1-Math.max(0,(S.inc.end-now())/2e4),x=sx+20+f*(W-sx-50),y=H-46;person(x,y,'#222','#222',Math.sin(ph*14)*2);
+    cx.fillStyle='#c0c0c0';cx.fillRect(x+6,y+14,14,4);hit={x,y:y+15}}
+}
+requestAnimationFrame(frame);
+cv.addEventListener('click',e=>{if(!hit)return;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
+}
+
+</script>
+</body>
+</html>
