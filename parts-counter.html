@@ -17,6 +17,7 @@
 --line:light-dark(#e6e2da,#2a2e33);--soft:light-dark(#f7f5f1,#22262b);--acc:light-dark(#c8371d,#ff6a4d);--acc2:light-dark(#fbe9e5,#3a1d17);
 --good:light-dark(#2e7d32,#66bb6a);--warn:light-dark(#b26a00,#ffb74d);--bad:light-dark(#c62828,#ef5350);--sh:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+.dk #scene{filter:brightness(.92)}.ski.tO{color:light-dark(#2f6fb0,#90caf9)}
 *{box-sizing:border-box;min-width:0}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
@@ -42,7 +43,7 @@ h3{margin:0;font:700 18px/1.15 'Barlow Condensed',sans-serif}
 .card{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:14px;margin-bottom:10px}
 .btn{min-height:44px;border-radius:10px;border:0;background:var(--soft);color:var(--ink);font:600 15px/1.2 Barlow,sans-serif;padding:8px 14px;cursor:pointer;touch-action:manipulation}
 .btn:disabled{background:var(--soft);color:var(--mute);cursor:default}.btn:disabled small{opacity:1}
-.btn.pri{background:var(--acc);color:#fff}.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn.pri{background:var(--acc);color:#fff}.btn.pri:disabled{background:light-dark(#e4e1db,#2c3036);color:var(--mute);box-shadow:none}.btn.pri:disabled small{color:var(--mute)}.btn.ghost{background:transparent;border:1px solid var(--line)}
 .btn small{display:block;font-weight:500;font-size:12px;opacity:.9;white-space:nowrap}
 .btn:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--acc) 60%,transparent);outline-offset:2px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -166,7 +167,8 @@ details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mu
     <h2>Stats</h2><div class="card"><div class="kv" id="stats"></div></div>
     <h2>Settings</h2><div class="card">
       <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
-      <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label></div>
+      <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
+      <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The store and the shop keep working while you're away (up to 12 hours).</p>
       <button class="btn" id="copy">Copy save code</button>
       <textarea id="imp" placeholder="Paste a save code here to load it" style="margin-top:10px"></textarea>
@@ -947,7 +949,7 @@ const NEG=-1e9;
 const addL=(a,b)=>{if(a<=NEG/2)return b;if(b<=NEG/2)return a;const m=Math.max(a,b);return m+lg(10**(a-m)+10**(b-m))};
 const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)return a;return a+lg(1-10**d)};
 const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
-const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false},
+const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto'},
   st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now()},t:Date.now()});
 function load(d){if(!d||typeof d!=='object'||(d.v||0)<VERSION)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st),ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
   {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});
@@ -1202,6 +1204,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(d.job){const s=SVI[d.job];if(s){buyJob(s,jobAmt(s));unlock(false);tick(1e-6,false)}}
   else if(d.open){if(openShop()){note('The service shop is open!');tick(1e-6,false);openJob()}}
   else if(d.m){S.ui.mode=d.m==='max'?'max':+d.m}
+  else if(d.theme){S.ui.theme=d.theme;applyTheme();save()}
   else if(d.af){afilt=d.af;document.querySelectorAll('[data-af]').forEach(x=>x.classList.toggle('on',x===b))}
   else return;
   forceRender()});
@@ -1212,9 +1215,17 @@ function arm(btn,fn){if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=
 function save(){S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
-$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
-$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();save();resetLadder();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender()}));
+$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
+$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender()}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{const gap=(now()-S.t)/1000;if(gap>30){away(gap);S.t=now()}}});
+
+/* ---------- appearance: auto follows the phone, or force light or dark ---------- */
+const darkMQ=matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){const t=S.ui.theme||'auto',r=document.documentElement;if(t==='auto')delete r.dataset.theme;else r.dataset.theme=t;
+  const dark=t==='dark'||(t==='auto'&&darkMQ.matches);r.classList.toggle('dk',dark);
+  let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=dark?'#1b1e22':'#ffffff';
+  document.querySelectorAll('[data-theme]').forEach(x=>{if(x.tagName==='BUTTON')x.classList.toggle('on',x.dataset.theme===t)})}
+darkMQ.addEventListener('change',applyTheme);applyTheme();
 
 /* ---------- loop ---------- */
 tick(1e-6,false);
