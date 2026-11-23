@@ -169,7 +169,7 @@ details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mu
       <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
       <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
-    <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The store and the shop keep working while you're away (up to 12 hours).</p>
+    <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
       <button class="btn" id="copy">Copy save code</button>
       <textarea id="imp" placeholder="Paste a save code here to load it" style="margin-top:10px"></textarea>
       <div class="row" style="margin-top:8px"><button class="btn" id="load">Load code</button></div></div>
@@ -1217,7 +1217,7 @@ function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
 $('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
 $('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender()}));
-document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{const gap=(now()-S.t)/1000;if(gap>30){away(gap);S.t=now()}}});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save();S.t=now()});
 
 /* ---------- appearance: auto follows the phone, or force light or dark ---------- */
 const darkMQ=matchMedia('(prefers-color-scheme: dark)');
@@ -1229,10 +1229,10 @@ darkMQ.addEventListener('change',applyTheme);applyTheme();
 
 /* ---------- loop ---------- */
 tick(1e-6,false);
-{const gap=(now()-S.t)/1000;if(gap>10)away(gap);S.t=now()}
+S.t=now();/* no progress while the game is closed */
 openCurrent();if(S.sv.open)openJob();checkGoals();
 let ln=0;
-setInterval(()=>{const t=now(),dt=Math.min(30,(t-S.t)/1000);S.t=t;if(dt>0)tick(dt);
+setInterval(()=>{const t=now(),dt=Math.min(1,(t-S.t)/1000);S.t=t;if(document.hidden)return;if(dt>0)tick(dt);
   if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){openCurrent()}}
   if(S.sv.top!==lastJob){const prev=SVL[lastJob];lastJob=S.sv.top;if(svCur().job!==prev.job&&S.sv.open)openJob()}
   if(++ln%5===0)events();if(ln%20===0)checkGoals();if(ln%3===0)render()},100);
