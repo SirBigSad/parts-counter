@@ -1,0 +1,172 @@
+# Builds Parts Counter into an Android app (APK).
+# Put this file at .github/workflows/build.yml and parts-counter.html at the top of the repository.
+# Every time you change either file, GitHub builds a new APK and posts it under "Releases".
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Create the Android project
+        run: |
+          set -e
+          SRC=parts-counter.html; [ -f "$SRC" ] || SRC=index.html
+          [ -f "$SRC" ] || { echo "Upload parts-counter.html to the top of the repository first."; exit 1; }
+          P=android/app/src/main
+          mkdir -p $P/java/com/fremonttruck/partscounter $P/assets $P/res/mipmap-anydpi-v26 $P/res/drawable $P/res/values
+          cp "$SRC" $P/assets/index.html
+          echo "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" | base64 -d > android/app/release.p12
+          cat > android/settings.gradle <<'EOF2'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
+          rootProject.name = 'PartsCounter'
+          include ':app'
+          EOF2
+          cat > android/build.gradle <<'EOF2'
+          plugins { id 'com.android.application' version '8.5.2' apply false }
+          EOF2
+          cat > android/gradle.properties <<'EOF2'
+          org.gradle.jvmargs=-Xmx2g
+          EOF2
+          cat > android/app/build.gradle <<'EOF2'
+          plugins { id 'com.android.application' }
+          android {
+              namespace 'com.fremonttruck.partscounter'
+              compileSdk 34
+              defaultConfig {
+                  applicationId 'com.fremonttruck.partscounter'
+                  minSdk 26
+                  targetSdk 34
+                  versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
+                  versionName "1.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+              }
+              signingConfigs {
+                  release {
+                      storeFile file('release.p12')
+                      storeType 'pkcs12'
+                      storePassword 'partscounter'
+                      keyAlias 'partscounter'
+                      keyPassword 'partscounter'
+                  }
+              }
+              buildTypes {
+                  release { minifyEnabled false; signingConfig signingConfigs.release }
+              }
+              compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+          }
+          EOF2
+          cat > $P/AndroidManifest.xml <<'EOF2'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET"/>
+              <application android:label="Parts Counter" android:icon="@mipmap/ic_launcher" android:allowBackup="true"
+                  android:theme="@android:style/Theme.Material.Light.NoActionBar" android:hardwareAccelerated="true">
+                  <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait"
+                      android:configChanges="orientation|screenSize|keyboardHidden|uiMode">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN"/>
+                          <category android:name="android.intent.category.LAUNCHER"/>
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF2
+          cat > $P/java/com/fremonttruck/partscounter/MainActivity.java <<'EOF2'
+          package com.fremonttruck.partscounter;
+
+          import android.app.Activity;
+          import android.os.Bundle;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+
+          public class MainActivity extends Activity {
+              private WebView web;
+
+              @Override
+              protected void onCreate(Bundle state) {
+                  super.onCreate(state);
+                  web = new WebView(this);
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setAllowFileAccess(true);
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                          return !r.getUrl().toString().startsWith("file:");
+                      }
+                  });
+                  setContentView(web);
+                  if (state != null) web.restoreState(state);
+                  else web.loadUrl("file:///android_asset/index.html");
+              }
+
+              @Override
+              protected void onSaveInstanceState(Bundle out) {
+                  super.onSaveInstanceState(out);
+                  web.saveState(out);
+              }
+
+              @Override
+              protected void onPause() {
+                  web.evaluateJavascript("typeof save==='function'&&save()", null);
+                  web.onPause();
+                  super.onPause();
+              }
+
+              @Override
+              protected void onResume() {
+                  super.onResume();
+                  web.onResume();
+              }
+          }
+          EOF2
+          cat > $P/res/values/colors.xml <<'EOF2'
+          <resources><color name="icon_bg">#C8371D</color></resources>
+          EOF2
+          cat > $P/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF2'
+          <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+              <background android:drawable="@color/icon_bg"/>
+              <foreground android:drawable="@drawable/ic_fg"/>
+          </adaptive-icon>
+          EOF2
+          cat > $P/res/drawable/ic_fg.xml <<'EOF2'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp"
+              android:viewportWidth="24" android:viewportHeight="24">
+              <group android:translateX="6" android:translateY="6" android:scaleX="0.5" android:scaleY="0.5">
+                  <path android:pathData="M3,10l2,-6h14l2,6M4,10v10h16V10M9,20v-6h6v6" android:strokeColor="#FFFFFF"
+                      android:strokeWidth="2" android:strokeLineJoin="round" android:fillColor="#00000000"/>
+              </group>
+          </vector>
+          EOF2
+      - name: Build the APK
+        working-directory: android
+        run: gradle assembleRelease --no-daemon --stacktrace
+      - name: Name the APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk PartsCounter.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PartsCounter-apk
+          path: PartsCounter.apk
+      - name: Post it under Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Parts Counter build ${{ github.run_number }}
+          body: Tap PartsCounter.apk below to download it, then open it to install.
+          files: PartsCounter.apk
