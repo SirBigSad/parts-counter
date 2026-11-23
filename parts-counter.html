@@ -117,7 +117,19 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 #caps .capg{flex-wrap:wrap;row-gap:6px}#caps .capg h3{flex:1 0 100%}
 .gate{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:var(--acc2);font-size:14px}
 .nav5 button{font-size:12px}
-details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mute);font-weight:600;font-size:14px;padding:8px 0}
+details.older{margin-top:6px}
+.bn .lic svg.ic,.lic svg.ic{color:#fff}
+.lk{display:block;margin:4px 0 2px auto;background:none;border:0;color:var(--acc);font:600 14px Barlow,sans-serif;padding:6px 0;cursor:pointer}
+details.cat>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0}details.cat .lic{width:28px;height:28px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:6px 0 10px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:12px;border:1.5px solid var(--line);background:var(--soft);color:var(--ink);font:inherit;cursor:pointer;text-align:center;min-width:0}
+.tile svg.ic{width:28px;height:28px}.tile b{font-size:13px;line-height:1.15;overflow-wrap:anywhere}.tile small{font-size:11.5px;color:var(--mute)}
+.tile.none{background:transparent;border-style:dashed;opacity:.6}
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end}#sheet[hidden]{display:none}
+.sheet{background:var(--card);width:100%;max-height:82vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));position:relative}
+.sheet .x{position:absolute;right:10px;top:8px;width:40px;height:40px;border:0;background:none;font-size:28px;color:var(--mute);cursor:pointer}
+.sheet h4{margin:16px 0 6px;font:700 17px 'Barlow Condensed',sans-serif}.blist>div{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.pill{font-size:12px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}.blist small{grid-column:2;color:var(--mute)}.blist .dim{opacity:.5}.fits{margin:0;color:var(--mute);font-size:14px;line-height:1.5}details.older>summary{cursor:pointer;color:var(--mute);font-weight:600;font-size:14px;padding:8px 0}
 </style>
 </head>
 <body>
@@ -161,6 +173,8 @@ details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mu
   </section>
 
   <section id="t-more" hidden>
+    <h2>Income</h2><div class="card"><canvas id="chart" style="width:100%;height:150px;display:block"></canvas><p class="sub" id="chartCap" style="margin:6px 0 0"></p></div>
+    <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><div id="cat"></div></div>
     <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
       <div class="chips" style="margin:8px 0"><button class="chip on" data-af="todo">To do</button><button class="chip" data-af="done">Reached</button></div><div id="goals"></div></div>
     <h2>Logbook</h2><div class="card log" id="log"></div>
@@ -168,6 +182,8 @@ details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mu
     <h2>Settings</h2><div class="card">
       <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
       <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
+      <label class="tog">Sound effects<input type="checkbox" id="sSnd"></label>
+      <label class="tog">Vibration<input type="checkbox" id="sVib"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
       <button class="btn" id="copy">Copy save code</button>
@@ -177,6 +193,7 @@ details.older{margin-top:6px}details.older>summary{cursor:pointer;color:var(--mu
     <p class="sub" style="margin-top:14px">Fremont Truck &amp; Parts is made up. Brand, engine and truck names are trademarks of their owners and are used here only to name parts. Prices are fictional. Not affiliated with or endorsed by any brand or dealership.</p>
   </section>
 </main>
+<div id="sheet" hidden><div class="sheet"><button class="x" data-close="1" aria-label="Close">×</button><div id="sheetBody"></div></div></div>
 <nav class="bar" id="nav"></nav>
 <div id="toast" role="status"></div>
 <script>
@@ -949,9 +966,9 @@ const NEG=-1e9;
 const addL=(a,b)=>{if(a<=NEG/2)return b;if(b<=NEG/2)return a;const m=Math.max(a,b);return m+lg(10**(a-m)+10**(b-m))};
 const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)return a;return a+lg(1-10**d)};
 const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
-const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto'},
-  st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now()},t:Date.now()});
-function load(d){if(!d||typeof d!=='object'||(d.v||0)<VERSION)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st),ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
+const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true},
+  st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now(),all:0,sold:{},br:{},trucks:0,hrs:0},hist:[],t:Date.now()});
+function load(d){if(!d||typeof d!=='object'||(d.v||0)<VERSION)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
   {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});
    for(const k of Object.keys(s.sv.f))if(!SVI[k])delete s.sv.f[k];for(const k of Object.keys(s.sv.b))if(!STEP[k])delete s.sv.b[k];s.sv.top=Math.min(s.sv.top||0,NSV-1)}
   for(const k of Object.keys(s.b))if(!STEP[k])delete s.b[k];
@@ -1000,11 +1017,13 @@ function tick(dt,quiet){recount();
   let supply=0;for(const k in S.f){const s=SI[k];if(S.f[k]>0&&onShelf(s))supply+=S.f[k]*s.u}
   const dem=customers()*PER_CUST,ck=checkoutCap(),sk=stockCap(),moved=Math.min(supply,dem,ck,sk),E=supply>0?moved/supply:1;
   let inc=NEG;const line={};const lE=lg(Math.max(E,1e-300));
-  for(const k in S.f){const s=SI[k],n=S.f[k];if(!n||!onShelf(s))continue;const v=lg(n)+s.incL+lE;inc=addL(inc,v);if(!quiet)line[s.line]=addL(line[s.line]===undefined?NEG:line[s.line],v)}
+  const st=S.st,track=dt>0&&!quiet;
+  for(const k in S.f){const s=SI[k],n=S.f[k];if(!n||!onShelf(s))continue;if(track){const q=n*s.u*E*dt;st.all+=q;st.sold[s.base]=(st.sold[s.base]||0)+q;st.br[s.b]=(st.br[s.b]||0)+q}const v=lg(n)+s.incL+lE;inc=addL(inc,v);if(!quiet)line[s.line]=addL(line[s.line]===undefined?NEG:line[s.line],v)}
   /* the shop: labor hours of booked work vs trucks coming in, writers, technicians and tools */
   let sInc=NEG;if(S.sv.open){recountSv();let work=0;for(const k in S.sv.f){const n=S.sv.f[k];if(n>0)work+=n*SVI[k].u}
     const sd=svTrucks()*PER_TRUCK,wr=svWriters(),tech=svTechs(),tools=svTools(),sm=Math.min(work,sd,wr,tech,tools),sE=work>0?sm/work:1,slE=lg(Math.max(sE,1e-300));const sl={};
     for(const k in S.sv.f){const n=S.sv.f[k];if(!n)continue;const j=SVI[k],v=lg(n)+j.incL+slE;sInc=addL(sInc,v);if(!quiet)sl[j.line]=addL(sl[j.line]===undefined?NEG:sl[j.line],v)}
+    if(track){st.hrs+=sm*dt;st.trucks+=sm/PER_TRUCK*dt}
     if(!quiet)R.sv={incL:sInc,work,dem:sd,wr,tech,tools,moved:sm,E:sE,line:sl,lim:work<=0?'vb':sm>=work-1e-9?'vb':sm>=sd-1e-9?'vc':sm>=wr-1e-9?'vw':sm>=tech-1e-9?'vt':'ve'}}
   R.pIncL=inc;inc=addL(inc,sInc);
   if(dt>0)earnL(inc+lg(dt));unlock(quiet);
@@ -1067,7 +1086,7 @@ $('nav').classList.add('nav5');$('nav').innerHTML=TABS.map(([id,n])=>`<button da
 
 /* ---------- shelves: the ladder ---------- */
 function buildBase(b){const steps=BASE_STEPS[b],upto=Math.min(S.top+1,steps[steps.length-1].k);if(built[b]===upto)return;built[b]=upto;
-  let h='',fit=null;for(const s of steps){if(s.k>upto)break;const p=PI[s.p];
+  let h=`<button class="lk" data-info="${b}">Part info, fitment and sales</button>`,fit=null;for(const s of steps){if(s.k>upto)break;const p=PI[s.p];
     if(s.k===steps[0].k||BI[s.b]!==BI[LADDER[s.k-1].b]){h+=`<div class="fit">${esc(BI[s.b].n)} · ${TIER[s.t].n}</div>`}
     const ik=`<i class="ski t${s.t}">${icSvg(BASE_IC[b])}</i>`;
     h+=s.k>S.top?`<div class="sku locked">${ik}<div class="sn"><b>${esc(p.fit||p.short)}</b><small>Own ${needOf(LADDER[s.k-1])} of the one above to unlock</small></div><span class="lock">Locked</span></div>`:
@@ -1178,9 +1197,9 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
   setHTML('log',LOG.filter(([id])=>S.log[id]).sort((a,b)=>S.log[b[0]]-S.log[a[0]]).slice(0,30).map(([id,,tx])=>`<p><small>${new Date(S.log[id]).toLocaleDateString()}</small>${esc(tx)}</p>`).join(''));
   const mastered=BASES.filter(b=>{const st=BASE_STEPS[b];return L(S.f,st[st.length-1].id)>=BASE_NEED}).length;
   $('stats').innerHTML=kv([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
-    ['Products unlocked',`${fmt(S.top+1)} of ${fmt(NS)}`],['Parts mastered',`${mastered} of ${NB}`],['Facings',fmt(FAC)],['Incidents handled',fmt(S.st.incidents)],
+    ['Products unlocked',`${fmt(S.top+1)} of ${fmt(NS)}`],['Parts mastered',`${mastered} of ${NB}`],['Facings',fmt(FAC)],['Incidents handled',fmt(S.st.incidents)],...lifeStats(),
     ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]);
-  $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci}
+  $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci;$('sSnd').checked=S.ui.snd;$('sVib').checked=S.ui.vib;renderCatalog();drawChart()}
 
 /* ---------- header ---------- */
 function renderHeader(){$('cash').textContent=moneyL(S.cashL);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=STORE;
@@ -1192,24 +1211,24 @@ function renderHeader(){$('cash').textContent=moneyL(S.cashL);$('cps').textConte
 function render(){recount();SCI=S.ui.sci;renderHeader();document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',String(S.ui.mode)===x.dataset.m));
   if(tab==='shelves'){$('shelfTxt').textContent=`Shelf space ${fmt(FAC)} of ${fmt(shelfCap())} facings`;renderLadder()}
   if(tab==='store')renderStore();if(tab==='service')renderService();if(tab==='shop')renderShop();if(tab==='more')renderMore()}
-function forceRender(){busy=false;for(const id of ['goals','log','svClosed','shClosed',...['ck','sk','cu','sh','vb','vt','vw','vc','ve'].flatMap(g=>['ci-'+g,'co-'+g,'cp-'+g])])$(id)._h=null;render()}
+function forceRender(){busy=false;for(const id of ['goals','log','cat','svClosed','shClosed',...['ck','sk','cu','sh','vb','vt','vw','vc','ve'].flatMap(g=>['ci-'+g,'co-'+g,'cp-'+g])])$(id)._h=null;render()}
 
 /* ---------- input ---------- */
-let lastTop=S.top,lastJob=S.sv.top;
+let lastTop=S.top,lastJob=S.sv.top,lastAisle='';
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.tab){tab=d.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));for(const [s] of TABS)$('t-'+s).hidden=s!==tab;scrollTo({top:0})}
-  else if(d.sku){const s=SI[d.sku];buySku(s,skuAmt(s));unlock(false)}
-  else if(d.bld){const x=STEP[d.bld];if(x){buyBld(x,bAmt(x));unlock(false);tick(1e-6,false)}}
-  else if(d.shop){const x=STEP[d.shop];if(x){buyShop(x,shAmt(x));unlock(false);tick(1e-6,false)}}
-  else if(d.job){const s=SVI[d.job];if(s){buyJob(s,jobAmt(s));unlock(false);tick(1e-6,false)}}
-  else if(d.open){if(openShop()){note('The service shop is open!');tick(1e-6,false);openJob()}}
+  else if(d.sku){const s=SI[d.sku];if(buySku(s,skuAmt(s)))feel('buy');unlock(false)}
+  else if(d.bld){const x=STEP[d.bld];if(x){if(buyBld(x,bAmt(x)))feel('buy');unlock(false);tick(1e-6,false)}}
+  else if(d.shop){const x=STEP[d.shop];if(x){if(buyShop(x,shAmt(x)))feel('buy');unlock(false);tick(1e-6,false)}}
+  else if(d.job){const s=SVI[d.job];if(s){if(buyJob(s,jobAmt(s)))feel('buy');unlock(false);tick(1e-6,false)}}
+  else if(d.open){if(openShop()){feel('big');note('The service shop is open!');tick(1e-6,false);openJob()}}
   else if(d.m){S.ui.mode=d.m==='max'?'max':+d.m}
   else if(d.theme){S.ui.theme=d.theme;applyTheme();save()}
   else if(d.af){afilt=d.af;document.querySelectorAll('[data-af]').forEach(x=>x.classList.toggle('on',x===b))}
   else return;
   forceRender()});
 document.addEventListener('toggle',e=>{const el=e.target;if(el.tagName!=='DETAILS')return;if(el.dataset.old){if(oldOpen[el.dataset.old]!==el.open){oldOpen[el.dataset.old]=el.open;$('co-'+el.dataset.old)._h=null;render()}}else render()},true);
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='sAnim')S.ui.anim=t.checked;if(t.id==='sSci')S.ui.sci=t.checked;forceRender()});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='sAnim')S.ui.anim=t.checked;if(t.id==='sSci')S.ui.sci=t.checked;if(t.id==='sSnd'){S.ui.snd=t.checked;if(t.checked)feel('step')}if(t.id==='sVib'){S.ui.vib=t.checked;if(t.checked)buzz(30)}forceRender()});
 $('incBtn').addEventListener('click',()=>{fixInc();forceRender()});
 function arm(btn,fn){if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l;fn()}else{btn.dataset.l=btn.textContent;btn.dataset.arm=1;btn.textContent='Tap again to confirm';setTimeout(()=>{if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l}},3000)}}
 function save(){S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
@@ -1233,11 +1252,87 @@ S.t=now();/* no progress while the game is closed */
 openCurrent();if(S.sv.open)openJob();checkGoals();
 let ln=0;
 setInterval(()=>{const t=now(),dt=Math.min(1,(t-S.t)/1000);S.t=t;if(document.hidden)return;if(dt>0)tick(dt);
-  if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){openCurrent()}}
-  if(S.sv.top!==lastJob){const prev=SVL[lastJob];lastJob=S.sv.top;if(svCur().job!==prev.job&&S.sv.open)openJob()}
+  if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){openCurrent();feel('big')}else feel('step')}
+  if(S.sv.top!==lastJob){const prev=SVL[lastJob];lastJob=S.sv.top;if(svCur().job!==prev.job&&S.sv.open){openJob();feel('big')}else feel('step')}
+  {const k=JSON.stringify(S.sTop)+JSON.stringify(S.sv.sTop);if(k!==lastAisle){if(lastAisle)feel('step');lastAisle=k}}
+  if(ln%100===0)sampleHist();if(sheetBase&&ln%10===0)renderSheet();
   if(++ln%5===0)events();if(ln%20===0)checkGoals();if(ln%3===0)render()},100);
 setInterval(save,5000);
 render();
+
+</script><script>
+/* ===== Parts Counter: feel, catalog, part lookup, income chart, lifetime stats ===== */
+
+/* ---------- sound and vibration ---------- */
+let AC=null;
+function ac(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(AC.state==='suspended')AC.resume();return AC}
+function tone(a,f,t,d,type,vol){const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.005);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.02)}
+function hiss(a,t,d,vol){const n=Math.floor(a.sampleRate*d),buf=a.createBuffer(1,n,a.sampleRate),ch=buf.getChannelData(0);for(let i=0;i<n;i++)ch[i]=(Math.random()*2-1)*(1-i/n);
+  const src=a.createBufferSource(),g=a.createGain(),f=a.createBiquadFilter();f.type='highpass';f.frequency.value=3000;src.buffer=buf;g.gain.value=vol;src.connect(f).connect(g).connect(a.destination);src.start(t)}
+let lastSfx=0;
+function sfx(kind){if(!S.ui.snd)return;const a=ac();if(!a)return;const t=a.currentTime;
+  if(kind==='buy'){if(t-lastSfx<.04)return;lastSfx=t;tone(a,740,t,.06,'triangle',.07)}
+  else if(kind==='step'){tone(a,988,t,.09,'sine',.07);tone(a,1319,t+.07,.12,'sine',.06)}
+  else{/* cha-ching: the drawer, then the bell */hiss(a,t,.07,.05);tone(a,1568,t+.05,.12,'square',.03);tone(a,2093,t+.12,.5,'triangle',.08);tone(a,3136,t+.12,.35,'sine',.03)}}
+function buzz(p){if(!S.ui.vib||!navigator.vibrate)return;try{navigator.vibrate(p)}catch(e){}}
+function feel(kind){sfx(kind);buzz(kind==='buy'?8:kind==='step'?[12,40,12]:[25,50,40])}
+
+/* ---------- catalog book ---------- */
+const PART_STEPS={};for(const s of LADDER)(PART_STEPS[s.p]=PART_STEPS[s.p]||[]).push(s);
+const BASE_PARTS={};for(const p of PARTS)(BASE_PARTS[p.base]=BASE_PARTS[p.base]||[]).push(p);
+const catOpen={};
+const stocked=s=>L(S.f,s.id)>0;
+function baseCounts(b){const st=BASE_STEPS[b];const br=new Set(st.map(s=>s.b)),brS=new Set(st.filter(stocked).map(s=>s.b));
+  const pa=BASE_PARTS[b],paS=pa.filter(p=>PART_STEPS[p.id].some(stocked)).length;return {br:br.size,brS:brS.size,pa:pa.length,paS}}
+function renderCatalog(){let tot=0,got=0;const per={};
+  for(const l of LINES){let a=0,g=0;for(const b of LINE_BASES[l.id]||[]){const c=baseCounts(b);a+=c.pa;g+=c.paS}per[l.id]=[g,a];tot+=a;got+=g}
+  $('catSum').innerHTML=`<b class="num">${fmt(got)}</b> of ${fmt(tot)} parts stocked`;$('catM').style.width=got/tot*100+'%';
+  setHTML('cat',LINES.map(l=>{const [g,a]=per[l.id],open=catOpen[l.id];
+    let body='';if(open)body='<div class="tiles">'+(LINE_BASES[l.id]||[]).map(b=>{const c=baseCounts(b);
+      return `<button class="tile ${c.paS?'':'none'}" data-info="${b}"><i style="color:${c.paS?l.c:'var(--mute)'}">${icSvg(BASE_IC[b])}</i><b>${esc(BASE_NAME[b])}</b><small>${c.paS?`${c.brS} of ${c.br} brands`:'Not stocked'}</small></button>`}).join('')+'</div>';
+    return `<details class="older cat" ${open?'open':''} data-cat="${l.id}"><summary><span class="bn"><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i>${esc(l.n)}</span><small class="num">${g} / ${a}</small></summary>${body}</details>`}).join(''))}
+document.addEventListener('toggle',e=>{const el=e.target;if(el.dataset&&el.dataset.cat){if(catOpen[el.dataset.cat]!==el.open){catOpen[el.dataset.cat]=el.open;$('cat')._h=null;renderCatalog()}}},true);
+
+/* ---------- part lookup sheet ---------- */
+let sheetBase=null;
+function openSheet(b){sheetBase=b;$('sheet').hidden=false;document.body.style.overflow='hidden';renderSheet()}
+function closeSheet(){sheetBase=null;$('sheet').hidden=true;document.body.style.overflow=''}
+function renderSheet(){if(!sheetBase)return;const b=sheetBase,st=BASE_STEPS[b],l=LI[st[0].line],idx=BASES.indexOf(b),reached=S.top>=st[0].k;
+  const prices=st.map(s=>s.price),fac=st.reduce((a,s)=>a+L(S.f,s.id),0);let earn=NEG;const lE=lg(Math.max(R.E,1e-300));for(const s of st){const n=L(S.f,s.id);if(n)earn=addL(earn,lg(n)+s.incL+lE)}
+  const brands=[...new Set(st.map(s=>s.b))].map(id=>{const xs=st.filter(s=>s.b===id);return {id,n:BI[id].n,t:BI[id].t,stk:xs.filter(stocked).length,all:xs.length,fac:xs.reduce((a,s)=>a+L(S.f,s.id),0),open:xs[0].k<=S.top}});
+  const fits=BASE_PARTS[b].map(p=>p.fit).filter(Boolean);
+  $('sheetBody').innerHTML=`<div class="capg"><h3 class="bn"><i class="lic" style="background:${l.c}">${icSvg(BASE_IC[b])}</i>${esc(BASE_NAME[b])}</h3></div>
+   <p class="sub" style="margin:6px 0 10px">Part ${idx+1} of ${NB} · ${esc(l.n)}${reached?'':' · not on your shelves yet'}</p>
+   <div class="kv">${[['Retail',prices.length>1?`${money(Math.min(...prices))} – ${money(Math.max(...prices))}`:money(prices[0])],['Products',`${fmt(st.length)} (${brands.length} brands × ${fits.length||1} fitments)`],
+     ['Facings',fmt(fac)],['Sold so far',fmt(S.st.sold[b]||0)+' units'],['Earning now',moneyL(earn)+'/s']].map(([k,v])=>`<span>${k}</span><span>${v}</span>`).join('')}</div>
+   <h4>Brands</h4><div class="blist">${brands.map(x=>`<div class="${x.open?'':'dim'}"><span class="pill p${x.t}">${TIER[x.t].n}</span><b>${esc(x.n)}</b><small>${x.stk} of ${x.all} stocked · ${fmt(x.fac)} facings</small></div>`).join('')}</div>
+   ${fits.length?`<h4>Fits</h4><p class="fits">${fits.map(esc).join(' · ')}</p>`:`<h4>Fits</h4><p class="fits">Universal: fits any truck.</p>`}`}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-info]');if(t){e.preventDefault();e.stopPropagation();openSheet(t.dataset.info);return}
+  if(e.target.closest('[data-close]')||e.target.id==='sheet')closeSheet()},true);
+
+/* ---------- income history ---------- */
+/* theme colours use light-dark(), which the canvas can't read, so resolve them through a hidden element */
+const probe=document.createElement('i');probe.style.display='none';document.body.appendChild(probe);
+const cssColor=v=>{probe.style.color=`var(${v})`;return getComputedStyle(probe).color};
+function sampleHist(){if(!isFinite(R.incL)||R.incL<=NEG/2&&!S.hist.length)return;S.hist.push([Date.now(),R.incL]);if(S.hist.length>360)S.hist.splice(0,S.hist.length-360)}
+function drawChart(){const cv=$('chart');if(!cv)return;const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;if(!r.width)return;cv.width=r.width*d;cv.height=r.height*d;
+  const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);const W=r.width,H=r.height;
+  const ink=cssColor('--mute'),acc=cssColor('--acc'),line=cssColor('--line');
+  c.clearRect(0,0,W,H);const h=S.hist.filter(x=>x[1]>NEG/2);
+  if(h.length<2){c.fillStyle=ink;c.font='14px Barlow,sans-serif';c.textAlign='center';c.fillText('Play a little longer to see your income over time.',W/2,H/2);$('chartCap').textContent='';return}
+  let lo=Math.min(...h.map(x=>x[1])),hi=Math.max(...h.map(x=>x[1]));if(hi-lo<.5){lo-=.25;hi+=.25}
+  const pl=6,pr=6,pt=10,pb=18,X=i=>pl+i*(W-pl-pr)/(h.length-1),Y=v=>pt+(1-(v-lo)/(hi-lo))*(H-pt-pb);
+  c.strokeStyle=line;c.lineWidth=1;for(let i=0;i<=3;i++){const y=pt+i*(H-pt-pb)/3;c.beginPath();c.moveTo(pl,y);c.lineTo(W-pr,y);c.stroke()}
+  c.beginPath();h.forEach((x,i)=>i?c.lineTo(X(i),Y(x[1])):c.moveTo(X(i),Y(x[1])));c.strokeStyle=acc;c.lineWidth=2.5;c.lineJoin='round';c.stroke();
+  c.lineTo(X(h.length-1),H-pb);c.lineTo(X(0),H-pb);c.closePath();c.globalAlpha=.12;c.fillStyle=acc;c.fill();c.globalAlpha=1;
+  c.fillStyle=ink;c.font='12px Barlow,sans-serif';c.textAlign='left';c.fillText(moneyL(hi)+'/s',pl,pt+10);c.fillText(moneyL(lo)+'/s',pl,H-pb-4);
+  const mins=Math.round((h[h.length-1][0]-h[0][0])/6e4);$('chartCap').textContent=`Income over your last ${mins<1?'minute':mins===1?'minute':mins+' minutes'} of play (the scale climbs by powers of ten).`}
+
+/* ---------- lifetime stats ---------- */
+function lifeStats(){const st=S.st;let bb=null,bv=0;for(const k in st.br)if(st.br[k]>bv){bv=st.br[k];bb=k}let pb=null,pv=0;for(const k in st.sold)if(st.sold[k]>pv){pv=st.sold[k];pb=k}
+  return [['Parts sold, all time',fmt(st.all)],['Most-sold brand',bb?`${BI[bb].n} (${fmt(bv)})`:'None yet'],['Most-sold part',pb?`${BASE_NAME[pb]} (${fmt(pv)})`:'None yet'],
+    ['Trucks serviced',S.sv.open?fmt(st.trucks):'Shop not open'],['Labor hours sold',S.sv.open?fmt(st.hrs):'Shop not open']]}
 
 </script>
 <script>
@@ -1248,6 +1343,18 @@ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function resize(){const r=cv.getBoundingClientRect(),d=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0)}
 const ro=new ResizeObserver(resize);ro.observe(cv);
 const BODY=['#c62828','#1565c0','#2e7d32','#ef6c00','#6d4c41','#455a64'];
+/* has the player reached a named store or shop item? */
+const firstOf={};for(const [g,set] of [['ck',AISLE],['sk',AISLE],['cu',AISLE],['sh',AISLE],['vb',SHOP],['vt',SHOP],['ve',SHOP]]){firstOf[g]={};for(const st of set[g]){if(firstOf[g][st.item]===undefined)firstOf[g][st.item]=st.j}}
+const has=(g,item)=>{const j=firstOf[g][item];if(j===undefined)return false;return (g[0]==='v'?S.sv.sTop[g]:S.sTop[g])>=j};
+const lerp=(a,b,t)=>a+(b-a)*t,mix=(c1,c2,t)=>{const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));const A=p(c1),B=p(c2);return '#'+A.map((v,i)=>Math.round(lerp(v,B[i],t)).toString(16).padStart(2,'0')).join('')};
+/* daylight from the phone's clock: 1 at midday, 0 at night, with dawn and dusk in between */
+function daylight(){const d=new Date(),h=d.getHours()+d.getMinutes()/60;if(h<5.5||h>20.5)return 0;if(h<7.5)return (h-5.5)/2;if(h>18.5)return (20.5-h)/2;return 1}
+const STARS=Array.from({length:14},(_,i)=>[(i*37%100)/100,(i*53%60)/100]);
+function van(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);cx.fillStyle=c;cx.fillRect(0,-22,34,16);cx.fillRect(34,-16,10,10);cx.fillStyle='#cfe3f2';cx.fillRect(35,-14,6,5);
+  cx.fillStyle='#1b1d20';for(const wx of [8,36]){cx.beginPath();cx.arc(wx,-5,4.5,0,7);cx.fill()}cx.restore()}
+function forklift(x,y,load){cx.fillStyle='#f4b400';cx.fillRect(x,y-16,18,12);cx.fillStyle='#1b1d20';cx.fillRect(x+3,y-26,2,10);cx.fillRect(x+12,y-26,2,10);cx.fillRect(x+3,y-26,11,2);
+  cx.fillStyle='#555';cx.fillRect(x+18,y-30,3,28);cx.fillRect(x+18,y-5,10,2);if(load){cx.fillStyle='#b5651d';cx.fillRect(x+20,y-14,9,9)}
+  cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(x+4,y-2,3,0,7);cx.arc(x+15,y-2,3,0,7);cx.fill()}
 function person(x,y,body,hat,bob){y+=bob;cx.fillStyle='rgba(0,0,0,.15)';cx.beginPath();cx.ellipse(x,y+30,10,3,0,0,7);cx.fill();
   cx.fillStyle=body;cx.beginPath();cx.moveTo(x-9,y+30);cx.lineTo(x-8,y+12);cx.quadraticCurveTo(x,y+6,x+8,y+12);cx.lineTo(x+9,y+30);cx.fill();
   cx.fillStyle='#d8a47f';cx.beginPath();cx.arc(x,y+3,6,0,7);cx.fill();cx.fillStyle=hat;cx.beginPath();cx.arc(x,y,6.5,Math.PI,0);cx.fill();cx.fillRect(x-1,y-1,10,2.5)}
@@ -1255,30 +1362,54 @@ function semi(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);cx.fillStyle=c;
   cx.fillStyle='#cfe3f2';cx.fillRect(26,-30,10,8);cx.fillStyle='#9aa5b1';cx.fillRect(18,-44,3,22);cx.fillStyle='#1b1d20';for(const wx of [10,30,52]){cx.beginPath();cx.arc(wx,-5,5,0,7);cx.fill()}cx.restore()}
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
   const floorY=Math.round(H*.62);
-  cx.fillStyle='#d9d2c3';cx.fillRect(0,0,W,floorY);cx.fillStyle='#b7ab95';cx.fillRect(0,floorY-6,W,6);cx.fillStyle='#8d8270';cx.fillRect(0,floorY,W,H-floorY);
-  const wx=8,wy=14,ww=Math.min(110,W*.26),wh=floorY-34;cx.fillStyle='#9fc8e8';cx.fillRect(wx,wy,ww,wh);cx.fillStyle='#7d8c6a';cx.fillRect(wx,wy+wh*.7,ww,wh*.3);
+  const day=daylight(),night=1-day;
+  cx.fillStyle=mix('#a89f8d','#d9d2c3',day);cx.fillRect(0,0,W,floorY);cx.fillStyle='#b7ab95';cx.fillRect(0,floorY-6,W,6);cx.fillStyle=mix('#6e6553','#8d8270',day);cx.fillRect(0,floorY,W,H-floorY);
+  const wx=8,wy=14,ww=Math.min(110,W*.26),wh=floorY-34;
+  const sky=day>=1?'#9fc8e8':day<=0?'#18223b':day>.5?mix('#f2b279','#9fc8e8',(day-.5)*2):mix('#18223b','#f2b279',day*2);
+  cx.fillStyle=sky;cx.fillRect(wx,wy,ww,wh);
+  if(night>.5){cx.fillStyle='rgba(255,255,255,'+(night-.5)*1.6+')';for(const [a,b] of STARS)cx.fillRect(wx+a*ww,wy+b*wh*.6,1.5,1.5);cx.fillStyle='#f4f1de';cx.beginPath();cx.arc(wx+ww*.8,wy+14,5,0,7);cx.fill()}
+  else if(day>.5){cx.fillStyle='#ffd54f';cx.beginPath();cx.arc(wx+ww*.82,wy+14,6,0,7);cx.fill()}
+  /* outside: billboard and yard sign from marketing, delivery vehicles from checkout */
+  if(has('cu','Billboard')){const bx2=wx+ww*.5,by2=wy+wh*.36;cx.fillStyle='#5d5446';cx.fillRect(bx2+ww*.12,by2+wh*.14,2,wh*.22);cx.fillStyle='#fff';cx.fillRect(bx2,by2,ww*.28,wh*.15);cx.fillStyle='#c8371d';cx.fillRect(bx2,by2,ww*.28,wh*.05)}
+  cx.fillStyle=mix('#2f3a2c','#7d8c6a',day);cx.fillRect(wx,wy+wh*.7,ww,wh*.3);
+  if(has('cu','Yard sign')){cx.fillStyle='#5d5446';cx.fillRect(wx+ww*.9,wy+wh*.66,1.5,10);cx.fillStyle='#ffd54f';cx.fillRect(wx+ww*.84,wy+wh*.6,12,7)}
   const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=['#c62828','#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)semi(wx+4+i*(ww/3),wy+wh-2,tc[i],ww/220);
+  if(has('ck','Delivery van'))van(wx+ww*.55,wy+wh*.74,'#f5f5f5',ww/260);if(has('ck','Box truck'))van(wx+ww*.05,wy+wh*.74,'#e0e0e0',ww/200);
   cx.strokeStyle='#5d5446';cx.lineWidth=4;cx.strokeRect(wx,wy,ww,wh);cx.lineWidth=1;
-  cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=8;cx.font='700 12px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('OPEN',wx+ww/2,wy+14);cx.shadowBlur=0;
+  cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=8+night*10;cx.font='700 12px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('OPEN',wx+ww/2,wy+14);cx.shadowBlur=0;
   // shelving: one unit per aisle (plus the starter), bins coloured by the lines you stock
-  const sx=wx+ww+12,sw=W-sx-44,unitW=26,units=Math.max(1,Math.min(1+Math.floor(shelfCap()/40),Math.floor(sw/unitW))),bh=(floorY-28)/4;
+  const doors=!S.sv.open?1:has('vb','Second shop')?3:has('vb','Service bay')?2:1,sx=wx+ww+12,sw=W-sx-6-doors*38,unitW=26,units=Math.max(1,Math.min(1+Math.floor(shelfCap()/40),Math.floor(sw/unitW))),bh=(floorY-28)/4;
   const cols=[];const seen=new Set(LADDER.slice(0,S.top+1).map(x=>x.line));for(const c of LINES){if(!seen.has(c.id))continue;const n=lineFac(c.id);for(let i=0;i<Math.min(40,Math.ceil(n/10));i++)cols.push(c.c)}
-  for(let u=0;u<units;u++){const x=sx+u*unitW;cx.fillStyle='#6d6455';cx.fillRect(x,10,unitW-3,floorY-20);
+  const rackC=has('sh','Pallet racking')?'#e46a1c':has('sh','Steel shelving')?'#5a6b7a':'#6d6455';
+  for(let u=0;u<units;u++){const x=sx+u*unitW;cx.fillStyle=rackC;cx.fillRect(x,10,unitW-3,floorY-20);
     for(let k=0;k<4;k++){const i=u*4+k,y=14+k*bh;cx.fillStyle='#4a4338';cx.fillRect(x+2,y,unitW-7,bh-4);
       if(i<cols.length){cx.fillStyle=cols[i];const f=R.E<1?.35+.65*R.E:1;cx.fillRect(x+3,y+(bh-6)*(1-f)+1,unitW-9,(bh-6)*f)}}}
   if(1+Math.floor(shelfCap()/40)>units){cx.fillStyle='#1b1d20';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(1+Math.floor(shelfCap()/40)-units)}`,sx+units*unitW,24)}
-  if(S.sv.open){/* the service bay out back: a roll-up door with a truck nosed in */
-    const bx=W-40,bw=34,by=floorY-70;cx.fillStyle='#5d5446';cx.fillRect(bx-3,by-3,bw+6,73);cx.fillStyle='#e9e4da';cx.fillRect(bx,by,bw,70);
-    const up=R.sv.work>0?.55:.1;cx.fillStyle='#b9b2a4';for(let i=0;i<70*(1-up);i+=6)cx.fillRect(bx,by+i,bw,3);
-    if(R.sv.work>0){cx.fillStyle=S.inc&&S.inc.type==='lift'?'#7a7a7a':'#c62828';cx.fillRect(bx+4,by+70-30,bw-8,26);cx.fillStyle='#cfe3f2';cx.fillRect(bx+8,by+70-26,bw-16,8);
-      cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+10,by+68,4,0,7);cx.arc(bx+bw-10,by+68,4,0,7);cx.fill()}
-    cx.fillStyle='#1b1d20';cx.font='700 9px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('SERVICE',bx+bw/2,by-6)}
+  if(S.sv.open){/* the service bays out back: roll-up doors with trucks nosed in */
+    for(let d=0;d<doors;d++){const bx=W-40-d*38,bw=34,by=floorY-70,busy=R.sv.work>0&&d<Math.max(1,Math.round(doors*R.sv.E));
+      cx.fillStyle='#5d5446';cx.fillRect(bx-3,by-3,bw+6,73);cx.fillStyle=mix('#a9a296','#e9e4da',day);cx.fillRect(bx,by,bw,70);
+      const up=busy?.55:.1;cx.fillStyle='#b9b2a4';for(let i=0;i<70*(1-up);i+=6)cx.fillRect(bx,by+i,bw,3);
+      if(busy){if(has('vb','Truck lift')){cx.fillStyle='#f4b400';cx.fillRect(bx+1,by+70-36,3,34);cx.fillRect(bx+bw-4,by+70-36,3,34)}
+        const lift=has('vb','Truck lift')?6:0;cx.fillStyle=S.inc&&S.inc.type==='lift'?'#7a7a7a':tc[d%3];cx.fillRect(bx+5,by+70-30-lift,bw-10,26);cx.fillStyle='#cfe3f2';cx.fillRect(bx+9,by+70-26-lift,bw-18,8);
+        cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+11,by+68-lift,4,0,7);cx.arc(bx+bw-11,by+68-lift,4,0,7);cx.fill()}}
+    const bx=W-40;cx.fillStyle=night>.5?'#ffd54f':'#1b1d20';cx.font='700 9px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('SERVICE',bx-(doors-1)*19+17,floorY-76);
+    if(R.sv.work>0)person(W-40-(doors-1)*38-10,floorY-28,'#1565c0','#1565c0',mv?Math.sin(ph*5)*1.5:0)}
   else{cx.fillStyle='#5d5446';cx.fillRect(W-38,floorY-80,30,80);cx.fillStyle='#9fc8e8';cx.fillRect(W-34,floorY-74,22,40)}
+  /* stocking gear on the open floor under the window */
+  const gx=wx+4,gw=ww-10,gy=H-8;
+  if(has('sk','Conveyor')){cx.fillStyle='#3c4148';cx.fillRect(gx,floorY+4,gw,4);cx.fillStyle='#b5651d';for(let i=0;i<3;i++){const x=gx+((ph*24*(mv?1:0)+i*gw/3)%gw);cx.fillRect(x,floorY-2,8,6)}}
+  if(has('sk','Forklift')){const f=mv?(Math.sin(ph*.6)+1)/2:.3;forklift(gx+f*(gw-30),gy,Math.sin(ph*.6)>0)}
+  else if(has('sk','Pallet jack')){cx.fillStyle='#c62828';cx.fillRect(gx+10,gy-16,3,14);cx.fillStyle='#555';cx.fillRect(gx+10,gy-3,18,3);cx.fillStyle='#b5651d';cx.fillRect(gx+14,gy-12,12,9)}
+  else if(has('sk','Hand truck')){cx.strokeStyle='#555';cx.lineWidth=2;cx.beginPath();cx.moveTo(gx+10,gy-22);cx.lineTo(gx+14,gy-2);cx.lineTo(gx+22,gy-2);cx.stroke();cx.lineWidth=1;cx.fillStyle='#b5651d';cx.fillRect(gx+14,gy-12,9,9)}
+  if(has('sk','Warehouse robots')&&mv){cx.fillStyle='#ff7043';for(let i=0;i<2;i++){const x=gx+((ph*30+i*gw/2)%gw);cx.fillRect(x,gy-24,10,5)}}
+  /* hanging lights, brighter at night */
+  for(let i=0;i<3;i++){const lx=W*(.3+i*.22);cx.fillStyle='#3c3c3c';cx.fillRect(lx,0,1,8);cx.fillStyle='#f4f1de';cx.fillRect(lx-6,8,12,3);
+    if(night>.2){const g=cx.createRadialGradient(lx,12,2,lx,12,70);g.addColorStop(0,`rgba(255,236,170,${.28*night})`);g.addColorStop(1,'rgba(255,236,170,0)');cx.fillStyle=g;cx.fillRect(lx-70,8,140,90)}}
   // counter and registers
-  const lanes=Object.keys(S.b).filter(k=>k.startsWith('ck')).reduce((a,k)=>a+S.b[k],0),regs=Math.min(lanes,Math.max(1,Math.floor((W-sx-70)/34))),cy=floorY+10,cl=sx,cr=Math.min(W-60,sx+regs*34+40),rx=i=>cl+22+i*34;
+  const lanes=Object.keys(S.b).filter(k=>k.startsWith('ck')).reduce((a,k)=>a+S.b[k],0),regs=Math.min(lanes,Math.max(1,Math.floor((W-sx-30-doors*38)/34))),cy=floorY+10,cl=sx,cr=Math.min(W-14-doors*38,sx+regs*34+40),rx=i=>cl+22+i*34;
   for(let i=0;i<regs;i++)person(rx(i),cy-46,i===0?'#c8371d':'#2f5d7c',i===0?'#1b1d20':'#2f5d7c',mv?Math.sin(ph*4+i)*1.2:0);
   cx.fillStyle='#6b4f3a';cx.fillRect(cl,cy,cr-cl,22);cx.fillStyle='#8b6b52';cx.fillRect(cl-2,cy-4,cr-cl+4,6);
-  for(let i=0;i<regs;i++){cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)-8,cy-14,16,10);cx.fillStyle=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff6b5e':'#5cc98a';cx.fillRect(rx(i)-6,cy-12,12,4)}
+  const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){if(pos){cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)+8,cy-24,2,10);cx.fillStyle='#3949ab';cx.fillRect(rx(i)+3,cy-30,13,9)}cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)-8,cy-14,16,10);cx.fillStyle=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff6b5e':'#5cc98a';cx.fillRect(rx(i)-6,cy-12,12,4)}
   if(lanes>regs){cx.fillStyle='#fff';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(lanes-regs)} more`,cr+4,cy+14)}
   // customers walking in and out
   if(mv&&FAC){spawn+=dt*Math.min(3,.3+Math.log10(1+R.moved)*.6);while(spawn>1){spawn--;if(peeps.length<10)peeps.push({x:W-20,tx:rx(Math.floor(Math.random()*regs)),y:cy+18,c:pick(BODY),st:0,w:0})}}
