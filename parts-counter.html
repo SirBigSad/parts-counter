@@ -14,10 +14,10 @@
    COLOUR and TYPE: warm paper, white cards, one dealership red; Barlow Condensed numbers, Barlow text
    LAYOUT: compact header, dashboard strip, content, bottom tab bar */
 :root{color-scheme:light dark;
---bg:light-dark(#eef2f8,#101215);--card:light-dark(#ffffff,#1a1d22);--ink:light-dark(#0f1b33,#e9ebef);--mute:light-dark(#5d6b82,#9ca3ae);
---line:light-dark(#dde4ee,#2b3038);--soft:light-dark(#f4f7fb,#20242a);--acc:light-dark(#f2541b,#22c55e);--on-acc:light-dark(#fff,#04210f);--acc-2:light-dark(#ff8a3d,#4ade80);--acc2:light-dark(#fff1e8,#11301d);
---good:light-dark(#0e9f6e,#4ade80);--warn:light-dark(#d97706,#fbbf24);--bad:light-dark(#e11d48,#fb7185);
---hd1:light-dark(#1e3a8a,#1b1f25);--hd2:light-dark(#2563eb,#2b313a);
+--bg:light-dark(#f3edf4,#101215);--card:light-dark(#ffffff,#1a1d22);--ink:light-dark(#2a1f3d,#e9ebef);--mute:light-dark(#6b5f7d,#9ca3ae);
+--line:light-dark(#e6dbe6,#2b3038);--soft:light-dark(#f8f2f5,#20242a);--acc:light-dark(#e0583f,#22c55e);--on-acc:light-dark(#fff,#04210f);--acc-2:light-dark(#f08a5d,#4ade80);--acc2:light-dark(#fdeee6,#11301d);
+--good:light-dark(#1f9e7a,#4ade80);--warn:light-dark(#d97706,#fbbf24);--bad:light-dark(#e11d48,#fb7185);
+--hd1:light-dark(#4b3f99,#1b1f25);--hd2:light-dark(#8a5db5,#2b313a);
 --sh:0 1px 2px rgba(15,27,51,.06),0 4px 14px rgba(15,27,51,.06)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 .dk #scene{filter:brightness(.92)}.ski.tO{color:light-dark(#2f6fb0,#90caf9)}
@@ -275,6 +275,35 @@ body.cb{--good:#3d8bfd;--bad:#ff8c1a}body.cb .dash .lim{border-color:#ff8c1a!imp
  .row:has(>.seg){left:auto;right:24px;transform:none;width:calc(58% - 60px)}
  main>.ticker{position:static}
 }
+
+/* ---------- round 3: layout, style ---------- */
+header{background:color-mix(in srgb,var(--hd1) 78%,transparent)!important;backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);background-image:linear-gradient(135deg,color-mix(in srgb,var(--hd1) 82%,transparent),color-mix(in srgb,var(--hd2) 82%,transparent))!important}
+.goalbar{display:none;align-items:center;gap:10px;font-size:12.5px;margin-top:6px;opacity:.95}.goalbar span{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.goalbar i{width:70px;height:5px;border-radius:3px;background:rgba(255,255,255,.2);overflow:hidden;flex:none}.goalbar b{display:block;height:100%;background:#fff;border-radius:3px;transition:width .3s}
+header.mini .goalbar{display:flex}
+@media (max-width:520px){.dash{gap:5px!important}.dash>div{padding:6px 8px!important;border-radius:10px!important}.dash small{font-size:10.5px!important}.dash b{font-size:17px!important}.dash .db{margin-top:2px!important}.dash>div+div::before{display:none}}
+.stage .fold{position:absolute;right:50px;top:8px;width:36px;height:36px;border-radius:10px;border:0;background:rgba(20,15,40,.45);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:2;backdrop-filter:blur(4px)}
+.stage .fold svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;transition:transform .2s}
+.stage.small{height:96px!important}.stage.small .fold svg{transform:rotate(180deg)}
+.stage{transition:height .25s}
+.ski{clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border:0!important;border-radius:0!important;width:30px!important;height:32px!important;background:linear-gradient(90deg,color-mix(in srgb,var(--lc,var(--acc)) 55%,#1a1530) 50%,color-mix(in srgb,var(--lc,var(--acc)) 80%,#1a1530) 50%)!important;color:#fff!important;position:relative}
+.ski::before{content:'';position:absolute;inset:0;background:color-mix(in srgb,var(--lc,var(--acc)) 30%,#fff);clip-path:polygon(50% 0,100% 25%,50% 50%,0 25%)}
+.ski svg.ic{position:relative;width:15px!important;height:15px!important;margin-top:7px;stroke:#fff}
+.ski svg.ic .fl{fill-opacity:.35}
+details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;right:112px;bottom:-12px;width:112px;height:66px;opacity:.5;pointer-events:none}.pcmini .dart,#postcard .dart{position:static;opacity:1}
+@media (max-width:420px){.dart{right:96px;width:90px;height:54px;opacity:.4}}
+
+.album{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ph{margin:0;border-radius:10px;overflow:hidden;background:var(--soft);cursor:pointer}.ph img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}
+.ph figcaption{font-size:12px;padding:5px 7px;line-height:1.3}.ph small{display:block;color:var(--mute);font-size:10.5px}
+.posts{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pcmini{border:1px solid var(--line);background:linear-gradient(160deg,color-mix(in srgb,var(--lc) 18%,var(--card)),var(--card));border-radius:10px;padding:6px;color:var(--ink);font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+.pcmini svg{width:90px;height:52px}.pcmini b{font-size:12.5px}
+#postcard{position:fixed;inset:0;z-index:80;background:rgba(15,10,35,.55);display:grid;place-items:center;padding:20px}#postcard[hidden]{display:none}
+#postcard .pc{background:#fffaf0;color:#2a1f3d;border-radius:14px;max-width:360px;width:100%;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.4);transform:rotate(-1.5deg);animation:pcin .4s ease-out}
+#postcard .pc.photo{transform:none}#postcard .pc img{width:100%;border-radius:8px;display:block}
+#postcard .pcart{position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--lc) 35%,#fff),#fffaf0);border-radius:10px;display:grid;place-items:center;height:130px}
+#postcard .pcart svg{width:200px;height:116px}.stampbox{position:absolute;top:8px;right:8px;border:2px dashed #b0583f;color:#b0583f;font:700 11px 'Barlow Condensed',sans-serif;padding:4px 6px;transform:rotate(6deg);text-transform:uppercase}
+#postcard h3{font:700 22px 'Barlow Condensed',sans-serif;margin:12px 0 4px}#postcard p{font-family:Georgia,serif;font-size:15px;line-height:1.5;margin:0 0 12px}
+@keyframes pcin{from{transform:translateY(30px) rotate(-6deg);opacity:0}to{transform:rotate(-1.5deg);opacity:1}}
 </style>
 </head>
 <body>
@@ -282,6 +311,7 @@ body.cb{--good:#3d8bfd;--bad:#ff8c1a}body.cb .dash .lim{border-color:#ff8c1a!imp
 <header id="top">
   <div class="hrow"><div class="who"><b id="rank"></b><small id="where"></small></div><div class="money"><div id="cash" class="num">$0</div><div id="cps">$0/s</div></div></div>
   <div class="dash" id="dash"></div>
+  <div class="goalbar" id="goalbar"><span id="gbTxt"></span><i><b id="gbM"></b></i></div>
 </header>
 <main>
   <div class="stage" id="stage"><canvas id="scene" aria-label="Your parts store"></canvas></div>
@@ -336,6 +366,8 @@ body.cb{--good:#3d8bfd;--bad:#ff8c1a}body.cb .dash .lim{border-color:#ff8c1a!imp
     </div>
     <h2>Income</h2><div class="card"><canvas id="chart" style="width:100%;height:150px;display:block"></canvas><p class="sub" id="chartCap" style="margin:6px 0 0"></p></div>
     <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><input class="search" id="catq" type="search" placeholder="Look up a part (oil filter, turbo, wiper…)" style="margin:6px 0 4px"><div id="catres"></div><div id="cat"></div></div>
+    <h2>Photo album</h2><div class="card"><p class="sub" id="albumSum" style="margin:0 0 10px"></p><div id="albumList" class="album"></div></div>
+    <h2>Postcards</h2><div class="card"><p class="sub" id="postSum" style="margin:0 0 10px"></p><div id="postList" class="posts"></div></div>
     <h2>Plaque wall</h2><div class="card"><div class="capg"><span id="plaqSum"></span></div><div class="meter" style="margin:8px 0 8px"><i id="plaqM"></i></div><div id="plaqList" class="plaqs"></div></div>
     <h2>Spotter's log</h2><div class="card"><div class="capg"><span id="spotSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="spotM"></i></div><p class="sub" style="margin:0 0 8px">Trucks roll past the lot while you play. Rare ones don't come by often.</p><div id="spotList" class="spots"></div></div>
     <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
@@ -1357,6 +1389,14 @@ const mHTML=L=>{const s=moneyL(L),m=s.match(/^(.*\d)([A-Za-z]+)$/);return m?`${m
 const LOCK='<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
 const STARS=t=>`<span class="stars" aria-label="${TIER[t].n}">${'★'.repeat({V:1,O:2,P:3}[t]||1)}<i>${'★'.repeat(3-({V:1,O:2,P:3}[t]||1))}</i></span>`;
 const BAR=id=>`<span class="rbar" id="${id}w" hidden><i id="${id}"></i></span>`;
+/* the product's own short name, like "Cummins X15" or "X15" when it's the fitment */
+const shortName=s=>{const p=PI[s.p];return (p&&(p.fit||p.short))||skuName(s)};
+/* a little isometric pallet of crates in the department's color, drawn behind its header */
+const deptArt=(c,seed)=>{const crates=[[0,0,0],[1,0,0],[0,1,0],[0,0,1],[1,1,0]].slice(0,3+seed%3);const iso=(x,y,z)=>[60+(x-y)*13,44+(x+y)*7.5-z*14];
+  const face=(pts,f)=>`<polygon points="${pts.map(p=>iso(...p).join(',')).join(' ')}" fill="${f}"/>`;
+  let s=face([[-.2,-.2,0],[2.2,-.2,0],[2.2,2.2,0],[-.2,2.2,0]],'rgba(120,80,50,.55)');
+  for(const [x,y,z] of crates.sort((a,b)=>(a[0]+a[1]+a[2])-(b[0]+b[1]+b[2]))){s+=face([[x,y+1,z],[x+1,y+1,z],[x+1,y+1,z+1],[x,y+1,z+1]],'rgba(0,0,0,.25)')+face([[x+1,y,z],[x+1,y+1,z],[x+1,y+1,z+1],[x+1,y,z+1]],c)+face([[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],'rgba(255,255,255,.35)')+face([[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],c+'99')}
+  return `<svg class="dart" viewBox="0 0 120 70" aria-hidden="true">${s}</svg>`};
 let tt;function note(m){const el=$('toast');el.textContent=m;el.style.display='block';clearTimeout(tt);tt=setTimeout(()=>el.style.display='none',3500)}
 const BASE_STEPS={};for(const s of LADDER)(BASE_STEPS[s.base]=BASE_STEPS[s.base]||[]).push(s);
 const LINE_BASES={};for(const b of BASES){const l=BASE_STEPS[b][0].line;(LINE_BASES[l]=LINE_BASES[l]||[]).push(b)}
@@ -1386,11 +1426,12 @@ function updRow(s){const b=$('kb-'+s.id);if(!b)return;const n=L(S.f,s.id),k=skuA
 function baseLvl(b){const st=BASE_STEPS[b];return st[0].k<=S.top}
 function renderLadder(){const c=cur(),bi=BASES.indexOf(c.base),steps=BASE_STEPS[c.base],have=L(S.f,c.id),need=needOf(c);
   let nextTxt;if(S.top>=NS-1)nextTxt='You carry every product in the catalog.';
-  else{const n=LADDER[S.top+1];nextTxt=c.last?`Stock ${need} of ${skuName(c)} to unlock ${lc(BASE_NAME[n.base])}`:`Stock ${need} of ${skuName(c)} to unlock ${skuName(n)}`}
+  else{const n=LADDER[S.top+1];nextTxt=c.last?`Stock ${need} ${shortName(c)} → unlocks ${lc(BASE_NAME[n.base])}`:`Stock ${need} ${shortName(c)} → unlocks ${shortName(n)}`}
   const gq=S.top<NS-1?gateOf(LADDER[S.top+1]):-1,gTxt=gq<0?'':!S.sv.open?`<p class="gate">The next part also needs the service shop. Open it in the Service tab.</p>`:S.sv.top<gq?`<p class="gate">The next part also needs the shop to keep up: unlock <b>${esc(svName(SVL[gq]))}</b> in the Service tab (job step ${fmt(gq+1)}, you're on ${fmt(S.sv.top+1)}).</p>`:'';
   const rp=Math.min(1,have/need),RC=2*Math.PI*23;$('prog').style.setProperty('--lc',LI[c.line].c);
-  $('prog').innerHTML=`<div class="phead"><div class="ring"><svg viewBox="0 0 52 52"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23" stroke-dasharray="${RC.toFixed(1)}" stroke-dashoffset="${(RC*(1-rp)).toFixed(1)}"/></svg><i>${icSvg(BASE_IC[c.base])}</i></div><div style="flex:1;min-width:0"><div class="capg"><h3 class="bn">${esc(BASE_NAME[c.base])}</h3><span class="sub" style="margin:0">Part ${bi+1} of ${NB}</span></div>
-    <p class="sub" style="margin:2px 0 0">Step ${c.k-steps[0].k+1} of ${steps.length} in this part · ${esc(LI[c.line].n)}</p></div></div><div style="height:10px"></div>
+  window.GOAL={txt:nextTxt,have:Math.min(have,need),need};
+  $('prog').innerHTML=`<div class="phead"><div class="ring"><svg viewBox="0 0 52 52"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23" stroke-dasharray="${RC.toFixed(1)}" stroke-dashoffset="${(RC*(1-rp)).toFixed(1)}"/></svg><i>${icSvg(BASE_IC[c.base])}</i></div><div style="flex:1;min-width:0"><div class="capg"><h3 class="bn">${esc(BASE_NAME[c.base])}</h3><span class="sub" style="margin:0">${esc(LI[c.line].n)}: part ${(LINE_BASES[c.line]||[]).indexOf(c.base)+1} of ${(LINE_BASES[c.line]||[]).length}</span></div>
+    <p class="sub" style="margin:2px 0 0">Step ${c.k-steps[0].k+1} of ${steps.length} in this part · ${bdg(c.b)}${esc(BI[c.b].n)}</p></div></div><div style="height:10px"></div>
     <div class="meter"><i style="width:${Math.min(100,have/need*100)}%"></i></div><p style="margin:8px 0 0;font-size:15px"><b>${esc(nextTxt)}</b> <b class="num">${fmt(Math.min(have,need))} / ${need}</b></p>${gTxt}${typeof nextUp==="function"?nextUp():""}`;
   const reached=new Set(LADDER.slice(0,S.top+1).map(s=>s.line));
   for(const l of LINES){const el=$('ln-'+l.id);el.hidden=!reached.has(l.id);if(el.hidden)continue;
@@ -1401,7 +1442,7 @@ function renderLadder(){const c=cur(),bi=BASES.indexOf(c.base),steps=BASE_STEPS[
       const st=BASE_STEPS[b],last=st[st.length-1],done=L(S.f,last.id)>=BASE_NEED;let f2=0,v2=NEG;for(const s of st){const n=L(S.f,s.id);if(n){f2+=n;v2=addL(v2,lg(n)+s.incL+lg(Math.max(R.E,1e-300)))}}
       $('bs-'+b).innerHTML=`${done?'<span class="stamp">Fully stocked</span>':''}${fmt(f2)} facings · ${moneyL(v2)}/s`;be.classList.toggle('done',done);
       if(be.open){buildBase(b);for(const s of st){if(s.k>S.top)break;updRow(s)}}}}}
-$('ladder').innerHTML=LINES.map(l=>`<details class="line" id="ln-${l.id}" data-line="${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="ls-${l.id}"></small></div><span class="lval" id="lv-${l.id}"></span></summary><div class="lbody">${
+$('ladder').innerHTML=LINES.map(l=>`<details class="line" id="ln-${l.id}" data-line="${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="ls-${l.id}"></small></div>${deptArt(l.c,l.id.charCodeAt(0))}<span class="lval" id="lv-${l.id}"></span></summary><div class="lbody">${
   (LINE_BASES[l.id]||[]).map(b=>`<details class="part" id="bd-${b}" data-base="${b}" hidden><summary><span class="bn">${icSvg(BASE_IC[b])}${esc(BASE_NAME[b])}<button class="ib" data-info="${b}" aria-label="Part info, fitment and sales">i</button></span><small id="bs-${b}"></small></summary><div id="bb-${b}"></div></details>`).join('')}</div></details>`).join('');
 function openCurrent(){const c=cur();const ln=$('ln-'+c.line),bd=$('bd-'+c.base);if(!ln.open)ln.open=true;if(!bd.open)bd.open=true}
 
@@ -1441,7 +1482,7 @@ const SV_STEPS={};for(const s of SVL)(SV_STEPS[s.job]=SV_STEPS[s.job]||[]).push(
 const LINE_JOBS={};for(const [jid,,l] of SV_JOBS)(LINE_JOBS[l]=LINE_JOBS[l]||[]).push(jid);
 const JOB_ORDER=SV_LINES.flatMap(l=>LINE_JOBS[l.id]||[]);
 let sbuilt={};
-$('sladder').innerHTML=SV_LINES.map(l=>`<details class="line" id="sln-${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(SV_LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="sls-${l.id}"></small></div><span class="lval" id="slv-${l.id}"></span></summary><div class="lbody">${
+$('sladder').innerHTML=SV_LINES.map(l=>`<details class="line" id="sln-${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(SV_LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="sls-${l.id}"></small></div>${deptArt(l.c,l.id.charCodeAt(0))}<span class="lval" id="slv-${l.id}"></span></summary><div class="lbody">${
   (LINE_JOBS[l.id]||[]).map(j=>`<details class="part" id="sjd-${j}" hidden><summary><span class="bn">${icSvg(JOB_IC[j])}${esc(JOB_NAME[j])}</span><small id="sjs-${j}"></small></summary><div id="sjb-${j}"></div></details>`).join('')}</div></details>`).join('');
 function buildJob(j){const steps=SV_STEPS[j],upto=Math.min(S.sv.top+1,steps[steps.length-1].k);if(sbuilt[j]===upto)return;sbuilt[j]=upto;
   let h='';for(const s of steps){if(s.k>upto)break;
@@ -1978,6 +2019,38 @@ let funT=0;setInterval(()=>{document.body.classList.toggle('noanim',!S.ui.anim);
   if(funT%5===0)checkPlaques(false);
   if(funT%2===0&&typeof tab!=='undefined'&&tab==='more')renderFun()},1000);
 {const el=$('tickTxt');if(el){nextHeadline();el.addEventListener('animationiteration',nextHeadline);setInterval(()=>{if(!S.ui.anim)nextHeadline()},9000)}}
+
+/* ---------- photo album: the game takes a picture of your store at each milestone ---------- */
+const ALBUM_KEY='parts-counter-album';
+const albumGet=()=>{try{return JSON.parse(localStorage.getItem(ALBUM_KEY)||'[]')}catch(e){return []}};
+function snap(caption){try{const src=$('scene');if(!src||!src.width)return;const w=360,h=Math.round(w*src.height/src.width),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(src,0,0,w,h);
+  const a=albumGet();a.push({t:Date.now(),c:caption,img:c.toDataURL('image/jpeg',.72)});while(a.length>40)a.splice(1,1);localStorage.setItem(ALBUM_KEY,JSON.stringify(a))}catch(e){}}
+/* take the first photo on day one, then one at each unlock and plaque */
+setTimeout(()=>{if(!albumGet().length)snap('Opening day at '+storeName())},4000);
+if(typeof celebrate==='function'){const _cel=celebrate;celebrate=function(...a){_cel.apply(this,a);setTimeout(()=>snap('Started carrying '+lc(BASE_NAME[a[0]&&a[0].base]||'a new part')),1200)}}
+
+/* ---------- postcards: finishing a department mails you a little piece of the dealership's story ---------- */
+const POST_T=[
+ (d,i)=>`Fremont, ${1971+i*2}. When we opened, ${d} was one dusty shelf by the door. Now it has its own aisle, and the regulars know it by heart.`,
+ (d)=>`Dear ${storeName()}, my truck broke down two states away and the only shop with the part was yours. Thanks for keeping ${d} stocked. — A grateful driver`,
+ (d)=>`Overheard at the counter: "If ${storeName()} doesn't have it, it doesn't exist." ${dogName()} wagged in agreement. ${d} is officially complete.`,
+ (d,i)=>`The old parts manager kept a handwritten ${d} catalog in a coffee can. We found it in ${1980+i} and framed it above the register.`,
+ (d)=>`Every brand, every fitment, every part in ${d}. The sales reps took a group photo in the aisle. Somebody's thumb is in it.`,
+ (d)=>`A fleet manager drove four hours just to see the ${d} wall in person. She bought one part and took twelve pictures.`];
+function postcardFor(id){const i=LINES.findIndex(l=>l.id===id),l=LINES[i];return {l,txt:POST_T[i%POST_T.length](l.n,i)}}
+function showPostcard(id){const {l,txt}=postcardFor(id);let el=$('postcard');if(!el){el=document.createElement('div');el.id='postcard';document.body.appendChild(el)}
+  el.innerHTML=`<div class="pc" style="--lc:${l.c}"><div class="pcart">${deptArt(l.c,l.id.charCodeAt(0))}<span class="stampbox">${esc(l.n.split(' ')[0])}</span></div><h3>${esc(l.n)}</h3><p>${esc(txt)}</p><button class="btn pri">Keep it</button></div>`;
+  el.hidden=false;el.querySelector('button').onclick=()=>{el.hidden=true}}
+{const _cp=checkPlaques;checkPlaques=function(quiet){const before=new Set(Object.keys(S.fun.pl));_cp(quiet);if(quiet)return;for(const id of Object.keys(S.fun.pl))if(!before.has(id)){snap('New plaque: '+((PLAQ.find(p=>p[0]===id)||[])[1]||'milestone'));if(id[0]==='d'&&LINES.some(l=>'d'+l.id===id))setTimeout(()=>showPostcard(id.slice(1)),800)}}}
+function renderAlbum(){if(!$('albumList'))return;const a=albumGet();$('albumSum').textContent=a.length?`${a.length} photo${a.length>1?'s':''} of your store`:'Your first photo is taken a few seconds after you start playing.';
+  const sig=a.length+':'+(a.length?a[a.length-1].t:0);if($('albumList').dataset.sig===sig)return;$('albumList').dataset.sig=sig;
+  $('albumList').innerHTML=a.slice().reverse().map((p,i)=>`<figure class="ph" data-ph="${a.length-1-i}"><img src="${p.img}" alt="${esc(p.c)}"><figcaption>${esc(p.c)}<small>${new Date(p.t).toLocaleDateString()}</small></figcaption></figure>`).join('');
+  const cards=LINES.filter(l=>S.fun.pl['d'+l.id]);$('postSum').textContent=cards.length?`${cards.length} of ${LINES.length} postcards`:'Finish every part in a department to get its postcard.';
+  $('postList').innerHTML=cards.map(l=>`<button class="pcmini" data-post="${l.id}" style="--lc:${l.c}">${deptArt(l.c,l.id.charCodeAt(0))}<b>${esc(l.n)}</b></button>`).join('')}
+document.addEventListener('click',e=>{const p=e.target.closest('[data-post]');if(p){showPostcard(p.dataset.post);return}
+  const f=e.target.closest('[data-ph]');if(f){const a=albumGet()[+f.dataset.ph];if(!a)return;let el=$('postcard');if(!el){el=document.createElement('div');el.id='postcard';document.body.appendChild(el)}
+    el.innerHTML=`<div class="pc photo"><img src="${a.img}" alt=""><p>${esc(a.c)} · ${new Date(a.t).toLocaleDateString()}</p><button class="btn pri">Close</button></div>`;el.hidden=false;el.querySelector('button').onclick=()=>{el.hidden=true}}});
+setInterval(()=>{if(!document.hidden&&typeof tab!=='undefined'&&tab==='more')renderAlbum()},1500);
 </script>
 <script>/* ===== Parts Counter Idle: store scene ===== */
 {
@@ -2040,11 +2113,12 @@ function iperson(x,y,body,hat,bob,tie){const [a,b]=P(x,y,0),k=s*1.05;cx.save();c
 function itruck(x,y,c,len,lift){const z=lift||0;ibox(x,y,z+4,len,26,20,shade(c,.05),tint(c,.3));ibox(x+len,y+1,z+4,24,24,30,c);quad([[x+len+24,y+5,z+20],[x+len+24,y+21,z+20],[x+len+24,y+21,z+30],[x+len+24,y+5,z+30]],'#bfe6ff');
   for(const wx of [x+8,x+len-6,x+len+14]){const [a,b]=P(wx,y+26,z+4);cx.fillStyle='#2a2440';cx.beginPath();cx.ellipse(a,b,5*s*1.6,4*s*1.6,0,0,7);cx.fill();cx.fillStyle='#8f8aa8';cx.beginPath();cx.ellipse(a,b,2*s*1.6,1.6*s*1.6,0,0,7);cx.fill()}}
 function itree(x,y){const [a,b]=P(x,y,0);rr(a-2*s*2,b-18*s*2,4*s*2,18*s*2,2,'#6b4a3a');cx.fillStyle='#2ec4a6';cx.beginPath();cx.arc(a,b-26*s*2,14*s*2,0,7);cx.fill();cx.fillStyle='rgba(126,232,210,.55)';cx.beginPath();cx.arc(a-4*s*2,b-30*s*2,6*s*2,0,7);cx.fill()}
-let bayTrucks=[],lastFac=-1,lastLanes=-1,pops=[],regBounce=0;window.SCENE_HITS=[];
+/* pinch to zoom, drag to look around, double-tap to reset */
+const VIEW={z:1,x:0,y:0};window.SCENE_VIEW=VIEW;window.SCENE_PEEPS=()=>peeps;let bayTrucks=[],lastFac=-1,lastLanes=-1,pops=[],regBounce=0;window.SCENE_HITS=[];
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
   const day=daylight(),night=1-day,E=ERAS[eraOf()],w=weatherToday();
   /* fit the diorama to the canvas */
-  s=Math.min(W/530,H/405);ox=W/2-s*64;oy=H/2-s*101;
+  s=Math.min(W/530,H/405)*VIEW.z;ox=W/2-s*64+VIEW.x;oy=H/2-s*101+VIEW.y;
   /* sky behind everything */
   const skyT=day>=1?'#5fb4e8':day<=0?'#141236':day>.5?mix('#ff8a6a','#5fb4e8',(day-.5)*2):mix('#141236','#ff8a6a',day*2),skyB=day>=1?'#c9ecf5':day<=0?'#3b2d6b':day>.5?mix('#ffd18a','#c9ecf5',(day-.5)*2):mix('#3b2d6b','#ffd18a',day*2);
   cx.fillStyle=vg(0,H,skyT,skyB);cx.fillRect(0,0,W,H);
@@ -2090,13 +2164,17 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   pops=pops.filter(p=>p.t<1);
   /* hanging lights */
   for(const [lx,ly] of [[60,60],[140,60],[266,70]]){const [a,b]=P(lx,ly,78);cx.fillStyle='#2a2440';cx.fillRect(a-.5,b-10,1.5,10);cx.fillStyle='#fff3c4';cx.beginPath();cx.ellipse(a,b,5,1.8,0,0,7);cx.fill();glow(a,b+6,30+night*30,'255,232,160',.12+.25*night)}
+  /* the specials chalkboard by the door */
+  {quad([[150,.3,24],[192,.3,24],[192,.3,54],[150,.3,54]],'#6b4a3a');quad([[152,.4,26],[190,.4,26],[190,.4,52],[152,.4,52]],'#23392f');
+   const [a,b]=P(171,0,45),fs=Math.max(6,Math.round(7*s*1.6));cx.save();cx.translate(a,b);cx.transform(1,.577,0,1,0,0);cx.fillStyle='#f4f1de';cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`;cx.textAlign='center';cx.fillText('TODAY',0,0);
+   cx.font=`600 ${Math.max(5,fs-1)}px Barlow,sans-serif`;const t=curPart().split(' ').slice(-2).join(' ');cx.fillText(t.length>14?t.slice(0,13)+'…':t,0,fs*1.15);cx.strokeStyle='#ffcf4a';cx.lineWidth=1;cx.beginPath();cx.arc(-fs*2.2,-fs*.35,fs*.45,0,7);cx.stroke();cx.restore()}
   drawIsoSeason(day);
   if(R.lim==='sk'&&FAC){for(let q=0;q<Math.min(6,2+Math.round((1-Math.min(1,R.E))*6));q++)ibox(20+q*22%140,30+(q%2)*8,(q>2?8:0),12,10,8,'#e0a35a')}
   /* stocking gear: forklift or pallet jack trundles along the shelves */
   if(has('sk','Forklift')||has('sk','Pallet jack')){const f=mv?(Math.sin(ph*.5)+1)/2:.3,x=20+f*140;ibox(x,46,0,22,14,12,'#ffb627');ibox(x+22,48,0,3,10,26,'#6b6488');if(Math.sin(ph*.5)>0)ibox(x+25,47,2,10,12,10,'#e0a35a')}
   /* the counter with registers, and staff standing behind it */
   const lanes=Object.keys(S.b).filter(k=>k.startsWith('ck')).reduce((a,k)=>a+S.b[k],0),regs=Math.max(1,Math.min(lanes,4)),cw=22+regs*28,cx0=30,rxw=i=>cx0+14+i*28;
-  const U=uniform();for(let i=0;i<regs;i++)iperson(rxw(i)+4,80,i===0?U.body:'#2f5d7c',i===0?U.hat:'#2f5d7c',mv?Math.sin(ph*4+i)*1.2:0,i===0?U.tie:null);
+  const U=uniform(),nightCrew=rushNow()<.6;for(let i=0;i<regs;i++)iperson(rxw(i)+4,80,i===0?U.body:nightCrew?'#3b3561':'#2f5d7c',i===0?U.hat:nightCrew?'#1e1a4a':'#2f5d7c',mv?Math.sin(ph*4+i)*1.2:0,i===0?U.tie:null);
   /* customers at the shelves are behind the counter: draw them first */
   stepPeeps(dt,mv,regs,rxw);
   for(const p of peeps)if(p.y<92)drawPeep(p,mv);
@@ -2152,9 +2230,13 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
    around to the front of a register, pay, and walk out to the lot. They never cross the counter. */
 const AISLE_X=188;
 function route(p,pts){p.path=pts.slice();}
+/* the store follows your phone's clock: morning rush, lunch rush, a quieter evening and a slow night shift. Only the picture changes. */
+function rushNow(){const d=new Date(),h=d.getHours()+d.getMinutes()/60;return h>=7&&h<9?1.7:h>=11.5&&h<13?1.5:h>=16.5&&h<18.5?1.2:h>=21||h<5.5?.5:1}
+const NAMES=['Ray','Dolores','Hank','Tammy','Gus','Priya','Earl','Rosa','Walt','Mike','Luis','Dana','Kenji','Shay','Bo','Marlene','Andre','Cody','Ines','Vern'];
+const WHO=['owner-operator','fleet mechanic','farmer','dispatcher','tow operator','bus garage tech','dump truck driver','RV owner','diesel tech','delivery driver'];
 function stepPeeps(dt,mv,regs,rxw){
-  const add=o=>{const p=Object.assign({x:AISLE_X,y:225,c:pick(BODY),st:0,w:0},o);p.sx=20+Math.random()*150;p.tx=rxw(Math.floor(Math.random()*regs))+6;route(p,[[AISLE_X,140],[AISLE_X,40],[p.sx,32]]);peeps.push(p)};
-  if(mv&&FAC){spawn+=dt*Math.min(2.5,.25+Math.log10(1+R.moved)*.5)*(R.lim==='cu'?.45:1);while(spawn>1){spawn--;if(peeps.length<9)add({})}}
+  const add=o=>{const p=Object.assign({x:AISLE_X,y:225,c:pick(BODY),st:0,w:0,nm:pick(NAMES),who:pick(WHO),qty:1+Math.floor(Math.random()*3)},o);p.sx=20+Math.random()*150;p.tx=rxw(Math.floor(Math.random()*regs))+6;route(p,[[AISLE_X,140],[AISLE_X,40],[p.sx,32]]);peeps.push(p)};
+  if(mv&&FAC){spawn+=dt*Math.min(2.5,.25+Math.log10(1+R.moved)*.5)*(R.lim==='cu'?.45:1)*rushNow();while(spawn>1){spawn--;if(peeps.length<9)add({})}}
   if(regNow&&mv){const r=regNow.r;add({c:r.body,hat:r.hat,reg:regNow,bt:7});peeps[peeps.length-1].tx=rxw(0)+6;regNow=null}else if(regNow&&!mv)regNow=null;
   for(const p of peeps){
     if(p.path&&p.path.length){const [tx,ty]=p.path[0],dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy),sp=p.st===4?90:75;
@@ -2162,7 +2244,8 @@ function stepPeeps(dt,mv,regs,rxw){
       else{const m=Math.min(d,sp*dt);p.x+=dx/d*m;p.y+=dy/d*m}continue}
     if(p.st===1){p.w-=dt;if(p.w<=0){p.st=2;route(p,[[p.sx,40],[AISLE_X,40],[AISLE_X,126],[p.tx,126]])}}
     else if(p.st===3){p.w-=dt*(R.E<1?.5:1);if(p.reg&&p.bt>0)p.w=Math.max(p.w,.1);if(p.w<=0){p.st=4;route(p,[[AISLE_X,128],[AISLE_X,160],[AISLE_X+20,225]])}}}}
-function drawPeep(p,mv){const walk=p.st===0||p.st===2||p.st===4,bob=walk&&mv?Math.sin(ph*12)*2:0;iperson(p.x,p.y,p.c,p.hat||'#333',bob);
+function drawPeep(p,mv){const walk=p.st===0||p.st===2||p.st===4,bob=walk&&mv?Math.sin(ph*12)*2:0;iperson(p.x,p.y,p.c,p.hat||'#333',bob);{const [a,b]=P(p.x,p.y,20);p.sx2=a;p.sy2=b}
+  if(p.info>0){p.info-=1/60;const [a,b]=P(p.x,p.y,42);bubble(a,b,p.reg?`${p.reg.r.n}, ${p.reg.r.who}`:`${p.nm}, ${p.who}. ${p.st<=1?'Looking for':'Buying'} ${p.qty} ${curPart()}${p.qty>1?'s':''}`)}
   if(p.st===2||p.st===3){const [a,b]=P(p.x+6,p.y,16);rr(a-3*s*1.6,b-3*s*1.6,7*s*1.6,6*s*1.6,1.5,'#e0a35a')}
   if(p.reg&&p.bt>0&&p.st>=1){p.bt-=1/60;const [a,b]=P(p.x,p.y,40);bubble(a,b,p.reg.r.n+': '+p.reg.line)}}
 /* holiday touches along the top of the walls */
@@ -2178,7 +2261,18 @@ function finish(W,H,floorY,mv,day){
   let g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(255,190,120,.10)');g.addColorStop(.55,'rgba(255,190,120,0)');g.addColorStop(1,'rgba(40,20,90,.22)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
   g=cx.createRadialGradient(W/2,H*.45,Math.min(W,H)*.35,W/2,H*.45,Math.max(W,H)*.75);g.addColorStop(0,'rgba(20,10,50,0)');g.addColorStop(1,'rgba(20,10,50,.38)');cx.fillStyle=g;cx.fillRect(0,0,W,H)}
 requestAnimationFrame(frame);
-cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(hit&&Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender();return}let best=null,bd=1e9;for(const h of SCENE_HITS){const d=Math.hypot(x-h.x,y-h.y);if(d<h.r&&d<bd){bd=d;best=h}}if(best&&typeof jumpTo==='function')jumpTo(best.k)});
+{const pts=new Map();let start=null,moved=false,lastTap=0;cv.style.touchAction='pan-y';
+ const dist=()=>{const v=[...pts.values()];return Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y)};
+ cv.addEventListener('pointerdown',e=>{pts.set(e.pointerId,{x:e.clientX,y:e.clientY});moved=false;if(pts.size===2)start={d:dist(),z:VIEW.z};else start={x:e.clientX,y:e.clientY,vx:VIEW.x,vy:VIEW.y,z:VIEW.z}});
+ cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId))return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+   if(pts.size===2&&start&&start.d){VIEW.z=Math.max(1,Math.min(3,start.z*dist()/start.d));moved=true}
+   else if(pts.size===1&&start&&VIEW.z>1.01&&start.x!==undefined){const dx=e.clientX-start.x,dy=e.clientY-start.y;if(Math.hypot(dx,dy)>6){moved=true;VIEW.x=start.vx+dx;VIEW.y=start.vy+dy}}
+   cv.style.touchAction=VIEW.z>1.01?'none':'pan-y';const lim=W*(VIEW.z-1)*.7;VIEW.x=Math.max(-lim,Math.min(lim,VIEW.x));VIEW.y=Math.max(-lim,Math.min(lim,VIEW.y));if(VIEW.z<=1.01){VIEW.x=0;VIEW.y=0}});
+ const up=e=>{pts.delete(e.pointerId);if(pts.size<2)start=null};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{if(!e.ctrlKey&&VIEW.z<=1.01)return;e.preventDefault();VIEW.z=Math.max(1,Math.min(3,VIEW.z*(e.deltaY<0?1.12:1/1.12)));if(VIEW.z<=1.01){VIEW.x=0;VIEW.y=0}},{passive:false});
+ cv.addEventListener('click',e=>{if(moved){moved=false;e.stopImmediatePropagation();return}const t=Date.now();if(t-lastTap<300&&VIEW.z>1.01){VIEW.z=1;VIEW.x=0;VIEW.y=0;cv.style.touchAction='pan-y';e.stopImmediatePropagation();return}lastTap=t},true)}
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  {let bp=null,bd=22;for(const p of peeps){if(p.sx2===undefined)continue;const d=Math.hypot(x-p.sx2,y-p.sy2);if(d<bd){bd=d;bp=p}}if(bp){bp.info=3;return}}if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(hit&&Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender();return}let best=null,bd=1e9;for(const h of SCENE_HITS){const d=Math.hypot(x-h.x,y-h.y);if(d<h.r&&d<bd){bd=d;best=h}}if(best&&typeof jumpTo==='function')jumpTo(best.k)});
 }
 </script>
 <script>/* ===== Parts Counter Idle: look-and-feel touches. Nothing here changes the game itself. ===== */
@@ -2195,7 +2289,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(
   sec.style.setProperty('--tx',(i>lastTabI?14:-14)+'px');sec.classList.remove('tabin');void sec.offsetWidth;if(S.ui.anim)sec.classList.add('tabin');lastTabI=i});
 
 
-setInterval(()=>{if(document.hidden)return;fillPass();pulsePass()},250);
+/* the slim goal bar in the shrunken header */
+function goalPass(){const g=window.GOAL;if(!g||!$('gbTxt'))return;if($('gbTxt').textContent!==g.txt)$('gbTxt').textContent=g.txt;$('gbM').style.width=Math.min(100,g.have/g.need*100)+'%'}
+setInterval(()=>{if(document.hidden)return;fillPass();pulsePass();goalPass()},250);
 
 </script>
 <script>/* ===== Parts Counter Idle: cross save. Two ways to move a save between phone and computer:
@@ -2271,6 +2367,10 @@ document.addEventListener('keydown',e=>{const d=e.target.closest&&e.target.close
   const set=on=>{st.classList.toggle('full',on);document.body.classList.toggle('fsopen',on);b.setAttribute('aria-label',on?'Close full-screen view':'Full-screen store view');
     b.innerHTML=on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'};
   b.addEventListener('click',e=>{e.stopPropagation();set(!st.classList.contains('full'))});
+  /* fold the picture down to a slim strip, remembered between visits */
+  const f=document.createElement('button');f.className='fold';f.setAttribute('aria-label','Make the store picture smaller');f.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';st.appendChild(f);
+  const fs=on=>{st.classList.toggle('small',on);f.setAttribute('aria-label',on?'Make the store picture bigger':'Make the store picture smaller')};fs(!!S.ui.picSmall);
+  f.addEventListener('click',e=>{e.stopPropagation();S.ui.picSmall=!S.ui.picSmall;fs(S.ui.picSmall);save()});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&st.classList.contains('full'))set(false)})}
 
 /* ---------- More tab: each heading folds its section away ---------- */
