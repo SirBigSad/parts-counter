@@ -1213,7 +1213,11 @@ const skuAmt=s=>{const room=Math.max(1,Math.min(shelfCap()-FAC,MAXC-L(S.f,s.id))
    what a part does: old gear never gets dirt cheap. STORE_Y sets the first copy at a few seconds of income. */
 const STORE_Y=lg(3);
 function storeFloor(){const k=Math.min(S.top,LADDER.length-2),c=LADDER[S.top],fr=Math.min(1,L(S.f,c.id)/needOf(c));return incAt(k)+(incAt(k+1)-incAt(k))*fr+STORE_Y}
-const bPrice=b=>AISLE_SPEC[b.g]?storeFloor():b.baseL;
+/* every store and shop item is priced by what it adds: the newest unlocked item in an aisle costs the
+   floor, and every other item costs the same per unit it adds, so a small old item is cheap and a big one is not. */
+const SHOP_Y=lg(6);
+function bPrice(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],top=st[Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g])];
+  return storeFloor()+(isS?0:SHOP_Y)+lg(b.amt/top.amt)}
 const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.b,b.id),room)||1:m))};
 const cur=()=>LADDER[S.top];
 
@@ -1227,7 +1231,7 @@ const svTechs=()=>(SHOP_SPEC.vt.base+capOfS('vt'))*(S.inc&&S.inc.type==='sick'?.
 const svTools=()=>(SHOP_SPEC.ve.base+capOfS('ve'))*(S.inc&&S.inc.type==='lift'?.4:1);
 const svCur=()=>SVL[S.sv.top];
 const jobAmt=s=>{const room=Math.max(1,svSlots()-SFAC),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.sv.f,s.id),room)||1:m,room))};
-const shAmt=b=>{const room=Math.max(1,MAXC-L(S.sv.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(b.baseL,b.g2,L(S.sv.b,b.id),room)||1:m))};
+const shAmt=b=>{const room=Math.max(1,MAXC-L(S.sv.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.sv.b,b.id),room)||1:m))};
 /* the shop job a parts step is waiting on, or -1 */
 const gateNeed=k=>{const g=gateOf(LADDER[k]);return g>=0&&(!S.sv.open||S.sv.top<g)?g:-1};
 const offCap=()=>12*3600;
@@ -1264,7 +1268,7 @@ function unlock(quiet){while(S.top<NS-1){const s=LADDER[S.top];if(L(S.f,s.id)<ne
 function buySku(s,k){if(s.k>S.top||FAC+k>shelfCap()||L(S.f,s.id)+k>MAXC)return false;const c=costL(s.lam,s.g,L(S.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.f[s.id]=L(S.f,s.id)+k;FAC+=k;return true}
 function openShop(){if(S.sv.open||S.top<SV_OPEN_K||!canPay(SV_OPEN_L))return false;S.cashL=subL(S.cashL,SV_OPEN_L);S.sv.open=true;return true}
 function buyJob(s,k){recountSv();if(!S.sv.open||s.k>S.sv.top||SFAC+k>svSlots())return false;const c=costL(s.lam,s.g,L(S.sv.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.f[s.id]=L(S.sv.f,s.id)+k;SFAC+=k;return true}
-function buyShop(b,k){if(!S.sv.open||b.j>S.sv.sTop[b.g]||L(S.sv.b,b.id)+k>MAXC)return false;const c=costL(b.baseL,b.g2,L(S.sv.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.b[b.id]=L(S.sv.b,b.id)+k;return true}
+function buyShop(b,k){if(!S.sv.open||b.j>S.sv.sTop[b.g]||L(S.sv.b,b.id)+k>MAXC)return false;const c=costL(bPrice(b),b.g2,L(S.sv.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.sv.b[b.id]=L(S.sv.b,b.id)+k;return true}
 function buyBld(b,k){if(b.j>S.sTop[b.g]||L(S.b,b.id)+k>MAXC)return false;const c=costL(bPrice(b),b.g2,L(S.b,b.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.b[b.id]=L(S.b,b.id)+k;return true}
 
 /* ---------- incidents: they clear on their own, tapping clears them sooner ---------- */
