@@ -1,0 +1,81 @@
+# Builds Parts Counter into a Windows program (PartsCounter.exe).
+# Put this file at .github/workflows/build-exe.yml in the same repository as the APK build.
+# It uses the same parts-counter.html at the top of the repository. Every time you change it,
+# GitHub builds a new .exe and posts it under "Releases".
+name: Build Windows EXE
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Create the desktop app
+        shell: bash
+        run: |
+          set -e
+          SRC=parts-counter.html; [ -f "$SRC" ] || SRC=index.html
+          [ -f "$SRC" ] || { echo "Upload parts-counter.html to the top of the repository first."; exit 1; }
+          mkdir -p desktop && cp "$SRC" desktop/index.html && cd desktop
+          cat > package.json <<'EOF2'
+          {
+            "name": "parts-counter",
+            "productName": "Parts Counter",
+            "version": "1.0.0",
+            "description": "Parts Counter idle game",
+            "main": "main.js",
+            "author": "Parts Counter",
+            "build": {
+              "appId": "com.fremonttruck.partscounter",
+              "productName": "Parts Counter",
+              "files": ["main.js", "index.html"],
+              "win": { "target": "portable" },
+              "portable": { "artifactName": "PartsCounter.exe" },
+              "directories": { "output": "dist" }
+            }
+          }
+          EOF2
+          cat > main.js <<'EOF2'
+          const { app, BrowserWindow, shell } = require('electron');
+          const path = require('path');
+          // keep the save in the same place every time, even though the portable exe unpacks to a temp folder
+          app.setPath('userData', path.join(app.getPath('appData'), 'PartsCounter'));
+          function open() {
+            const win = new BrowserWindow({
+              width: 1280, height: 900, minWidth: 380, minHeight: 600,
+              backgroundColor: '#101215', autoHideMenuBar: true, title: 'Parts Counter',
+              webPreferences: { contextIsolation: true, backgroundThrottling: false }
+            });
+            win.setMenu(null);
+            win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
+            // save right before the window closes, so nothing is lost
+            win.on('close', () => { win.webContents.executeJavaScript("typeof save==='function'&&save()").catch(() => {}); });
+            win.loadFile('index.html');
+          }
+          app.whenReady().then(open);
+          app.on('window-all-closed', () => app.quit());
+          EOF2
+          npm install --save-dev electron@31 electron-builder@24 --no-audit --no-fund
+      - name: Build the EXE
+        shell: bash
+        working-directory: desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: npx electron-builder --win portable --x64 --publish never
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PartsCounter-exe
+          path: desktop/dist/PartsCounter.exe
+      - name: Post it under Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: exe-build-${{ github.run_number }}
+          name: Parts Counter for Windows, build ${{ github.run_number }}
+          body: Download PartsCounter.exe below and double-click it to play. Windows may warn that it's from an unknown publisher; choose More info, then Run anyway.
+          files: desktop/dist/PartsCounter.exe
