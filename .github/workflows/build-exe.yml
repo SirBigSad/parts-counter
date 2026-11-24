@@ -16,6 +16,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Check the game, then build parts-counter.html from src/
+        run: |
+          node tests/saves.js
+          node tests/bot.js
+          node build.js
       - name: Create the desktop app
         shell: bash
         run: |

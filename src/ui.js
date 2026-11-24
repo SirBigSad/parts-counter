@@ -122,7 +122,7 @@ function openJob(){const c=svCur(),ln=$('sln-'+c.line),jd=$('sjd-'+c.job);if(!ln
 function closedCard(){const reach=S.top>=SV_OPEN_K,pct=Math.min(1,S.top/SV_OPEN_K);
   return `<div class="card" id="prog"><div class="capg"><h3 class="bn"><i class="lic" style="background:var(--acc)">${icSvg('wrench')}</i>Service shop</h3></div>
   <p class="sub" style="margin:8px 0">There's an empty building out back. Open a shop and you can sell labor too: oil changes and inspections first, overhauls and electric trucks much later. Jobs cost far more than parts and pay back slower, the shop has its own bottlenecks to manage, and later parts won't unlock unless the shop keeps up.</p>
-  <p style="margin:0 0 6px;font-size:15px">${reach?'You have enough of the parts list on the shelves.':`Get ${esc(lc(BASE_NAME[LADDER[SV_OPEN_K].base]))} on the shelves (part ${BASES.indexOf(LADDER[SV_OPEN_K].base)+1}).`}</p>
+  <p style="margin:0 0 6px;font-size:15px">${reach?'You have enough of the parts list on the shelves.':`Keep climbing the parts list. The shop opens at step ${SV_OPEN_K+1}; you're on step ${S.top+1}.`}</p>
   <div class="meter"><i style="width:${pct*100}%"></i></div>
   <button class="btn pri" data-open="1" style="width:100%;margin-top:12px" ${reach&&canPay(SV_OPEN_L)?'':'disabled'}>Open the service shop<small>${moneyL(SV_OPEN_L)}</small></button></div>`}
 function renderService(){const open=S.sv.open;$('svOpen').hidden=!open;$('svClosed').hidden=open;if(!open){setHTML('svClosed',closedCard());return}
@@ -196,8 +196,8 @@ let SAVE_LOCK=false;
 function save(){if(SAVE_LOCK)return;S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
-$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.rid=Date.now();S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
-$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();S.rid=Date.now();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender();if(typeof syncNow==='function')syncNow(false)}));
+$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;if(typeof backupNow==='function')backupNow('Before loading a save code',true);S=load(d);S.rid=Date.now();S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
+$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{if(typeof backupNow==='function')backupNow('Before reset',true);try{localStorage.removeItem(KEY)}catch(er){}S=fresh();S.rid=Date.now();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender();if(typeof syncNow==='function')syncNow(false)}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();S.t=now()});
 
 /* ---------- appearance: auto follows the phone, or force light or dark ---------- */

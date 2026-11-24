@@ -1,0 +1,37 @@
+{
+ "_": "Target pace for one sensible player, in minutes. The bot fails the build if a milestone is missed or a wait gets too long.",
+ "maxHours": 60,
+ "maxWaitMin": 15,
+ "strict": true,
+ "stopAt": "Rank: Owner",
+ "targets": {
+  "Rank: Senior counter salesperson": [
+   8,
+   30
+  ],
+  "Rank: Parts specialist": [
+   20,
+   60
+  ],
+  "Rank: Parts manager": [
+   70,
+   180
+  ],
+  "Rank: General manager": [
+   180,
+   420
+  ],
+  "Rank: President": [
+   900,
+   1800
+  ],
+  "Rank: Owner": [
+   1500,
+   2700
+  ],
+  "Service shop opens": [
+   150,
+   480
+  ]
+ }
+}

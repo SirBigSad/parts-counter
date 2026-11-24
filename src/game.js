@@ -50,13 +50,17 @@ const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
 /* store and shop prices only ever climb:
    - the newest item in an aisle costs at least STORE_WAIT (or SHOP_WAIT) seconds of your best income,
-   - and its first copy always costs 20% more than the 25th copy of the item before it,
+   - and its first copy always costs 20% more than the 25th copy of the item before it
+     (except shelf space and bay slots, see below),
    - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
      ones stays the cheaper choice and moving up always costs more. */
-const NEXT_UP=lg(1.2);
+const NEXT_UP=lg(1.2),FLAT_UP={sh:1,vb:1};
 function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
     after=p=>bBase(p)+lg(p.g2)*MAXC+NEXT_UP;
+  /* shelf space and bay slots go up in small steps (each about 10% bigger than the last), so a new step
+     just carries on from the current price instead of jumping: it still never drops */
+  if(FLAT_UP[b.g]){if(b.j>tj)return own;const v=own+lg(b.amt/st[tj].amt);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(b.j>tj)return Math.max(own,after(st[b.j-1]));
   if(b.j===tj){const v=Math.max(own,b.j>0?after(st[b.j-1]):NEG);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(fl[k]===undefined)fl[k]=own+lg(b.amt/st[tj].amt);

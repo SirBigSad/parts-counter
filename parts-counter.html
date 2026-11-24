@@ -936,7 +936,7 @@ const svNeed=s=>s.last?BASE_NEED:NEED;
 const svName=s=>`${SV_LV[s.lv][0]} ${lc(JOB_NAME[s.job])}${s.fit?', '+s.fit:''}`;
 
 /* where the shop opens: once part 5 is on the shelves */
-const SV_OPEN_K=LADDER.findIndex(s=>s.base===BASES[4]);
+const SV_OPEN_K=40;/* about four hours in, partway through oil filters */
 const SV_OPEN_L=incAt(SV_OPEN_K)-1.6+lg(7200);/* a couple of hours of what you'll be earning then */
 /* each job step is pinned to a point further up the parts list and priced well above it */
 const SV_OFF=1,SV_MINC=NEED*lg(1.32)+lg(1.15);
@@ -1324,13 +1324,17 @@ const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
 /* store and shop prices only ever climb:
    - the newest item in an aisle costs at least STORE_WAIT (or SHOP_WAIT) seconds of your best income,
-   - and its first copy always costs 20% more than the 25th copy of the item before it,
+   - and its first copy always costs 20% more than the 25th copy of the item before it
+     (except shelf space and bay slots, see below),
    - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
      ones stays the cheaper choice and moving up always costs more. */
-const NEXT_UP=lg(1.2);
+const NEXT_UP=lg(1.2),FLAT_UP={sh:1,vb:1};
 function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
     after=p=>bBase(p)+lg(p.g2)*MAXC+NEXT_UP;
+  /* shelf space and bay slots go up in small steps (each about 10% bigger than the last), so a new step
+     just carries on from the current price instead of jumping: it still never drops */
+  if(FLAT_UP[b.g]){if(b.j>tj)return own;const v=own+lg(b.amt/st[tj].amt);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(b.j>tj)return Math.max(own,after(st[b.j-1]));
   if(b.j===tj){const v=Math.max(own,b.j>0?after(st[b.j-1]):NEG);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(fl[k]===undefined)fl[k]=own+lg(b.amt/st[tj].amt);
@@ -1787,7 +1791,7 @@ function openJob(){const c=svCur(),ln=$('sln-'+c.line),jd=$('sjd-'+c.job);if(!ln
 function closedCard(){const reach=S.top>=SV_OPEN_K,pct=Math.min(1,S.top/SV_OPEN_K);
   return `<div class="card" id="prog"><div class="capg"><h3 class="bn"><i class="lic" style="background:var(--acc)">${icSvg('wrench')}</i>Service shop</h3></div>
   <p class="sub" style="margin:8px 0">There's an empty building out back. Open a shop and you can sell labor too: oil changes and inspections first, overhauls and electric trucks much later. Jobs cost far more than parts and pay back slower, the shop has its own bottlenecks to manage, and later parts won't unlock unless the shop keeps up.</p>
-  <p style="margin:0 0 6px;font-size:15px">${reach?'You have enough of the parts list on the shelves.':`Get ${esc(lc(BASE_NAME[LADDER[SV_OPEN_K].base]))} on the shelves (part ${BASES.indexOf(LADDER[SV_OPEN_K].base)+1}).`}</p>
+  <p style="margin:0 0 6px;font-size:15px">${reach?'You have enough of the parts list on the shelves.':`Keep climbing the parts list. The shop opens at step ${SV_OPEN_K+1}; you're on step ${S.top+1}.`}</p>
   <div class="meter"><i style="width:${pct*100}%"></i></div>
   <button class="btn pri" data-open="1" style="width:100%;margin-top:12px" ${reach&&canPay(SV_OPEN_L)?'':'disabled'}>Open the service shop<small>${moneyL(SV_OPEN_L)}</small></button></div>`}
 function renderService(){const open=S.sv.open;$('svOpen').hidden=!open;$('svClosed').hidden=open;if(!open){setHTML('svClosed',closedCard());return}
@@ -1861,8 +1865,8 @@ let SAVE_LOCK=false;
 function save(){if(SAVE_LOCK)return;S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
-$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.rid=Date.now();S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
-$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();S.rid=Date.now();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender();if(typeof syncNow==='function')syncNow(false)}));
+$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;if(typeof backupNow==='function')backupNow('Before loading a save code',true);S=load(d);S.rid=Date.now();S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
+$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{if(typeof backupNow==='function')backupNow('Before reset',true);try{localStorage.removeItem(KEY)}catch(er){}S=fresh();S.rid=Date.now();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender();if(typeof syncNow==='function')syncNow(false)}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();S.t=now()});
 
 /* ---------- appearance: auto follows the phone, or force light or dark ---------- */
@@ -2649,6 +2653,100 @@ if(SY.on)setTimeout(()=>syncNow(false),1500);
 setInterval(()=>{if(!document.hidden)syncNow(false)},60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)syncNow(false);else if(SY.on)syPull(true).catch(()=>{})});
 addEventListener('online',()=>syncNow(false));
+
+</script>
+<script>
+/* ---------- save backups: a copy of your game every 30 minutes (the last 6 are kept), plus one right before
+   a reset, a loaded save code or a cloud save replaces it. Restore any of them from More > Save. ---------- */
+const BK_KEY=KEY+'.backups',BK_MAX=6,BK_EVERY=30*60*1000;
+const bkList=()=>{try{const a=JSON.parse(localStorage.getItem(BK_KEY)||'[]');return Array.isArray(a)?a:[]}catch(e){return[]}};
+function backupNow(why,force){try{const list=bkList(),last=list[0];if(!force&&last&&Date.now()-last.t<BK_EVERY)return;
+    if(typeof save==='function')save();const d=localStorage.getItem(KEY)||JSON.stringify(S);
+    list.unshift({t:Date.now(),why,play:S.st.play||0,rank:rankOf(S.st.totalL),d});
+    while(list.length>BK_MAX)list.pop();
+    /* never let backups fill the phone's storage: drop the oldest until it fits */
+    for(;;){try{localStorage.setItem(BK_KEY,JSON.stringify(list));break}catch(e){if(list.length<=1)break;list.pop()}}
+    bkDraw()}catch(e){}}
+function bkDraw(){const box=$('bkList');if(!box)return;const list=bkList();
+  box.innerHTML=list.length?list.map((b,i)=>`<div class="bk"><div><b>${new Date(b.t).toLocaleString([], {weekday:'short',hour:'numeric',minute:'2-digit'})}</b><small>${esc(b.why)} · ${fmtT(b.play)} played · ${esc(b.rank)}</small></div><button class="btn" data-bk="${i}">Restore</button></div>`).join('')
+    :'<p class="sub" style="margin:0">The first backup is made a few minutes after you start playing.</p>'}
+(function(){const save0=$('copy');if(!save0)return;const card=save0.closest('.card');
+  const css=document.createElement('style');css.textContent='.bk{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}.bk>div{flex:1;min-width:0}.bk b{display:block;font-size:14px}.bk small{display:block;color:var(--mute);font-size:12.5px}';document.head.appendChild(css);
+  const w=document.createElement('div');w.innerHTML='<h3 class="bn" style="font-size:16px;margin:16px 0 4px">Backups</h3><p class="sub" style="margin:0 0 6px">A copy every 30 minutes, and one before any reset or load. Restoring one keeps a backup of your game now, so you can always undo.</p><div id="bkList"></div>';card.appendChild(w);
+  card.addEventListener('click',e=>{const b=e.target.closest('[data-bk]');if(!b)return;e.stopPropagation();
+    arm(b,()=>{const it=bkList()[+b.dataset.bk];if(!it)return;try{const d=JSON.parse(it.d);d.rid=Date.now();switchTo(d)}catch(er){note("That backup couldn't be read.")}})},true);
+  bkDraw();
+  /* a resumed game gets a first backup after five minutes, then every 30 */
+  setTimeout(()=>backupNow('Automatic'),5*60*1000);setInterval(()=>backupNow('Automatic'),60*1000);
+  /* cloud save and transfer codes swap the whole game: keep a copy first */
+  if(typeof switchTo==='function'){const sw=switchTo;switchTo=function(d){backupNow('Before loading another save',true);sw(d)}}})();
+
+</script>
+<script>
+/* ---------- the ending, rotating headlines, and the report-a-problem button ---------- */
+const BUILD='2026-11-24';
+
+/* ===== the ending: being promoted to Owner is the finish line. You can keep playing afterwards
+   (the parts list, catalog, plaques and higher titles keep going), and watch the ending again from More. ===== */
+const END_AT=(RANKS.find(r=>r[1]==='Owner')||[450])[0];
+function endingHTML(){const st=S.st,days=Math.max(1,Math.round((Date.now()-(st.start||Date.now()))/864e5));
+  const plq=typeof PLAQ!=='undefined'?PLAQ.filter(p=>{try{return p[2]()}catch(e){return false}}).length:0;
+  const row=(a,b)=>`<span>${a}</span><span>${b}</span>`;
+  return `<div class="endc"><small>Fremont Truck &amp; Parts</small><h3>You own the place.</h3>
+  <p>You started behind the counter with one oil filter on the shelf. Now your name is on the sign out front.</p>
+  <div class="kv">${row('Time at the counter',fmtT(st.play||0))}${row('Days since you started',days)}${row('Parts sold',fmt(st.all||0))}
+  ${row('Products on the list',`${S.top+1} of ${NS}`)}${row('Trucks through the shop',fmt(st.trucks||0))}${row('Problems handled',fmt(st.incidents||0))}${row('Plaques on the wall',plq)}</div>
+  <div class="cred"><b>Thanks for playing Parts Counter</b><span>Designed by you, built with Claude</span><span>Every part, price and person here is made up</span></div>
+  <p class="sub">The parts list keeps going, and so do the titles. Keep playing as long as you like.</p>
+  <button class="btn pri" id="endOk" style="width:100%">Back to the counter</button></div>`}
+function showEnding(){let o=$('ending');if(!o){o=document.createElement('div');o.id='ending';document.body.appendChild(o);
+    o.addEventListener('click',e=>{if(e.target.id==='endOk'||e.target===o){o.hidden=true}})}
+  o.innerHTML=endingHTML();o.hidden=false;if(typeof feel==='function')feel('big');
+  if(typeof confetti==='function')try{confetti()}catch(e){}}
+(function(){const css=document.createElement('style');css.textContent=`#ending{position:fixed;inset:0;z-index:90;display:grid;place-items:center;background:rgba(8,10,20,.72);padding:16px;overflow:auto}#ending[hidden]{display:none}
+.endc{background:var(--card);color:var(--ink);border-radius:22px;padding:22px;width:min(380px,100%);box-shadow:0 20px 60px rgba(0,0,0,.4);text-align:left}
+.endc small{color:var(--mute);text-transform:uppercase;letter-spacing:.08em;font-size:12px}.endc h3{font-size:30px;margin:4px 0 8px}.endc>p{margin:0 0 12px;font-size:15px}
+.endc .kv{margin:0 0 14px}.endc .cred{display:flex;flex-direction:column;gap:2px;text-align:center;padding:12px;border-radius:12px;background:var(--soft);margin:0 0 12px;font-size:13px;color:var(--mute)}.endc .cred b{color:var(--ink);font-size:15px}`;document.head.appendChild(css);
+  setInterval(()=>{if(!S.ended&&S.st.totalL>=END_AT){S.ended=Date.now();save();showEnding()}},2000);
+  /* More > Stats gets a way to watch it again once you've earned it */
+  const st=$('stats');if(st){const b=document.createElement('button');b.className='btn';b.id='endAgain';b.textContent='Watch the ending again';b.style.marginTop='10px';
+    st.after(b);b.addEventListener('click',e=>{e.stopPropagation();showEnding()});const upd=()=>{b.hidden=!S.ended};upd();setInterval(upd,3000)}})();
+
+/* ===== rotating content: headlines that follow the calendar and a brand of the week.
+   Cosmetic only: nothing here changes prices, income or anything you can buy. ===== */
+function weekNo(d=new Date()){const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const day=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-day);return Math.ceil(((t-Date.UTC(t.getUTCFullYear(),0,1))/864e5+1)/7)+t.getUTCFullYear()*53}
+function brandOfWeek(){return BRANDS.length?BRANDS[weekNo()%BRANDS.length]:null}
+function seasonal(){const d=new Date(),m=d.getMonth()+1,day=d.getDate(),st=typeof storeName==='function'?storeName():'the store',o=[];
+  const between=(m1,d1,m2,d2)=>{const v=m*100+day;return v>=m1*100+d1&&v<=m2*100+d2};
+  if(between(12,26,12,31)||between(1,1,1,7))o.push('New year, same blinker fluid question',`${st} resolves to finally organize the back room`,'Truckers report holiday weight gain "mostly in the cab"');
+  if(between(2,7,2,14))o.push(`Valentine's rush: man buys wife a set of wiper blades, says "she'll love it"`,'Roses are red, coolant is too');
+  if(between(3,10,3,31))o.push('Spring pothole season opens to record crowds','Front-end parts flying off the shelves as roads crumble');
+  if(between(5,20,5,31))o.push('Long weekend ahead: everyone needs their truck fixed by Friday');
+  if(between(6,28,7,6))o.push('Fireworks sold out; tie-down straps somehow also sold out','Fourth of July: parade float breaks down, parts run saves the day');
+  if(between(8,15,9,10))o.push('Back to school: buses lining up for brakes','School bus fleet manager spotted buying every air filter in town');
+  if(between(10,20,10,31))o.push(`Spooky: customer brings in the part number AND the old part`,'Haunted truck makes noise only when parked at the shop');
+  if(between(11,20,11,30))o.push('Thanksgiving: counter staff thankful for exactly one quiet hour','Turkey fryer accident blamed on "bad propane regulator"');
+  if(between(12,1,12,25))o.push('Holiday rush: everyone needs chains, nobody needs them until today',`${st} decorates the parts counter with brake rotors and tinsel`);
+  if(m===12||m<=2)o.push('Cold snap: block heaters and batteries in short supply','Diesel gels at 10 below; fuel filter sales follow');
+  if(m>=6&&m<=8)o.push('Heat wave: A/C compressors and coolant moving fast','Summer road trips bring the RVs, and the RV questions');
+  const b=brandOfWeek();if(b)o.push(`Brand of the week: ${b.n}. The rep left free pens at the counter`,`${b.n} week at the counter: everyone's suddenly an expert`);
+  return o}
+(function(){if(typeof headline!=='function')return;const base=headline;headline=function(){const s=seasonal();return s.length&&Math.random()<.3?s[Math.floor(Math.random()*s.length)]:base()}})();
+
+/* ===== report a problem: puts everything needed to reproduce a bug into one block you can paste or share ===== */
+(function(){const sec=$('t-more');if(!sec)return;const set=[...sec.querySelectorAll(':scope > details.fold')].find(d=>d.firstElementChild&&d.firstElementChild.textContent==='Save');
+  const d=document.createElement('details');d.className='fold';d.innerHTML=`<summary>Report a problem</summary><div class="card">
+   <p class="sub" style="margin:0 0 8px">Something look wrong? Say what happened. The report includes your save, so the problem can be played back exactly as you saw it.</p>
+   <textarea id="rpNote" placeholder="What happened? (for example: the price of brass bells dropped after I bought 10)"></textarea>
+   <div class="row" style="gap:8px;margin-top:8px"><button class="btn pri" id="rpCopy">Copy report</button><button class="btn" id="rpShare">Share report</button></div>
+   <p class="sub" id="rpStat" style="margin:8px 0 0">Game version ${BUILD} · save version ${VERSION}</p></div>`;
+  if(set)set.before(d);else sec.appendChild(d);
+  const build=()=>{if(typeof save==='function')save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+    return ['Parts Counter problem report','What happened: '+($('rpNote').value.trim()||'(not filled in)'),`Version ${BUILD} (save ${VERSION})`,`Look: ${S.ui.skin||'classic'}  Appearance: ${S.ui.theme}`,
+      `Played ${fmtT(S.st.play||0)} · ${rankOf(S.st.totalL)} · step ${S.top+1} of ${NS} · shop ${S.sv.open?'open':'closed'}`,`Screen ${innerWidth}x${innerHeight} @${devicePixelRatio}x · ${navigator.userAgent}`,'Save code:',code].join('\n')};
+  d.addEventListener('click',async e=>{const id=e.target.id;if(id!=='rpCopy'&&id!=='rpShare')return;e.stopPropagation();const txt=build();
+    if(id==='rpShare'&&navigator.share){try{await navigator.share({title:'Parts Counter problem report',text:txt});$('rpStat').textContent='Shared.';return}catch(er){}}
+    try{await navigator.clipboard.writeText(txt);$('rpStat').textContent='Report copied. Paste it wherever you want to send it.'}catch(er){$('rpNote').value=txt;$('rpNote').select();$('rpStat').textContent='Copy the report from the box above.'}},true)})();
 
 </script>
 <script>

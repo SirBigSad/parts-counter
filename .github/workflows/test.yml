@@ -1,0 +1,35 @@
+# Checks every change before you install it:
+#   - tests/bot.js    plays the whole game on fast-forward and checks prices, income, waits and pace
+#   - tests/saves.js  makes sure saves from older versions still load
+#   - tests/looks.js  opens all 28 looks on every tab in a phone-sized browser
+# If any of them fail, the APK and .exe builds fail too, so a broken version never reaches your phone.
+name: Check the game
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Economy bot and old saves
+        run: |
+          node tests/saves.js
+          node tests/bot.js
+      - name: Build
+        run: node build.js
+      - name: Every look on every tab
+        run: |
+          npm i --no-save playwright@1
+          npx playwright install --with-deps chromium
+          node tests/looks.js
+      - name: Screenshots of anything that failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-looks
+          path: tests/out/
+          if-no-files-found: ignore
