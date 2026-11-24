@@ -1303,7 +1303,9 @@ const customers=()=>AISLE_SPEC.cu.base+capOf('cu');
 const checkoutCap=()=>(2+capOf('ck'))*(S.inc&&S.inc.type==='spill'?.6:S.inc&&S.inc.type==='jam'?.3:1);
 const stockCap=()=>2+capOf('sk');
 const shelfCap=()=>AISLE_SPEC.sh.base+capOf('sh');
-const onShelf=s=>s.k<=S.top&&!(S.inc&&S.inc.type==='back'&&S.inc.line===s.line);
+const onShelf=s=>s.k<=S.top;
+/* a backorder slows one line to half speed; it never empties the store */
+const boF=s=>S.inc&&S.inc.type==='back'&&S.inc.line===s.line?.5:1;
 /* cost of k more when you own n, in log10 */
 const costL=(baseL,g,n,k)=>baseL+n*lg(g)+lg((g**Math.min(k,2000)-1)/(g-1))+(k>2000?(k-2000)*lg(g):0);
 const canPay=cL=>S.cashL>=cL-1e-12;
@@ -1313,7 +1315,8 @@ const skuAmt=s=>{const room=Math.max(1,Math.min(shelfCap()-FAC,MAXC-L(S.f,s.id))
    STORE_WAIT seconds of your current income, so when you need it you wait a little, never long, never zero.
    Every other item in the aisle costs the same per unit it adds. Each copy costs 8% more than the last. */
 const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
-const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,lg(.5));
+/* priced off the best income you have reached, so a slow minute never makes prices swing */
+const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
 function bPrice(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],top=st[Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g])];
   return incNow()+(isS?STORE_WAIT:SHOP_WAIT)+lg(b.amt/top.amt)}
 const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.b,b.id),room)||1:m))};
@@ -1338,11 +1341,11 @@ const offCap=()=>12*3600;
 const R={incL:NEG,pIncL:NEG,supply:0,dem:0,ck:0,sk:0,moved:0,E:1,line:{},lim:'shelf',sv:{incL:NEG,work:0,dem:0,wr:0,tech:0,tools:0,moved:0,E:1,line:{},lim:'vb'}};
 function earnL(v){if(v<=NEG/2||!isFinite(v))return;S.cashL=addL(S.cashL,v);S.st.totalL=addL(S.st.totalL,v)}
 function tick(dt,quiet){recount();
-  let supply=0;for(const k in S.f){const s=SI[k];if(S.f[k]>0&&onShelf(s))supply+=S.f[k]*s.u}
+  let supply=0;for(const k in S.f){const s=SI[k];if(S.f[k]>0&&onShelf(s))supply+=S.f[k]*s.u*boF(s)}
   const dem=customers()*PER_CUST,ck=checkoutCap(),sk=stockCap(),moved=Math.min(supply,dem,ck,sk),E=supply>0?moved/supply:1;
   let inc=NEG;const line={};const lE=lg(Math.max(E,1e-300));
   const st=S.st,track=dt>0&&!quiet;
-  for(const k in S.f){const s=SI[k],n=S.f[k];if(!n||!onShelf(s))continue;if(track){const q=n*s.u*E*dt;st.all+=q;st.sold[s.base]=(st.sold[s.base]||0)+q;st.br[s.b]=(st.br[s.b]||0)+q}const v=lg(n)+s.incL+lE;inc=addL(inc,v);if(!quiet)line[s.line]=addL(line[s.line]===undefined?NEG:line[s.line],v)}
+  for(const k in S.f){const s=SI[k],n=S.f[k];if(!n||!onShelf(s))continue;const bf=boF(s);if(track){const q=n*s.u*bf*E*dt;st.all+=q;st.sold[s.base]=(st.sold[s.base]||0)+q;st.br[s.b]=(st.br[s.b]||0)+q}const v=lg(n)+s.incL+lE+lg(bf);inc=addL(inc,v);if(!quiet)line[s.line]=addL(line[s.line]===undefined?NEG:line[s.line],v)}
   /* the shop: labor hours of booked work vs trucks coming in, writers, technicians and tools */
   let sInc=NEG;if(S.sv.open){recountSv();let work=0;for(const k in S.sv.f){const n=S.sv.f[k];if(n>0)work+=n*SVI[k].u}
     const sd=svTrucks()*PER_TRUCK,wr=svWriters(),tech=svTechs(),tools=svTools(),sm=Math.min(work,sd,wr,tech,tools),sE=work>0?sm/work:1,slE=lg(Math.max(sE,1e-300));const sl={};
@@ -1351,7 +1354,7 @@ function tick(dt,quiet){recount();
     if(!quiet)R.sv={incL:sInc,work,dem:sd,wr,tech,tools,moved:sm,E:sE,line:sl,lim:work<=0?'vb':sm>=work-1e-9?'vb':sm>=sd-1e-9?'vc':sm>=wr-1e-9?'vw':sm>=tech-1e-9?'vt':'ve'}}
   R.pIncL=inc;inc=addL(inc,sInc);
   if(dt>0)earnL(inc+lg(dt));unlock(quiet);
-  R.incL=inc;
+  R.incL=inc;if(isFinite(inc)&&inc>(S.pk===undefined?NEG:S.pk))S.pk=inc;
   if(!quiet){S.st.play+=dt;const lim=supply<=0?'shelf':moved>=supply-1e-9?'shelf':moved>=dem-1e-9?'cu':moved>=ck-1e-9?'ck':'sk';
     Object.assign(R,{supply,dem,ck,sk,moved,E,line,lim})}}
 function unlock(quiet){while(S.top<NS-1){const s=LADDER[S.top];if(L(S.f,s.id)<needOf(s)||gateNeed(S.top+1)>=0)break;S.top++;const n=LADDER[S.top];
@@ -1377,7 +1380,7 @@ function events(){const t=now();
     S.nextInc=t+3e5+Math.random()*3e5}
   if(!S.inc&&t>S.nextInc&&S.st.play>300&&FAC>0){const r=Math.random(),ls=[...new Set(LADDER.slice(0,S.top+1).map(s=>s.line))];
     if(S.sv.open&&SFAC>0&&Math.random()<.4){const q=Math.random();if(q<.4)S.inc={type:'lift',end:t+9e4};else if(q<.7)S.inc={type:'sick',end:t+6e4};else S.inc={type:'comeback',end:t+3e4};return}
-    if(r<.3)S.inc={type:'spill',end:t+9e4};else if(r<.5)S.inc={type:'thief',end:t+2e4};else if(r<.75)S.inc={type:'jam',end:t+6e4};else S.inc={type:'back',line:pick(ls),end:t+6e4}}}
+    if(r<.3)S.inc={type:'spill',end:t+9e4};else if(r<.5)S.inc={type:'thief',end:t+2e4};else if(r<.75)S.inc={type:'jam',end:t+6e4};else if(ls.length>1)S.inc={type:'back',line:pick(ls),end:t+6e4};else S.inc={type:'spill',end:t+9e4}}}
 function fixInc(){const i=S.inc;if(!i||i.type==='back'||i.type==='sick')return;S.inc=null;S.st.incidents++;if(i.type==='thief')S.st.shop++;S.nextInc=now()+3e5+Math.random()*3e5}
 function away(sec){sec=Math.min(sec,offCap());const c0=S.cashL,n=Math.min(2000,Math.ceil(sec)),h=sec/n;for(let i=0;i<n;i++)tick(h,true);tick(1e-6,false);
   if(sec>60&&S.cashL>c0+1e-9)note(`Away ${fmtT(sec)}. The ${S.sv.open?'store and shop':'store'} made ${moneyL(subL(S.cashL,c0))}.`)}
@@ -1807,7 +1810,7 @@ let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownC
   const cells=[['shelf','Shelf',R.supply],['cu','Customers',R.dem],['ck','Checkout',R.ck],['sk','Stocking',R.sk]];
   {const mx=Math.max(...cells.map(c=>c[2]),1e-9);setHTML('dash',cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}" data-jump="${k==='shelf'?'sh':k}" role="button" tabindex="0"><small>${n}</small><b class="num">${fmt(v)}/s</b><span class="db"><i style="width:${Math.max(4,v/mx*100)}%"></i></span></div>`).join(''))}
   const i=S.inc;$('inc').hidden=!i;if(i){const t=now(),m={spill:['Coffee spilled by the counter. Checkout is slower.','Mop it up'],jam:['A register jammed. Checkout is crawling.','Fix it'],thief:['A shoplifter is heading for the door.','Stop him'],
-    back:[i.line?`Backorder: ${lc(LI[i.line].n)} can't restock for ${fmtT((i.end-t)/1000)}.`:'',''],lift:['A truck lift went down. The shop is short on equipment.','Call for repair'],
+    back:[i.line?`Backorder: ${lc(LI[i.line].n)} is selling at half speed for ${fmtT((i.end-t)/1000)}.`:'',''],lift:['A truck lift went down. The shop is short on equipment.','Call for repair'],
     sick:[`A technician called in sick. The shop is short-handed for ${fmtT((i.end-t)/1000)}.`,''],comeback:['A customer brought a truck back. The job has to be redone.','Fix it right']}[i.type];$('incTxt').textContent=m[0];$('incBtn').hidden=!m[1];$('incBtn').textContent=m[1]}}
 function render(){recount();SCI=S.ui.sci;renderHeader();document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',String(S.ui.mode)===x.dataset.m));
   if(tab==='shelves'){$('shelfTxt').textContent=`Shelf space ${fmt(FAC)} of ${fmt(shelfCap())} facings`;renderLadder()}
