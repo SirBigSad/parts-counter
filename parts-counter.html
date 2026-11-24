@@ -644,8 +644,11 @@ for(let k=0;k<LADDER.length;k++){const s=LADDER[k];s.first=k===0||LADDER[k-1].ba
 /* economy (all in log10 so prices can climb past 1e308):
    each product starts above what the one before it costs once you've stocked enough to unlock it */
 const lg=Math.log10,G=1.2,LG=lg(G);
+/* the next product's first copy costs JUMP times the last copy you bought of the one before it.
+   Pay is scaled down by the same amount so each step still takes the same time. */
+const JUMP=2.5;
 const needOf=s=>s.last?BASE_NEED:NEED;
-let lam=1;for(const s of LADDER){if(s.k>0){const p=LADDER[s.k-1];lam+=needOf(p)*LG+lg(1.12)}s.lam=lam;s.pay=27.54*10**(2.35*s.k/LADDER.length)*(1+2*Math.max(0,1-s.k/900));/* the early game pays back three times slower, easing off by about part 15 */s.incL=lam-lg(s.pay);s.u=.25*10**(.07*(lam-1)/(1+(lam-1)/3000));s.g=G}
+let lam=1;for(const s of LADDER){if(s.k>0){const p=LADDER[s.k-1];lam+=needOf(p)*LG+lg(JUMP)}s.lam=lam;s.pay=27.54/(JUMP/1.12)*10**(2.35*s.k/LADDER.length)*(1+2*Math.max(0,1-s.k/900));/* the early game pays back three times slower, easing off by about part 15 */s.incL=lam-lg(s.pay);s.u=.25*10**(.07*(lam-1)/(1+(lam-1)/3000));s.g=G}
 const NB=BASES.length,NS=LADDER.length;
 const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
 
@@ -739,7 +742,7 @@ function buildAisles(SPEC,LAD,needAt,slot,realAt,priceAt,taper=1,bump=0){const O
     /* priced near what a product costs at the point this step is needed; each extra copy climbs gently, like parts do */
     /* priced as a few seconds of the income you'd expect when the step unlocks */
     const at=j?kb:0;let baseL=priceAt(at)+c.off*Math.min(1,at/taper)+bump*Math.min(1,at/5)*Math.max(0,1-at/120)+lg(c.x||1);if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
-    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,kb:at,amt:a,baseL,g2:isSlot?1.15:1.15};
+    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,kb:at,amt:a,baseL,g2:isSlot?1.08:1.08};
     out.push(s);STEP[s.id]=s;cap+=MAXC*a;prevL=baseL;prevA=a}
   OUT[g]=out}
  return OUT}
@@ -1209,15 +1212,13 @@ const costL=(baseL,g,n,k)=>baseL+n*lg(g)+lg((g**Math.min(k,2000)-1)/(g-1))+(k>20
 const canPay=cL=>S.cashL>=cL-1e-12;
 const maxAff=(baseL,g,n,room)=>{const x=S.cashL+lg(g-1)-baseL-n*lg(g);const y=x>15?x:lg(10**x+1);return Math.max(0,Math.min(room,Math.floor(y/lg(g)+1e-9)))};
 const skuAmt=s=>{const room=Math.max(1,Math.min(shelfCap()-FAC,MAXC-L(S.f,s.id))),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.f,s.id),room)||1:m,room))};
-/* store prices keep pace with how far up the parts list you are, so a store buy always costs about
-   what a part does: old gear never gets dirt cheap. STORE_Y sets the first copy at a few seconds of income. */
-const STORE_Y=lg(3);
-function storeFloor(){const k=Math.min(S.top,LADDER.length-2),c=LADDER[S.top],fr=Math.min(1,L(S.f,c.id)/needOf(c));return incAt(k)+(incAt(k+1)-incAt(k))*fr+STORE_Y}
-/* every store and shop item is priced by what it adds: the newest unlocked item in an aisle costs the
-   floor, and every other item costs the same per unit it adds, so a small old item is cheap and a big one is not. */
-const SHOP_Y=lg(6);
+/* store and shop prices follow what you are making right now: the newest item in an aisle costs about
+   STORE_WAIT seconds of your current income, so when you need it you wait a little, never long, never zero.
+   Every other item in the aisle costs the same per unit it adds. Each copy costs 8% more than the last. */
+const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
+const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,lg(.5));
 function bPrice(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],top=st[Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g])];
-  return storeFloor()+(isS?0:SHOP_Y)+lg(b.amt/top.amt)}
+  return incNow()+(isS?STORE_WAIT:SHOP_WAIT)+lg(b.amt/top.amt)}
 const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.b,b.id),room)||1:m))};
 const cur=()=>LADDER[S.top];
 
@@ -2079,7 +2080,8 @@ function fillPass(){for(const b of document.querySelectorAll('button[data-cl]'))
 /* the income number gives a little pulse when it goes up */
 let lastInc=null;function pulsePass(){const v=R.incL;if(lastInc!==null&&isFinite(v)&&v>lastInc+lg(1.004)){const el=$('cps');el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse')}lastInc=v}
 /* the header shrinks once you scroll down the list */
-addEventListener('scroll',()=>{$('top').classList.toggle('mini',scrollY>80)},{passive:true});
+/* two thresholds so the header can't flip back and forth while its own height changes */
+let mini=false;addEventListener('scroll',()=>{const y=scrollY;if(!mini&&y>160){mini=true;$('top').classList.add('mini')}else if(mini&&y<24){mini=false;$('top').classList.remove('mini')}},{passive:true});
 /* tabs slide in from the side you tapped */
 let lastTabI=TABS.findIndex(t=>t[0]===tab);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;const i=TABS.findIndex(t=>t[0]===b.dataset.tab),sec=$('t-'+b.dataset.tab);if(!sec||i===lastTabI)return;
