@@ -13,24 +13,27 @@
    COLOUR and TYPE: warm paper, white cards, one dealership red; Barlow Condensed numbers, Barlow text
    LAYOUT: compact header, dashboard strip, content, bottom tab bar */
 :root{color-scheme:light dark;
---bg:light-dark(#f3f1ed,#111315);--card:light-dark(#ffffff,#1b1e22);--ink:light-dark(#1d1f22,#ecebe8);--mute:light-dark(#6b6f75,#9aa0a6);
---line:light-dark(#e6e2da,#2a2e33);--soft:light-dark(#f7f5f1,#22262b);--acc:light-dark(#c8371d,#ff6a4d);--acc2:light-dark(#fbe9e5,#3a1d17);
---good:light-dark(#2e7d32,#66bb6a);--warn:light-dark(#b26a00,#ffb74d);--bad:light-dark(#c62828,#ef5350);--sh:0 1px 2px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04)}
+--bg:light-dark(#eef2f8,#101215);--card:light-dark(#ffffff,#1a1d22);--ink:light-dark(#0f1b33,#e9ebef);--mute:light-dark(#5d6b82,#9ca3ae);
+--line:light-dark(#dde4ee,#2b3038);--soft:light-dark(#f4f7fb,#20242a);--acc:light-dark(#f2541b,#22c55e);--on-acc:light-dark(#fff,#04210f);--acc-2:light-dark(#ff8a3d,#4ade80);--acc2:light-dark(#fff1e8,#11301d);
+--good:light-dark(#0e9f6e,#4ade80);--warn:light-dark(#d97706,#fbbf24);--bad:light-dark(#e11d48,#fb7185);
+--hd1:light-dark(#1e3a8a,#1b1f25);--hd2:light-dark(#2563eb,#2b313a);
+--sh:0 1px 2px rgba(15,27,51,.06),0 4px 14px rgba(15,27,51,.06)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 .dk #scene{filter:brightness(.92)}.ski.tO{color:light-dark(#2f6fb0,#90caf9)}
 *{box-sizing:border-box;min-width:0}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
 .num{font-family:'Barlow Condensed',Barlow,sans-serif;font-variant-numeric:tabular-nums}
-header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);padding:calc(8px + env(safe-area-inset-top)) 16px 8px;border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,var(--hd1),var(--hd2));color:#fff;padding:calc(10px + env(safe-area-inset-top)) 16px 10px;box-shadow:0 4px 18px rgba(15,27,51,.25);border-radius:0 0 18px 18px}
 .hrow{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;max-width:720px;margin:auto}
-.who{flex:1}.who b{display:block;font:700 17px/1.1 'Barlow Condensed',sans-serif}.who small{color:var(--mute);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.money{text-align:right;flex:none}#cash{font:700 clamp(28px,8vw,38px)/1 'Barlow Condensed',sans-serif;white-space:nowrap}#cps{color:var(--good);font-size:14px;font-weight:600;white-space:nowrap}
+.who{flex:1}.who b{display:block;font:700 17px/1.1 'Barlow Condensed',sans-serif}.who small{color:rgba(255,255,255,.75);font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.money{text-align:right;flex:none}#cash{font:700 clamp(28px,8vw,38px)/1 'Barlow Condensed',sans-serif;white-space:nowrap}#cps{color:#7ef0b8;font-size:14px;font-weight:600;white-space:nowrap}
 .dash{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:720px;margin:8px auto 0}
-.dash div{background:var(--card);border-radius:10px;padding:5px 8px;box-shadow:var(--sh);border:1.5px solid transparent}
-.dash small{display:block;font-size:11px;color:var(--mute);text-transform:none;letter-spacing:.01em}
+.dash div{background:rgba(255,255,255,.12);border-radius:10px;padding:5px 8px;border:1.5px solid transparent;transition:border-color .3s,background .3s}
+.dash small{display:block;font-size:11px;color:rgba(255,255,255,.75);text-transform:none;letter-spacing:.01em}
 .dash b{font:700 16px/1.2 'Barlow Condensed',sans-serif}
-.dash .lim{border-color:var(--bad)}.dash .lim small{color:var(--bad);font-weight:600}
+.dash .lim{border-color:#ff8fa3;background:rgba(255,80,110,.22);animation:glow 1.6s ease-in-out infinite}.dash .lim small{color:#ffd1da;font-weight:600}
+@keyframes glow{50%{box-shadow:0 0 0 3px rgba(255,120,140,.25)}}
 .fixrow{max-width:720px;margin:6px auto 0;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--mute)}
 .fixrow span{flex:1}
 main{max-width:720px;margin:auto;padding:12px 16px calc(96px + env(safe-area-inset-bottom))}
@@ -40,10 +43,10 @@ main{max-width:720px;margin:auto;padding:12px 16px calc(96px + env(safe-area-ins
 h2{font:700 24px/1.1 'Barlow Condensed',sans-serif;margin:18px 0 8px}h2:first-child{margin-top:4px}
 h3{margin:0;font:700 18px/1.15 'Barlow Condensed',sans-serif}
 .sub{color:var(--mute);font-size:14px;margin:0 0 10px}
-.card{background:var(--card);border-radius:14px;box-shadow:var(--sh);padding:14px;margin-bottom:10px}
+.card{background:var(--card);border-radius:16px;box-shadow:var(--sh);padding:14px;margin-bottom:10px}
 .btn{min-height:44px;border-radius:10px;border:0;background:var(--soft);color:var(--ink);font:600 15px/1.2 Barlow,sans-serif;padding:8px 14px;cursor:pointer;touch-action:manipulation}
 .btn:disabled{background:var(--soft);color:var(--mute);cursor:default}.btn:disabled small{opacity:1}
-.btn.pri{background:var(--acc);color:#fff}.btn.pri:disabled{background:light-dark(#e4e1db,#2c3036);color:var(--mute);box-shadow:none}.btn.pri:disabled small{color:var(--mute)}.btn.ghost{background:transparent;border:1px solid var(--line)}
+.btn.pri{background:linear-gradient(135deg,var(--acc-2),var(--acc));color:var(--on-acc);box-shadow:0 3px 10px color-mix(in srgb,var(--acc) 35%,transparent);transition:transform .08s,box-shadow .2s}.btn.pri:active:not(:disabled){transform:scale(.96)}.btn.pri:disabled{background:light-dark(#e3e8f0,#2a2e35);color:var(--mute);box-shadow:none}.btn.pri:disabled small{color:var(--mute)}.btn.ghost{background:transparent;border:1px solid var(--line)}
 .btn small{display:block;font-weight:500;font-size:12px;opacity:.9;white-space:nowrap}
 .btn:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid color-mix(in srgb,var(--acc) 60%,transparent);outline-offset:2px}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -53,8 +56,9 @@ h3{margin:0;font:700 18px/1.15 'Barlow Condensed',sans-serif}
 .chip{flex:none;min-height:36px;border-radius:18px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 14px Barlow,sans-serif;padding:0 14px;cursor:pointer}
 .chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .seg{display:inline-flex;background:var(--soft);border-radius:10px;padding:3px}.seg button{min-height:36px;border:0;background:none;color:var(--mute);font:600 14px Barlow,sans-serif;padding:0 12px;border-radius:8px;cursor:pointer}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:var(--sh)}
-details.line{background:var(--card);border-radius:14px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden}
+.seg button.on{background:var(--card);color:var(--acc);box-shadow:var(--sh)}
+details.line{background:var(--card);border-radius:16px;box-shadow:var(--sh);margin-bottom:10px;overflow:hidden;border-left:5px solid var(--lc,transparent)}
+details.line[open]{background:linear-gradient(180deg,color-mix(in srgb,var(--lc) 7%,var(--card)),var(--card) 120px)}
 details.line>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:32px minmax(0,1fr) auto 16px;gap:10px;align-items:center;padding:12px 14px}
 details.line>summary::-webkit-details-marker{display:none}
 details.line>summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);margin-top:-4px}
@@ -72,7 +76,7 @@ details.part>summary small{color:var(--mute);font-weight:500;font-size:13px;whit
 .star{width:28px;height:28px;border:0;background:none;color:var(--line);font-size:20px;line-height:1;cursor:pointer;padding:0}.star.on{color:#e0a800}
 .sn b{display:block;font-weight:600;font-size:15px;line-height:1.2}.sn small{display:block;color:var(--mute);font-size:13px}
 .sn .p{font-size:11px;font-weight:600;padding:1px 6px;border-radius:6px;margin-left:4px;vertical-align:1px}
-.pV{background:light-dark(#e7f3e8,#1f3321);color:light-dark(#2e7d32,#81c784)}.pO{background:light-dark(#e5eef9,#1a2a40);color:light-dark(#1565c0,#90caf9)}.pP{background:light-dark(#f3e7f7,#33203a);color:light-dark(#7b1fa2,#ce93d8)}
+.pV{background:light-dark(#e7f3e8,#1f3321);color:light-dark(#2e7d32,#81c784)}.pO{background:light-dark(#e5eef9,#232830);color:light-dark(#1565c0,#90caf9)}.pP{background:light-dark(#f3e7f7,#33203a);color:light-dark(#7b1fa2,#ce93d8)}
 .sku .btn{min-width:92px;min-height:42px;padding:4px 8px;text-align:center}
 .item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
 .item:first-child{border-top:0}.item p{margin:0;color:var(--mute);font-size:14px}.item .btn{grid-column:2;grid-row:1/3;min-width:104px;text-align:center}
@@ -91,7 +95,7 @@ textarea{width:100%;min-height:70px;font:13px/1.4 ui-monospace,monospace;border:
 nav.bar{position:fixed;left:0;right:0;bottom:0;z-index:12;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(10px);border-top:1px solid var(--line);padding:4px 8px calc(4px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
 nav.bar button{position:relative;border:0;background:none;color:var(--mute);font:600 12px Barlow,sans-serif;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
 nav.bar button svg{width:24px;height:24px}nav.bar button[aria-selected=true]{color:var(--acc)}
-nav.bar .n{position:absolute;top:4px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:var(--acc);color:#fff;font:600 11px/18px Barlow,sans-serif;padding:0 5px}
+nav.bar .n{position:absolute;top:4px;left:calc(50% + 6px);min-width:18px;height:18px;border-radius:9px;background:var(--acc);color:var(--on-acc);font:600 11px/18px Barlow,sans-serif;padding:0 5px}
 .empty{color:var(--mute);text-align:center;padding:20px 0;font-size:15px}
 .modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}
 .mbox{background:var(--card);border-radius:18px;padding:20px;width:min(400px,100%)}
@@ -118,6 +122,30 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 .gate{margin:8px 0 0;padding:8px 10px;border-radius:10px;background:var(--acc2);font-size:14px}
 .nav5 button{font-size:12px}
 details.older{margin-top:6px}
+.dash{position:relative}.dash div{position:relative}.dash div:not(:last-child)::after{content:'›';position:absolute;right:-6px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.45);font-weight:700;font-size:14px}
+.next{display:flex;gap:10px;align-items:center;margin:10px 0 0;padding:10px 12px;border-radius:12px;background:var(--soft);font-size:14px;line-height:1.35}.next b{color:var(--ink)}.next span{flex:1;color:var(--mute)}.next .btn{min-height:38px;padding:6px 12px;flex:none}
+.jump{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom));z-index:30;display:flex;gap:8px;align-items:center;max-width:92vw;border:0;border-radius:22px;padding:8px 14px 8px 8px;
+  background:linear-gradient(135deg,var(--hd1),var(--hd2));color:#fff;font:600 14px Barlow,sans-serif;box-shadow:0 6px 20px rgba(15,27,51,.3);cursor:pointer;animation:fade .2s}
+.jump .lic{width:28px;height:28px;border-radius:8px}.jump .lic svg.ic{width:16px;height:16px}.jump span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sku .btn{min-width:92px;min-height:48px;border-radius:12px}.sku{padding-top:10px;padding-bottom:10px}
+#welcome{position:fixed;inset:0;z-index:85;display:grid;place-items:center;background:rgba(8,14,28,.55);backdrop-filter:blur(3px);animation:fade .25s}#welcome[hidden]{display:none}
+#welcome .u{background:var(--card);border-radius:22px;padding:22px;width:min(340px,88vw);box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+#welcome h3{font-size:26px;margin:0 0 4px}#welcome .kv{margin:12px 0 16px}
+@media (min-width:900px){main{max-width:1180px}#t-shelves:not([hidden]){display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}#t-shelves>#prog{position:sticky;top:150px}
+  #t-shelves>.row{grid-column:2}#t-shelves>#ladder{grid-column:2;grid-row:1/4}.stage{height:200px}.hrow,.dash{max-width:1180px}.jump{display:none}
+  #t-store:not([hidden]) #caps,#t-shop:not([hidden]) #shcaps{display:grid;grid-template-columns:1fr 1fr;gap:12px}#t-store #caps .card,#t-shop #shcaps .card{margin:0}}
+.bdg{display:inline-grid;place-items:center;min-width:26px;height:20px;padding:0 5px;border-radius:6px;color:#fff;font:700 11px/1 'Barlow Condensed',sans-serif;letter-spacing:.03em;margin-right:6px;vertical-align:1px}
+.fly{position:fixed;z-index:60;pointer-events:none;font:700 15px 'Barlow Condensed',sans-serif;color:var(--acc);animation:fly .9s ease-out forwards;text-shadow:0 1px 0 var(--card)}
+@keyframes fly{to{transform:translateY(-46px);opacity:0}}
+.flash{animation:flash 1.2s ease-out}@keyframes flash{0%{background:color-mix(in srgb,var(--good) 30%,transparent)}100%{background:transparent}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
+#unlock{position:fixed;inset:0;z-index:80;display:grid;place-items:center;background:rgba(8,14,28,.55);backdrop-filter:blur(3px);animation:fade .25s}#unlock[hidden]{display:none}
+#unlock .u{background:var(--card);border-radius:22px;padding:26px 22px;width:min(320px,86vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+#unlock .u .lic{width:64px;height:64px;border-radius:18px;margin:0 auto 12px}#unlock .u .lic svg.ic{width:38px;height:38px}
+#unlock .u small{display:block;color:var(--mute);font-size:13px;text-transform:uppercase;letter-spacing:.08em}#unlock .u b{display:block;font:700 28px/1.1 'Barlow Condensed',sans-serif;margin:4px 0 6px}
+#unlock .u p{margin:0 0 16px;color:var(--mute);font-size:15px}
+@keyframes pop{from{transform:scale(.7);opacity:0}}@keyframes fade{from{opacity:0}}
+section{animation:fade .2s}
 .guide details{border-top:1px solid var(--line);padding:2px 0}.guide summary{cursor:pointer;padding:10px 0;font-weight:600;font-size:16px}.guide details p{margin:0 0 10px;font-size:15px;line-height:1.5}
 .flow{display:flex;align-items:center;justify-content:space-between;gap:4px;margin:0 0 10px;font-size:13px;font-weight:600}.flow span{background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:6px 8px}.flow i{color:var(--mute);font-style:normal}
 .bn .lic svg.ic,.lic svg.ic{color:#fff}
@@ -145,6 +173,7 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
 
   <section id="t-shelves">
     <div class="card" id="prog"></div>
+    <button class="jump" id="jump" hidden></button>
     <div class="row" style="margin:4px 0 10px"><div class="seg" id="mode"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><span class="sub" id="shelfTxt" style="margin:0"></span></div>
     <div id="ladder"></div>
   </section>
@@ -188,7 +217,7 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
       <details><summary>7. A good habit</summary><p>Glance at the red box, fix that link, then spend the rest on the next step of the parts list or the shop, whichever one the next part is waiting on. If a buy button is gray, you can't afford it yet, or there's no shelf or bay space left for it.</p></details>
     </div>
     <h2>Income</h2><div class="card"><canvas id="chart" style="width:100%;height:150px;display:block"></canvas><p class="sub" id="chartCap" style="margin:6px 0 0"></p></div>
-    <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><div id="cat"></div></div>
+    <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><input class="search" id="catq" type="search" placeholder="Look up a part (oil filter, turbo, wiper…)" style="margin:6px 0 4px"><div id="catres"></div><div id="cat"></div></div>
     <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
       <div class="chips" style="margin:8px 0"><button class="chip on" data-af="todo">To do</button><button class="chip" data-af="done">Reached</button></div><div id="goals"></div></div>
     <h2>Logbook</h2><div class="card log" id="log"></div>
@@ -207,11 +236,11 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
     <p class="sub" style="margin-top:14px">Fremont Truck &amp; Parts is made up. Brand, engine and truck names are trademarks of their owners and are used here only to name parts. Prices are fictional. Not affiliated with or endorsed by any brand or dealership.</p>
   </section>
 </main>
+<canvas id="confetti"></canvas><div id="welcome" hidden><div class="u" id="welcomeBody"></div></div><div id="unlock" hidden><div class="u" id="unlockBody"></div></div>
 <div id="sheet" hidden><div class="sheet"><button class="x" data-close="1" aria-label="Close">×</button><div id="sheetBody"></div></div></div>
 <nav class="bar" id="nav"></nav>
 <div id="toast" role="status"></div>
-<script>
-/* ===== Parts Counter: data =====
+<script>/* ===== Parts Counter: data =====
    To add content later: append to BR, LINES or PARTS. Never rename an existing id; saves key on them. */
 const U3=['K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc','Ud','Dd','Td','Qad','Qid','Sxd','Spd','Ocd','Nod','Vg'];
 let SCI=false;
@@ -232,7 +261,38 @@ const lc=s=>{const w=s.split(/[ ,]/)[0];return /[A-Z].*[A-Z0-9/]|^[A-Z0-9]+$/.te
 const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'');
 
 /* ---------- brands: id: [name, tier]  (V value, O OE, P premium) ---------- */
-const BR={trp:['TRP','V'],pp:['PACCAR Parts','O'],wix:['Wix','V'],bald:['Baldwin','O'],flg:['Fleetguard','O'],don:['Donaldson','P'],lub:['Luber-finer','V'],
+const BR={
+ /* more brands so every part has a longer climb */
+ mann:['MANN-FILTER','O'],hast:['Hastings','V'],napa:['NAPA Gold','O'],champ:['Champion Labs','V'],puro:['Purolator','O'],catp:['Cat','P'],
+ perm:['Permatex','O'],lps:['LPS','O'],mech:['Mechanix Wear','O'],scott:['Scott Shop Towels','V'],gor:['Gorilla','O'],
+ crafts:['Craftsman','V'],tek:['Tekton','V'],proto:['Proto','P'],klein:['Klein Tools','O'],fluke:['Fluke','P'],
+ ansell:['Ansell','O'],ergo:['Ergodyne','V'],msa:['MSA','P'],cort:['Cortina','V'],bdog:['Bulldog','O'],
+ hella:['HELLA','P'],whelen:['Whelen','P'],ecco:['ECCO','O'],maxx:['Maxxima','V'],litf:['Littelfuse','O'],buss:['Bussmann','O'],
+ pion:['Pioneer','O'],kenw:['Kenwood','O'],lytx:['Lytx','P'],omni:['Omnitracs','P'],pilot:['Pilot Electronics','V'],
+ sealco:['Sealco','O'],tect:['Tectran','V'],trw:['TRW','O'],velv:['Velvac','O'],
+ seatsi:['Seats Inc','O'],natl:['National Seating','P'],cover:['Covercraft','O'],
+ gyb:['Goodyear Belts','O'],mahle:['MAHLE','P'],modine:['Modine','O'],behr:['Behr','O'],nrf:['NRF','V'],
+ hend:['Hendrickson','P'],dayt:['Dayton Parts','V'],cr:['Chicago Rawhide','O'],nseal:['National Seals','V'],
+ hutch:['Hutchens','O'],saf:['SAF-Holland','P'],whit:['Whiting','O'],todco:['Todco','V'],
+ warn:['WARN','P'],ramsey:['Ramsey','O'],ba:['B/A Products','O'],mytee:['Mytee','V'],
+ permco:['Permco','O'],prince:['Prince','V'],bez:['Bezares','O'],
+ davco:['Davco','O'],airdog:['AirDog','P'],fass:['FASS','P'],carter:['Carter','V'],
+ imb:['Interstate-McBee','V'],felp:['Fel-Pro','O'],vrz:['Victor Reinz','O'],ks:['KS Kolbenschmidt','P'],
+ wam:['World American','V'],valeo:['Valeo','O'],luk:['LuK','P'],
+ rw:['Road Warrior','V'],tenn:['Tenneco','O'],faur:['Faurecia','P'],ape:['AP Emissions','V'],
+ retrac:['Retrac','V'],hoge:['Hogebuilt','P'],eagle:['Eagle Fenders','O'],rwk:['RoadWorks','O'],vchr:['Valley Chrome','O'],
+ yoko:['Yokohama','O'],hank:['Hankook','O'],sumi:['Sumitomo','O'],bfg:['BFGoodrich','O'],sail:['Sailun','V'],ling:['Linglong','V'],
+ mcraft:['Motorcraft','O'],acd:['ACDelco','O'],aisin:['Aisin','O'],
+ sanden:['Sanden','O'],rdot:['Red Dot','P'],berg:['Bergstrom','P'],
+ wstar:['Western Star','O'],
+ accel:['Accelera','P'],siem:['Siemens','P'],heliox:['Heliox','O'],hyl:['Hyliion','O'],
+ /* remanufactured lines for big parts */
+ trpr:['TRP Reman','V'],recon:['Cummins ReCon','O'],ddr:['Detroit Reman','O'],eatr:['Eaton Reman','O'],drr:['Delco Remy Reman','O'],
+ /* new departments */
+ bbird:['Blue Bird','O'],ricon:['Ricon','P'],braun:['BraunAbility','P'],tair:['Trans/Air','O'],vapor:['Vapor','O'],hanov:['Hanover Displays','O'],
+ deere:['John Deere','O'],casei:['Case IH','O'],esco:['ESCO','P'],hens:['Hensley','O'],berco:['Berco','O'],itr:['ITR','V'],titan:['Titan','O'],
+ dom:['Dometic','P'],lipp:['Lippert','O'],shur:['SHURflo','O'],norc:['Norcold','O'],onan:['Onan','P'],camco:['Camco','V'],carefree:['Carefree','O'],bborn:['Battle Born','P'],
+ heil:['Heil','P'],mcn:['McNeilus','P'],hale:['Hale','P'],water:['Waterous','O'],cryst:['Crysteel','O'],civ:['Civacon','O'],fisher:['Fisher','O'],buyers:['Buyers Products','V'],trp:['TRP','V'],pp:['PACCAR Parts','O'],wix:['Wix','V'],bald:['Baldwin','O'],flg:['Fleetguard','O'],don:['Donaldson','P'],lub:['Luber-finer','V'],
  rot:['Shell Rotella','P'],delo:['Chevron Delo','O'],delv:['Mobil Delvac','P'],val:['Valvoline','O'],ow:['Old World','V'],peak:['Peak','O'],bdef:['BlueDEF','O'],
  pres:['Prestone','O'],lucas:['Lucas Oil','O'],grote:['Grote','O'],tl:['Truck-Lite','P'],opt:['Optronics','V'],pet:['Peterson','V'],phil:['Phillips Industries','O'],
  inter:['Interstate','O'],optima:['Optima','P'],deka:['Deka','V'],exide:['Exide','V'],dr:['Delco Remy','P'],prest:['Prestolite','O'],ln:['Leece-Neville','O'],
@@ -252,13 +312,13 @@ const TIER={V:{n:'Value',pf:.75,mg:.22,ag:.3},O:{n:'OE',pf:1,mg:.3,ag:.6},P:{n:'
 
 /* ---------- parts lines ---------- */
 const LINES=[
- ['f','Filters & fluids','#2f6fb0',0,'trp wix bald flg don'],['s','Shop supplies','#6d7a86',0,'trp m3 crc'],['to','Tools & shop equipment','#455a64',0,'gw mac snap'],['sf','Safety & DOT','#e65100',0,'trp grote gg'],['l','Lighting & electrical','#c79100',0,'trp grote tl opt pet'],['el','Electronics','#3949ab',0,'trp garmin cobra'],['b','Brakes & air','#c62828',0,'trp bend hald mer wab'],['c','Cab & interior','#6d4c41',0,'trp pp'],['k','Belts & cooling','#00897b',0,'trp gates dayco cont'],['w','Wheel end & suspension','#546e7a',0,'trp stemco skf timken conmet'],['tr','Trailer parts','#8d6e63',0,'trp grote phil'],['tw','Towing & recovery','#f9a825',0,'trp zips peer'],['hy','Hydraulics & PTO','#0277bd',0,'trp parker muncie'],['fu','Fuel system','#ef6c00',0,'trp racor bosch'],['e','Engine','#d84315',0,'pp cum dd fpd pai'],['d','Drivetrain','#5e35b1',0,'trp eaton spicer mer dana'],['a','Aftertreatment','#43a047',0,'trp pp don flg dinex'],['bd','Body & sheet metal','#607d8b',0,'trp pp dorman'],['x','Chrome & accessories','#78909c',0,'trp trux up gg'],['t','Tires','#37474f',0,'mich bs gy cont toyo dc'],['md','Medium duty','#7cb342',0,'trp wix bald'],['rf','Reefer & HVAC','#00838f',0,'trp thermo carrier'],['h','Heavy rebuild','#ad1457',0,'cum dd eaton mer pai fpd'],['ut','Used trucks & trailers','#4e342e',0,'kw pb fl volvo intl mack'],['nt','New trucks & trailers','#b71c1c',0,'kw pb'],['ev','Electric trucks','#1e88e5',0,'pp cum dana']].map(([id,n,c,cost,brands],i)=>({id,n,c,cost,brands,i}));
+ ['f','Filters & fluids','#2f6fb0',0,'trp wix bald flg don'],['s','Shop supplies','#6d7a86',0,'trp m3 crc'],['to','Tools & shop equipment','#455a64',0,'gw mac snap'],['sf','Safety & DOT','#e65100',0,'trp grote gg'],['l','Lighting & electrical','#c79100',0,'trp grote tl opt pet'],['el','Electronics','#3949ab',0,'trp garmin cobra'],['b','Brakes & air','#c62828',0,'trp bend hald mer wab'],['c','Cab & interior','#6d4c41',0,'trp pp'],['k','Belts & cooling','#00897b',0,'trp gates dayco cont'],['w','Wheel end & suspension','#546e7a',0,'trp stemco skf timken conmet'],['tr','Trailer parts','#8d6e63',0,'trp grote phil'],['tw','Towing & recovery','#f9a825',0,'trp zips peer'],['hy','Hydraulics & PTO','#0277bd',0,'trp parker muncie'],['fu','Fuel system','#ef6c00',0,'trp racor bosch'],['e','Engine','#d84315',0,'pp cum dd fpd pai'],['d','Drivetrain','#5e35b1',0,'trp eaton spicer mer dana'],['a','Aftertreatment','#43a047',0,'trp pp don flg dinex'],['kt','Kits & bundles','#8e24aa',0,'trp pp bend mer eaton gates'],['bd','Body & sheet metal','#607d8b',0,'trp pp dorman'],['x','Chrome & accessories','#78909c',0,'trp trux up gg'],['t','Tires','#37474f',0,'mich bs gy cont toyo dc'],['md','Medium duty','#7cb342',0,'trp wix bald'],['vo','Vocational trucks','#fb8c00',0,'trp parker muncie heil mcn buyers'],['bu','Bus & coach','#fdd835',0,'trp bbird ricon braun tair vapor'],['ag','Ag & construction','#9e9d24',0,'trp catp deere casei esco hens'],['rv','RV & motorhome','#26a69a',0,'trp dom lipp shur norc camco'],['rf','Reefer & HVAC','#00838f',0,'trp thermo carrier'],['h','Heavy rebuild','#ad1457',0,'cum dd eaton mer pai fpd'],['ut','Used trucks & trailers','#4e342e',0,'kw pb fl volvo intl mack'],['nt','New trucks & trailers','#b71c1c',0,'kw pb'],['ev','Electric trucks','#1e88e5',0,'pp cum dana']].map(([id,n,c,cost,brands],i)=>({id,n,c,cost,brands,i}));
 const LI={};LINES.forEach(l=>LI[l.id]=l);
 
 /* ---------- fitments (parts are sold per application, like a real counter) ---------- */
 const FIT={
- ENG:[['x15','Cummins X15'],['mx13','PACCAR MX-13'],['dd15','Detroit DD15'],['isx','Cummins ISX15'],['x12','Cummins X12'],['mx11','PACCAR MX-11'],['dd13','Detroit DD13'],['l9','Cummins L9'],['b67','Cummins B6.7'],['x10','Cummins X10'],['isl','Cummins ISL9'],['dd16','Detroit DD16']],
- MOD:[['t680','Kenworth T680'],['t880','Kenworth T880'],['w900','Kenworth W900'],['w990','Kenworth W990'],['t800','Kenworth T800'],['p579','Peterbilt 579'],['p389','Peterbilt 389'],['p567','Peterbilt 567'],['p589','Peterbilt 589'],['t480','Kenworth T480']],
+ ENG:[['x15','Cummins X15'],['mx13','PACCAR MX-13'],['dd15','Detroit DD15'],['isx','Cummins ISX15'],['x12','Cummins X12'],['mx11','PACCAR MX-11'],['dd13','Detroit DD13'],['l9','Cummins L9'],['b67','Cummins B6.7'],['x10','Cummins X10'],['isl','Cummins ISL9'],['dd16','Detroit DD16'],['d13','Volvo D13'],['mp8','Mack MP8'],['a26','Navistar A26'],['isb','Cummins ISB6.7']],
+ MOD:[['t680','Kenworth T680'],['t880','Kenworth T880'],['w900','Kenworth W900'],['w990','Kenworth W990'],['t800','Kenworth T800'],['p579','Peterbilt 579'],['p389','Peterbilt 389'],['p567','Peterbilt 567'],['p589','Peterbilt 589'],['t480','Kenworth T480'],['vnl','Volvo VNL'],['anth','Mack Anthem'],['lt','International LT'],['ws49','Western Star 49X']],
  TRN:[['f10','Eaton Fuller 10-speed'],['f13','Eaton Fuller 13-speed'],['f18','Eaton Fuller 18-speed'],['end','Eaton Endurant'],['a3k','Allison 3000'],['a4k','Allison 4000'],['tx12','PACCAR TX-12'],['f9','Eaton Fuller 9-speed'],['a25','Allison 2500']],
  TIRE:[['2957522','295/75R22.5'],['112245','11R22.5'],['112445','11R24.5'],['2857524','285/75R24.5'],['4455022','445/50R22.5'],['2758022','275/80R22.5'],['2257019','225/70R19.5'],['2457019','245/70R19.5']],
  DRUM:[['165x7','16.5 x 7'],['165x8','16.5 x 8.625'],['15x4','15 x 4']],
@@ -266,6 +326,10 @@ const FIT={
  WIPE:[['22','22 in'],['24','24 in'],['26','26 in']],
  MD:[['t280','Kenworth T280'],['p537','Peterbilt 537'],['npr','Isuzu NPR'],['h195','Hino 195'],['m2','Freightliner M2 106']],
  EV:[['t680e','Kenworth T680E'],['p579ev','Peterbilt 579EV'],['ecas','Freightliner eCascadia'],['vnre','Volvo VNR Electric']],
+ BUS:[['bb','Blue Bird Vision'],['ic','IC Bus CE'],['thom','Thomas Saf-T-Liner C2'],['gil','Gillig Low Floor'],['nf','New Flyer Xcelsior']],
+ VOC:[['dump','dump trucks'],['mix','mixers'],['ref','refuse trucks'],['tank','tankers'],['fire','fire trucks']],
+ AG:[['cat','Cat'],['jd','John Deere'],['case','Case'],['kom','Komatsu'],['vce','Volvo CE']],
+ RV:[['ca','Class A'],['cc','Class C'],['fw','fifth wheel'],['tt','travel trailer']],
  UJ:[['1710','1710 series'],['1760','1760 series'],['1810','1810 series']]};
 
 /* ---------- base parts: id, name, line, price, popularity, fitment set, brand override ---------- */
@@ -432,11 +496,44 @@ const BASE=[
  ['evcab','High-voltage cable','ev',680,.4,'EV','pp eaton'],['evcp','Battery coolant pump','ev',540,.4,'EV','pp bosch'],['evdc','DC-DC converter','ev',2600,.2,'EV','eaton pp'],['evobc','Onboard charger','ev',4800,.1,'EV','pp eaton'],
  ['evinv','Traction inverter','ev',9000,.08,'EV','dana eaton cum'],['evmot','Traction motor','ev',18000,.05,'EV','dana mer allison'],['evaxle','Electric axle','ev',38000,.04,'EV','dana mer allison'],
  ['evbat','Battery pack','ev',42000,.05,'EV','pp cum'],['evchg','Depot charger, 150 kW','ev',65000,.03,0,'abb cp'],['evchg2','Depot charger, 350 kW','ev',140000,.02,0,'abb cp'],
- ['nevbox','New electric box truck','ev',260000,.02,0,'kw pb'],['nev','New electric tractor','ev',420000,.02,0,'kw pb']];
+ ['nevbox','New electric box truck','ev',260000,.02,0,'kw pb'],['nev','New electric tractor','ev',420000,.02,0,'kw pb'],
+ ['pmk','PM kit','kt',140,3,'ENG','trp pp flg don'],['brkk','Brake job kit','kt',260,3,'MOD','trp bend mer'],['whk','Wheel-end kit','kt',220,2,'POS','trp stemco skf timken'],
+ ['clk','Clutch kit','kt',1200,.6,'TRN','eaton valeo luk trp'],['clnk','Cooling system kit','kt',680,.6,'MOD','trp gates mahle'],['ltk','Lighting upgrade kit','kt',380,1,'MOD','grote tl trp'],
+ ['airk2','Air system rebuild kit','kt',520,.8,'MOD','bend hald wab trp'],['egrk','EGR service kit','kt',980,.5,'ENG','pp cum dd trp'],['ovk','Overhaul gasket kit','kt',1400,.4,'ENG','felp vrz cum dd pai'],
+ ['ptop','PTO pump','vo',1600,.5,'VOC','muncie chelsea parker permco'],['tvalve','Tank valve','vo',420,1,'VOC','civ trp buyers'],['pcyl','Packer cylinder','vo',2400,.3,'VOC','heil mcn parker'],
+ ['fpseal','Fire pump seal kit','vo',380,.8,'VOC','hale water trp'],['hoist','Dump hoist cylinder','vo',3800,.2,'VOC','cryst parker buyers'],['drumroll','Mixer drum roller','vo',620,.6,'VOC','mcn trp'],
+ ['vapor2','Tanker vapor valve','vo',340,1,'VOC','civ trp'],['plow','Plow mount kit','vo',1800,.3,'VOC','fisher buyers'],['broom','Sweeper broom','vo',280,1,'VOC','trp buyers'],
+ ['bdoor','Bus door motor','bu',680,.6,'BUS','vapor bbird trp'],['wclift','Wheelchair lift','bu',6800,.1,'BUS','ricon braun'],['dsign','Destination sign','bu',2400,.2,'BUS','hanov trp'],
+ ['bseat','Bus seat','bu',420,1,'BUS','bbird trp natl'],['bhvac','Rooftop HVAC unit','bu',9800,.08,'BUS','tair carrier thermo'],['tbrk','Transit brake kit','bu',520,.8,'BUS','bend mer trp'],
+ ['sarm','Stop arm','bu',380,.8,'BUS','bbird trp'],['cgate','Crossing gate','bu',260,1,'BUS','bbird trp'],
+ ['aghose','Equipment hydraulic hose','ag',85,3,'AG','parker gates trp'],['troll','Track roller','ag',520,.8,'AG','berco itr catp'],['bteeth','Bucket teeth','ag',38,4,'AG','esco hens catp'],
+ ['cedge','Cutting edge','ag',260,1,'AG','esco catp trp'],['lpin','Loader pin and bushing','ag',140,2,'AG','catp itr trp'],['fdseal','Final drive seal','ag',220,1,'AG','catp deere trp'],
+ ['gtire','Grain cart tire','ag',1400,.3,'AG','titan fstone mich'],['cbelt','Combine belt','ag',180,1,'AG','gates deere casei'],
+ ['rvwp','RV water pump','rv',110,2,'RV','shur dom camco'],['awn','RV awning','rv',980,.4,'RV','carefree dom lipp'],['ljack','Leveling jack','rv',420,.8,'RV','lipp trp'],
+ ['genf','Generator filter','rv',18,4,'RV','onan trp'],['slm','Slide-out motor','rv',260,1,'RV','lipp trp'],['rvfr','RV refrigerator','rv',1800,.2,'RV','norc dom'],
+ ['htsen','Holding tank sensor','rv',45,3,'RV','camco trp'],['rvbat','RV lithium battery','rv',900,.4,'RV','bborn trp'],
+ ['mdwiper','Medium duty wiper blade','md',18,5,'MD','trico bosch trp'],['tdisc','Trailer disc brake pad','tr',85,2,0,'bend hald trp saf'],['tsus2','Trailer suspension kit','tr',780,.4,0,'hend saf trp'],
+ ['towhit','Tow hitch','tw',320,1,0,'ba trp'],['ltb2','Amber light bar','x',420,1,0,'whelen ecco trp'],['fogl','Fog light','l',85,2,'MOD','hella grote trp']];
 
 
 /* ---------- build the catalog ---------- */
 const hash=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return h/4294967295};
+
+/* every part climbs through 6 to 8 brands: parts with only a few get more from their department's pool,
+   and big rebuildable parts also come in remanufactured lines */
+const BRAND_POOL={f:'lub mann hast napa champ puro catp',s:'perm lps mech scott gor wd40 gojo loc',to:'crafts tek proto klein fluke milw dew',sf:'ansell ergo msa cort bdog kidde amerex',
+ l:'hella whelen ecco maxx litf buss opt pet',el:'pion kenw lytx omni pilot garmin rand',b:'sealco tect trw velv hald mer wab',c:'velv seatsi natl cover dorman hadley bos',
+ k:'gyb mahle modine behr nrf gates dayco',w:'hend dayt cr nseal stemco skf conmet',tr:'hutch saf whit todco phil grote',tw:'warn ramsey ba mytee peer zips',hy:'permco prince bez parker muncie chelsea',
+ fu:'davco airdog fass carter racor stan bosch',e:'imb felp vrz ks mahle fpd pai',d:'wam valeo luk eaton spicer mer',a:'rw tenn faur ape don dinex',kt:'pp bend mer eaton gates mahle',
+ bd:'retrac hoge eagle rwk dorman min',x:'rwk vchr hoge trux up gg',t:'yoko hank sumi bfg sail ling mich',md:'mcraft acd aisin isuzu hino wix',vo:'parker muncie chelsea heil mcn buyers',
+ bu:'bbird ricon braun tair vapor hanov',ag:'catp deere casei esco hens berco itr',rv:'dom lipp shur norc camco onan',rf:'sanden rdot berg denso thermo carrier',h:'recon ddr eatr cum dd pai',
+ ut:'kw pb fl volvo intl mack wstar',nt:'kw pb fl volvo mack wstar',ev:'accel siem heliox hyl cum dana'};
+const REMAN=/starter|alternator|turbo|injector|transmission|control module|compressor|water pump|clutch|cylinder head|crankshaft|differential/i;
+for(const b of BASE){const line=b[2],have=(b[6]||LI[line].brands).split(' ').filter(x=>BR[x]);
+  let h=0;for(const ch of b[0])h=(h*31+ch.charCodeAt(0))%97;const want=Math.max(have.length,6+h%3);
+  const add=(BRAND_POOL[line]||'').split(' ').filter(x=>BR[x]&&!have.includes(x));
+  if(REMAN.test(b[1]))add.unshift(...['trpr','recon','ddr','eatr','drr'].filter(x=>!have.includes(x)).slice(0,2));
+  while(have.length<want&&add.length)have.push(add.shift());b[6]=have.join(' ')}
 const BRANDS=Object.entries(BR).map(([id,[n,t]])=>({id,n,t}));const BI={};BRANDS.forEach(b=>BI[b.id]=b);
 const TORD={V:0,O:1,P:2};
 const PARTS=[],PI={};
@@ -470,7 +567,7 @@ const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
    Own 10 of a step to unlock the next one. Every step is priced close to what a product costs
    at the point on the parts ladder where the store will need it. */
 const AISLE_SPEC={
- ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:3.1,x:4,N:300,items:[
+ ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:3.1,x:8,N:300,items:[
   ['Counter bell',['Brass','Chrome','Desk']],['Cash drawer',['APG','MMF','Star Micronics']],['Cash register',['Casio','Sharp','Royal']],
   ['Card reader',['Square','Clover','Verifone','Ingenico']],['Barcode scanner',['Honeywell','Zebra','Datalogic']],['Receipt printer',['Epson','Star Micronics','Bixolon']],
   ['Label printer',['Zebra','Brother','DYMO']],['Counter mat',['Rubber','Anti-fatigue','Gel']],['Parts catalog',['=Paper parts catalog','=Catalog binder set','=Catalog library']],
@@ -478,7 +575,7 @@ const AISLE_SPEC={
   ['Parts catalog terminal',['Single-screen','Dual-screen','Counter-wide']],['Full-time counter clerk',['Trainee','Experienced','Senior']],['Checkout lane',['Second','Third','Fourth']],
   ['Express counter',['One-lane','Two-lane','Four-lane']],['Counter salesperson',['Junior','Seasoned','Top-selling']],['Core return desk',['Small','Busy','Full-service']],
   ['Warranty desk',['Part-time','Full-time','Dedicated']],['Phone order desk',['One-line','Four-line','Twelve-line']],['Headset system',['Wired','Wireless','Multi-line']],
-  ['Will-call window',['Walk-up','Drive-up','24-hour']],['Night drop box',['Small','Large','Secure']],['Online order desk',['Part-time','Full-time','Around-the-clock']],
+  ['Will-call window',['Walk-up','Drive-up','24-hour']],['Parts counter remodel',['=Fresh paint on the counter','=New counters','=Full counter remodel']],['Night drop box',['Small','Large','Secure']],['Online order desk',['Part-time','Full-time','Around-the-clock']],
   ['Parts runner',['Part-time','Full-time','Lead']],['Runner truck',['=Ford F-150 runner truck','=Ram 1500 runner truck','=Chevrolet Silverado runner truck']],
   ['Delivery van',['Ford Transit','Ram ProMaster','Mercedes-Benz Sprinter']],['Delivery route',['Local','County','Two-county']],['Box truck',['Isuzu NPR','Hino 195','Kenworth T280']],
   ['Dispatcher',['Part-time','Full-time','Lead']],['Pick-up lockers',['=Bank of 12 pick-up lockers','=Bank of 48 pick-up lockers','=Wall of 200 pick-up lockers']],
@@ -487,7 +584,7 @@ const AISLE_SPEC={
   ['Call center',['Day-shift','Two-shift','Around-the-clock']],['Shuttle fleet',['Small','Medium','Large']],['Automated order system',['Pilot','Full','Next-generation']],
   ['Same-day delivery network',['Metro','State','Regional']],['Parts network',['Regional','National','Continental']],['Overnight air freight',['Regional','National','International']],
   ['Global order platform',['Pilot','Full','Worldwide']]]},
- sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:3.1,x:4,N:300,items:[
+ sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:3.1,x:8,N:300,items:[
   ['Box cutter',['Basic','Safety','Auto-retract']],['Step stool',['Plastic','Steel','Rolling']],['Hand truck',['Harper','Magliner','Wesco']],['Stock cart',['Rubbermaid','Uline','Akro-Mils']],
   ['Price gun',['Single-line','Two-line','Thermal']],['Part-time stock crew',['Weekend','Evening','Overnight']],['Rolling ladder',['Cotterman','Louisville','Werner']],
   ['Shelf labels',['Paper','Magnetic','Electronic']],['Inventory scanner',['Zebra','Honeywell','Datalogic']],['Pallet jack',['Crown','Raymond','Toyota']],
@@ -500,7 +597,7 @@ const AISLE_SPEC={
   ['Cross-dock',['Small','Regional','National']],['Distribution center',['Local','Regional','National']],['Truck fleet',['Small','Mid-size','Large']],
   ['Rail spur',['Short','Long','Double-track']],['Freight network',['Regional','National','Continental']],['Automated port',['River','Lake','Ocean']],
   ['Global logistics network',['Pilot','Full','Worldwide']]]},
- cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:3.3,x:4,N:300,items:[
+ cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:3.3,x:8,N:300,items:[
   ['Business cards',['Plain','Two-sided','Embossed']],['Flyers',['Truck stop','Feed store','Fuel island']],['Window sign',['Paper','Vinyl','Neon']],
   ['Free coffee',['=Free coffee pot','=Coffee bar','=Espresso machine']],['Newspaper ad',['Classified','Quarter-page','Full-page']],['Phone book ad',['Line','Box','Full-page']],
   ['Radio spot',['Farm report','Morning drive','Ballgame']],['Yard sign',['Small','Lit','Digital']],['Parts website',['Basic','Catalog','Ordering']],
@@ -509,16 +606,16 @@ const AISLE_SPEC={
   ['Outside sales rep',['Part-time','Full-time','Senior']],['Customer appreciation day',['Spring','Summer','Fall']],['Fleet account manager',['Local','Regional','National']],
   ['Trade show booth',['County fair','State show','Mid-America Trucking Show']],['Sponsorship',['Little league','Truck pull','Racing']],['Regional TV ad',['Late-night','Prime-time','Big-game']],
   ['Loyalty program',['Punch card','Points','Fleet rewards']],['Podcast ad',['Trucking','Business','National']],['Streaming ad',['Regional','National','Prime-time']],
-  ['National fleet program',['Starter','Growing','Major']],['Truck stop chain deal',['Regional','National','Coast-to-coast']],['Spokesperson',['Local','Regional','National']],
+  ['National fleet program',['Starter','Growing','Major']],['Truck stop chain deal',['Regional','National','Coast-to-coast']],['Tire shop next door',['Small','Full','Commercial']],['Truck wash',['Self-serve','Automatic','Full-service']],['Spokesperson',['Local','Regional','National']],
   ['Nationwide campaign',['Spring','Year-round','Coast-to-coast']],['Household name',['Known','Famous','Legendary']],
   ['International campaign',['=Canada campaign','=Mexico campaign','=Worldwide campaign']]]},
- sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:3.3,x:4,N:720,items:[
+ sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:3.3,x:8,N:720,items:[
   ['Pegboard',['Small','Large','Wall']],['Slatwall',['4-foot','8-foot','16-foot']],['Wire shelving',['Edsal','Tennsco','Lyon']],['Bin shelving',['Akro-Mils','Lyon','Penco']],
   ['Steel shelving',['Lyon','Tennsco','Penco','Republic']],['Gondola',['Lozier','Madix']],['Endcap display',['Single','Double','Lit']],['Spinner rack',['Small','Tall','Double']],
   ['Drawer cabinet',['Lista','Stanley Vidmar','Lyon']],['Cantilever rack',['Light','Medium','Heavy']],['Tire rack',['Wall','Stacking','Mobile']],['Filter wall',['Small','Medium','Full']],['Battery rack',['Two-tier','Four-tier','Rolling']],['Hose reel rack',['Single','Double','Wall']],['Drum rack',['Two-drum','Four-drum','Bulk']],
   ['Bulk fluid tank',['=Bulk oil tank','=Bulk coolant tank','=Bulk DEF tank']],
   ['Pallet racking',['Frazier','Interlake Mecalux','Unarco']],['Drive-in racking',['Small','Medium','Large']],['Tall racking',['16-foot','20-foot','24-foot']],['High-bay racking',['30-foot','40-foot','60-foot']],['Yard storage',['Fenced','Paved','Covered']],
-  ['Mezzanine',['Small','Half-store','Full-store']],['Storage container',['20-foot','40-foot','High-cube']],['Pole barn',['Small','Large','Heated']],
+  ['Mezzanine',['Small','Half-store','Full-store']],['Second floor',['=Second-floor storage','=Second-floor showroom','=Full second floor']],['Storage container',['20-foot','40-foot','High-cube']],['Pole barn',['Small','Large','Heated']],
   ['Warehouse annex',['Small','Large']],['New wing',['East','West','North']],['Second building',['Small','Large']],['Off-site warehouse',['Small','Large','Twin']],
   ['Parts campus',['Starter','Full']],['Mega warehouse',['Single-floor','Multi-floor']],['Regional depot',['North','South','West']],
   ['National depot',['Central','Coastal','Mountain']],['Parts city',['Planned','Full','Mega']]]}};
@@ -554,7 +651,7 @@ function buildAisles(SPEC,LAD,needAt,slot,realAt,priceAt,taper=1,bump=0){const O
     let a=j===0?c.a0:Math.max(prevA*(isSlot?1:1.08),(tgt-cap)/MAXC);if(isSlot)a=Math.ceil(a);
     /* priced near what a product costs at the point this step is needed; each extra copy climbs gently, like parts do */
     /* priced as a few seconds of the income you'd expect when the step unlocks */
-    const at=j?kb:0;let baseL=priceAt(at)+c.off*Math.min(1,at/taper)+bump*Math.min(1,at/5)*Math.max(0,1-at/120)+lg(c.x||1);/* x: a flat price multiplier for the whole aisle */if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
+    const at=j?kb:0;let baseL=priceAt(at)+c.off*Math.min(1,at/taper)+bump*Math.min(1,at/5)*Math.max(0,1-at/120)+lg(c.x||1);if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
     const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,kb:at,amt:a,baseL,g2:isSlot?1.2:1.28};
     out.push(s);STEP[s.id]=s;cap+=MAXC*a;prevL=baseL;prevA=a}
   OUT[g]=out}
@@ -585,9 +682,7 @@ LINES.forEach(l=>A.push({id:'ln'+l.id,n:`Stock every ${lc(l.n)} product`,ok:()=>
 for(const g of Object.keys(AISLE))[5,15,30,60,100,150,200,300,500].forEach(j=>{const st=AISLE[g][j];if(st)A.push({id:'cap'+g+j,n:`Own one: ${st.n}`,ok:()=>L(S.b,st.id)>0})});
 [100,1000,1e4,5e4,1e5].forEach(v=>A.push({id:'fac'+v,n:`Own ${fmt(v)} facings`,ok:()=>FAC>=v}));
 [1,10,100,1000].forEach(v=>A.push({id:'ic'+v,n:`Handle ${fmt(v)} incident${v>1?'s':''}`,ok:()=>S.st.incidents>=v}));
-
-</script><script>
-/* ===== Parts Counter: the service side =====
+</script><script>/* ===== Parts Counter: the service side =====
    A shop next to the parts counter. Jobs climb like parts do: each job runs through
    service levels, and each level through the trucks or engines it applies to.
    Own 10 of a job step to unlock the next; finish a job with 25 of its last step. */
@@ -600,7 +695,7 @@ const SV_LINES=[
  ['rd','Road service','#f9a825','rc mo fc'],['up','Upfits & installs','#78909c','wi ap fc'],['af','Aftertreatment','#43a047','ap wa fc'],
  ['dt','Drivetrain','#5e35b1','ap wa fc'],['en','Engine repair','#d84315','ap wa fc'],['bd','Body & collision','#607d8b','wi ap fc'],
  ['md','Medium duty service','#7cb342','wi ap fc'],['fl','Fleet programs','#455a64','ap fc ex'],['hv','Heavy repair','#ad1457','ap wa ex fc'],
- ['ev','Electric truck service','#1e88e5','ap wa ex fc']].map(([id,n,c,lv],i)=>({id,n,c,lv:lv.split(' '),i}));
+ ['vb2','Bus, vocational & equipment','#fb8c00','wi ap fc'],['ev','Electric truck service','#1e88e5','ap wa ex fc']].map(([id,n,c,lv],i)=>({id,n,c,lv:lv.split(' '),i}));
 const SLI={};SV_LINES.forEach(l=>SLI[l.id]=l);
 const SV_JOBS=[
  ['oil','Oil change','pm','ENG'],['lube','Chassis lube','pm','MOD'],['ffs','Fuel filter service','pm','ENG'],['afs','Air filter service','pm','MOD'],['cfl','Coolant flush','pm','ENG'],
@@ -619,10 +714,10 @@ const SV_JOBS=[
  ['trd','Transmission diagnosis','dg','TRN'],['swu','Software update','dg','ENG'],['ecm','ECM programming','dg','ENG'],
  ['shk','Shock replacement','su','MOD'],['asp','Air spring replacement','su','MOD'],['kp','Kingpin job','su','MOD'],['trod','Tie rod replacement','su','MOD'],
  ['sg','Steering gear replacement','su','MOD'],['leaf','Leaf spring replacement','su','MOD'],['fw','Fifth wheel service','su',0],['trq','Torque rod replacement','su','MOD'],
- ['tpm','Trailer PM','tr',0],['tbj','Trailer brake job','tr',0],['tdr','Trailer door repair','tr',0],['tfl','Trailer floor repair','tr',0],['tlg','Landing gear replacement','tr',0],
+ ['tpm','Trailer PM','tr',0],['tshop','Trailer shop rebuild','tr',0],['tbj','Trailer brake job','tr',0],['tdr','Trailer door repair','tr',0],['tfl','Trailer floor repair','tr',0],['tlg','Landing gear replacement','tr',0],
  ['tsus','Trailer suspension rebuild','tr',0],['troof','Trailer roof repair','tr',0],['rfs','Reefer unit service','tr',0],
  ['jump','Jump start','rd',0],['trc','Tire road call','rd',0],['fuel','Fuel delivery','rd',0],['lock','Lockout service','rd',0],['ltow','Light-duty tow','rd',0],
- ['htow','Heavy tow','rd',0],['wout','Winch-out','rd',0],['roll','Rollover recovery','rd',0],
+ ['msc','Mobile service call','rd','MOD'],['htow','Heavy tow','rd',0],['wout','Winch-out','rd',0],['roll','Rollover recovery','rd',0],
  ['lbi','Light bar install','up',0],['bhi','Bunk heater install','up','MOD'],['apui','APU install','up','MOD'],['cami','Camera system install','up','MOD'],['eldi','ELD install','up','MOD'],
  ['lgi','Liftgate install','up',0],['wki','Wet kit install','up','MOD'],['ptoi','PTO install','up','TRN'],['chr','Chrome package install','up','MOD'],
  ['regen','Forced regen','af','ENG'],['dpfc','DPF cleaning','af','ENG'],['noxr','NOx sensor replacement','af','ENG'],['defp','DEF pump replacement','af','ENG'],['egrc','EGR valve cleaning','af','ENG'],
@@ -635,10 +730,12 @@ const SV_JOBS=[
  ['bmp','Bumper replacement','bd','MOD'],['hood','Hood replacement','bd','MOD'],['coll','Collision repair','bd','MOD'],['paint','Full repaint','bd','MOD'],
  ['mdo','Medium duty oil change','md','MD'],['mdp','Medium duty PM','md','MD'],['mdb','Medium duty brake job','md','MD'],['mda','Medium duty A/C service','md','MD'],
  ['lgr','Liftgate repair','md',0],['boxr','Box body repair','md',0],
- ['muni','Municipal fleet service','fl',0],['rent','Rental fleet service','fl','MOD'],['fpm','Fleet PM contract','fl','MOD'],['rec','Recall campaign','fl','ENG'],
+ ['yard','Fleet yard day','fl',0],['muni','Municipal fleet service','fl',0],['rent','Rental fleet service','fl','MOD'],['fpm','Fleet PM contract','fl','MOD'],['rec','Recall campaign','fl','ENG'],
  ['warr','Extended warranty work','fl','ENG'],['lease','Full-service lease maintenance','fl','MOD'],['natl','National account service','fl',0],
  ['rer','Rear end rebuild','hv',0],['trb','Transmission rebuild','hv','TRN'],['frame','Frame straightening','hv','MOD'],['cab','Cab replacement','hv','MOD'],
  ['inf','In-frame overhaul','hv','ENG'],['oof','Out-of-frame overhaul','hv','ENG'],['eswap','Engine swap','hv','ENG'],['glider','Glider kit build','hv','MOD'],
+ ['bpm','Bus PM','vb2','BUS'],['wlsv','Wheelchair lift service','vb2','BUS'],['bdr','Bus door repair','vb2','BUS'],['vocr','Body hydraulics repair','vb2','VOC'],
+ ['ptor','PTO pump replacement','vb2','VOC'],['eqh','Equipment hydraulic repair','vb2','AG'],['uc','Undercarriage job','vb2','AG'],['rvs','RV service','vb2','RV'],['rvsl','Slide-out repair','vb2','RV'],
  ['hvi','High-voltage inspection','ev','EV'],['bhc','Battery health check','ev','EV'],['chgi','Depot charger install','ev',0],['invr','Inverter replacement','ev','EV'],
  ['motr','Traction motor replacement','ev','EV'],['eaxr','E-axle replacement','ev','EV'],['bpr','Battery pack replacement','ev','EV']];
 const JOB_NAME={},JOB_LINE={};SV_JOBS.forEach(([id,n,l])=>{JOB_NAME[id]=n;JOB_LINE[id]=l});
@@ -674,14 +771,14 @@ const SHOP_SPEC={
  vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:4.5,N:900,items:[
   ['Outdoor work pad',['Gravel','Paved','Covered']],['Service bay',['Single','Drive-through','Heated']],['Truck lift',['Rotary','Stertil-Koni','Mohawk']],
   ['Lube pit',['Single','Double','Express']],['Tire bay',['Single','Double','Express']],['Alignment bay',['Standard','Wide','Drive-on']],['Wash bay',['Manual','Brush','Touchless']],
-  ['Trailer bay',['Single','Double','Pull-through']],['Paint booth',['Small','Truck-size','Downdraft']],['Body shop',['Small','Large','Full']],
+  ['Trailer bay',['Single','Double','Pull-through']],['Trailer shop',['Small','Large','Full']],['Paint booth',['Small','Truck-size','Downdraft']],['Body shop',['Small','Large','Full']],
   ['Heavy repair bay',['Single','Double','Crane-equipped']],['Shop building',['Steel','Insulated','Heated']],['Second shop',['Small','Large']],['Mobile service yard',['Small','Large']],
   ['Truck center',['Regional','Flagship']],['Service campus',['Starter','Full']],['Mega service center',['Single','Twin']],['National service network',['Regional','Coast-to-coast']]]},
  vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:6.5,N:240,items:[
   ['Shop helper',['Weekend','Evening','Day']],['Apprentice technician',['First-year','Second-year','Third-year']],['Lube technician',['Part-time','Full-time','Lead']],
   ['Tire technician',['Part-time','Full-time','Lead']],['Trailer technician',['Part-time','Full-time','Lead']],['Brake technician',['Junior','Certified','Senior']],
   ['Diesel technician',['Level 1','Level 2','Level 3']],['Electrical specialist',['Junior','Senior','Master']],['A/C technician',['Certified','Senior','Lead']],
-  ['Mobile technician',['One-truck','Two-truck','Fleet']],['Body technician',['Junior','Senior','Master']],['Night shift',['Small','Full','Double']],
+  ['Mobile technician',['One-truck','Two-truck','Fleet']],['Mobile service truck',['=One mobile service truck','=Three mobile service trucks','=Mobile service fleet']],['Body technician',['Junior','Senior','Master']],['Night shift',['Small','Full','Double']],
   ['Master technician',['Certified','Senior','Shop-leading']],['Shop foreman',['Day','Night','Lead']],['Technician school partnership',['Local','State','National']],
   ['Service team',['Regional','National']],['Technician network',['Regional','National','Continental']]]},
  vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:6.5,N:240,items:[
@@ -716,9 +813,7 @@ SV_LINES.forEach(l=>A.push({id:'svl'+l.id,n:`Offer every ${lc(l.n)} job`,ok:()=>
 for(const g of Object.keys(SHOP))[5,15,30,60,100,200].forEach(j=>{const st=SHOP[g][j];if(st)A.push({id:'shop'+g+j,n:`Own one: ${st.n}`,ok:()=>L(S.sv.b,st.id)>0})});
 LOG.push(['sv0',()=>S.sv.open,'Opened the service shop out back. Two bays, one lift, and a coffee pot that already smells burnt.'],
  ...SV_LINES.slice(1).map(l=>['svline_'+l.id,()=>S.sv.open&&S.sv.top>=SVL.findIndex(s=>s.line===l.id),`The shop started taking ${lc(l.n)} work.`]));
-
-</script><script>
-/* ===== Parts Counter: icons =====
+</script><script>/* ===== Parts Counter: icons =====
    Simple line icons on a 24x24 grid. Each icon is a list of shapes separated by "|":
    "c cx cy r" is a circle, "r x y w h rx" is a rectangle, anything else is a path. */
 const IC={
@@ -978,12 +1073,15 @@ const SHOP_RULES=[[/work pad|yard/,'yard'],[/lift/,'jack'],[/pit/,'barrel'],[/ti
 const SHOP_IC={vb:'dock',vt:'person',vw:'clip',vc:'truck',ve:'wrench'};
 for(const g in SHOP)for(const s of SHOP[g]){const n=s.item.toLowerCase().replace(/ (no\. \d+|[ivx]+)$/,'');const r=SHOP_RULES.find(([re])=>re.test(n));s.ic=r?r[1]:SHOP_IC[g]}
 
+/* brand badges: initials on a colour picked from the brand's name */
+const bdgColor=id=>{let h=0;for(const c of id)h=(h*37+c.charCodeAt(0))%360;return `hsl(${h} 55% 42%)`};
+const bdgText=n=>{const w=n.replace(/[^A-Za-z0-9 -]/g,'').split(/[\s-]+/).filter(Boolean);return (w.length>1?w[0][0]+w[1][0]:w[0].slice(0,3)).toUpperCase()};
+const bdg=id=>`<span class="bdg" style="background:${bdgColor(id)}">${esc(bdgText(BI[id].n))}</span>`;
 </script>
-<script>
-/* ===== Parts Counter: state and simulation =====
+<script>/* ===== Parts Counter: state and simulation =====
    One store and its service shop. No boosts, no bonuses, no multipliers.
    Money is kept as log10 (cashL, totalL) so it can grow far past 1e308. */
-const KEY='parts-counter-v6',VERSION=6;
+const KEY='parts-counter-v6',VERSION=7;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const L=(o,k)=>(o&&o[k])||0;
 const now=()=>Date.now();
@@ -993,11 +1091,18 @@ const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)
 const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
 const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true},
   st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now(),all:0,sold:{},br:{},trucks:0,hrs:0},hist:[],t:Date.now()});
-function load(d){if(!d||typeof d!=='object'||(d.v||0)<VERSION)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
+function load(d){if(!d||typeof d!=='object'||(d.v||0)<6)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
   {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});
    for(const k of Object.keys(s.sv.f))if(!SVI[k])delete s.sv.f[k];for(const k of Object.keys(s.sv.b))if(!STEP[k])delete s.sv.b[k];s.sv.top=Math.min(s.sv.top||0,NSV-1)}
   for(const k of Object.keys(s.b))if(!STEP[k])delete s.b[k];
-  for(const k of Object.keys(s.f))if(!SI[k])delete s.f[k];s.top=Math.min(s.top||0,NS-1);if(!isFinite(s.cashL))s.cashL=NEG;s.v=VERSION;return s}
+  for(const k of Object.keys(s.f))if(!SI[k])delete s.f[k];s.top=Math.min(s.top||0,NS-1);if(!isFinite(s.cashL))s.cashL=NEG;
+  /* version 7 added brands, engines, trucks and departments all through the lists: keep progress by moving
+     each ladder's position to the furthest thing already owned (new items behind you just become extra options) */
+  if((d.v||0)<7){let t=0;for(const k in s.f)if(s.f[k]>0)t=Math.max(t,SI[k].k);s.top=Math.max(t,0);
+    for(const g in s.sTop){let m=0;for(const st of AISLE[g])if(L(s.b,st.id)>0)m=st.j;s.sTop[g]=Math.min(AISLE[g].length-1,Math.max(m,0))}
+    if(s.sv){let j=0;for(const k in s.sv.f)if(s.sv.f[k]>0)j=Math.max(j,SVI[k].k);s.sv.top=j;
+      for(const g in s.sv.sTop){let m=0;for(const st of SHOP[g])if(L(s.sv.b,st.id)>0)m=st.j;s.sv.sTop[g]=Math.min(SHOP[g].length-1,m)}}}
+  s.v=VERSION;return s}
 try{for(const k of ['parts-counter-v4','parts-counter-v5'])localStorage.removeItem(k)}catch(e){}
 let S=fresh();
 try{const raw=localStorage.getItem(KEY);if(raw)S=load(JSON.parse(raw))}catch(e){S=fresh()}
@@ -1084,10 +1189,8 @@ function away(sec){sec=Math.min(sec,offCap());const c0=S.cashL,n=Math.min(2000,M
   if(sec>60&&S.cashL>c0+1e-9)note(`Away ${fmtT(sec)}. The ${S.sv.open?'store and shop':'store'} made ${moneyL(subL(S.cashL,c0))}.`)}
 function checkGoals(){for(const a of A)if(!S.ach[a.id]&&a.ok()){S.ach[a.id]=1;note('Goal reached: '+a.n)}
   for(const [id,c] of LOG)if(!S.log[id]&&c()){S.log[id]=now();if(id!=='l0')note('New logbook entry.')}}
-
 </script>
-<script>
-/* ===== Parts Counter: interface ===== */
+<script>/* ===== Parts Counter: interface ===== */
 const $=id=>document.getElementById(id);
 let oldOpen={},tab='shelves',busy=false,afilt='todo',openBase={},openLine={},built={};
 document.addEventListener('pointerdown',()=>busy=true,true);
@@ -1112,7 +1215,7 @@ $('nav').classList.add('nav5');$('nav').innerHTML=TABS.map(([id,n])=>`<button da
 /* ---------- shelves: the ladder ---------- */
 function buildBase(b){const steps=BASE_STEPS[b],upto=Math.min(S.top+1,steps[steps.length-1].k);if(built[b]===upto)return;built[b]=upto;
   let h=`<button class="lk" data-info="${b}">Part info, fitment and sales</button>`,fit=null;for(const s of steps){if(s.k>upto)break;const p=PI[s.p];
-    if(s.k===steps[0].k||BI[s.b]!==BI[LADDER[s.k-1].b]){h+=`<div class="fit">${esc(BI[s.b].n)} · ${TIER[s.t].n}</div>`}
+    if(s.k===steps[0].k||BI[s.b]!==BI[LADDER[s.k-1].b]){h+=`<div class="fit">${bdg(s.b)}${esc(BI[s.b].n)} · ${TIER[s.t].n}</div>`}
     const ik=`<i class="ski t${s.t}">${icSvg(BASE_IC[b])}</i>`;
     h+=s.k>S.top?`<div class="sku locked">${ik}<div class="sn"><b>${esc(p.fit||p.short)}</b><small>Own ${needOf(LADDER[s.k-1])} of the one above to unlock</small></div><span class="lock">Locked</span></div>`:
       `<div class="sku" id="r-${s.id}">${ik}<div class="sn"><b>${esc(p.fit||p.short)}</b><small id="ki-${s.id}"></small></div><button class="btn pri" data-sku="${s.id}" id="kb-${s.id}"></button></div>`}
@@ -1127,7 +1230,7 @@ function renderLadder(){const c=cur(),bi=BASES.indexOf(c.base),steps=BASE_STEPS[
   const gq=S.top<NS-1?gateOf(LADDER[S.top+1]):-1,gTxt=gq<0?'':!S.sv.open?`<p class="gate">The next part also needs the service shop. Open it in the Service tab.</p>`:S.sv.top<gq?`<p class="gate">The next part also needs the shop to keep up: unlock <b>${esc(svName(SVL[gq]))}</b> in the Service tab (job step ${fmt(gq+1)}, you're on ${fmt(S.sv.top+1)}).</p>`:'';
   $('prog').innerHTML=`<div class="capg"><h3 class="bn">${icSvg(BASE_IC[c.base])}${esc(BASE_NAME[c.base])}</h3><span class="sub" style="margin:0">Part ${bi+1} of ${NB}</span></div>
     <p class="sub" style="margin:4px 0 8px">Step ${c.k-steps[0].k+1} of ${steps.length} in this part · ${esc(LI[c.line].n)}</p>
-    <div class="meter"><i style="width:${Math.min(100,have/need*100)}%"></i></div><p style="margin:8px 0 0;font-size:15px">${esc(nextTxt)} <b class="num">${fmt(Math.min(have,need))} / ${need}</b></p>${gTxt}`;
+    <div class="meter"><i style="width:${Math.min(100,have/need*100)}%"></i></div><p style="margin:8px 0 0;font-size:15px">${esc(nextTxt)} <b class="num">${fmt(Math.min(have,need))} / ${need}</b></p>${gTxt}${typeof nextUp==="function"?nextUp():""}`;
   const reached=new Set(LADDER.slice(0,S.top+1).map(s=>s.line));
   for(const l of LINES){const el=$('ln-'+l.id);el.hidden=!reached.has(l.id);if(el.hidden)continue;
     let f=0;for(const b of LINE_BASES[l.id])for(const s of BASE_STEPS[b])f+=L(S.f,s.id);
@@ -1137,7 +1240,7 @@ function renderLadder(){const c=cur(),bi=BASES.indexOf(c.base),steps=BASE_STEPS[
       const st=BASE_STEPS[b],last=st[st.length-1],done=L(S.f,last.id)>=BASE_NEED;let f2=0,v2=NEG;for(const s of st){const n=L(S.f,s.id);if(n){f2+=n;v2=addL(v2,lg(n)+s.incL+lg(Math.max(R.E,1e-300)))}}
       $('bs-'+b).textContent=`${done?'Mastered · ':''}${fmt(f2)} facings · ${moneyL(v2)}/s`;
       if(be.open){buildBase(b);for(const s of st){if(s.k>S.top)break;updRow(s)}}}}}
-$('ladder').innerHTML=LINES.map(l=>`<details class="line" id="ln-${l.id}" data-line="${l.id}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="ls-${l.id}"></small></div><span class="lval" id="lv-${l.id}"></span></summary><div class="lbody">${
+$('ladder').innerHTML=LINES.map(l=>`<details class="line" id="ln-${l.id}" data-line="${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="ls-${l.id}"></small></div><span class="lval" id="lv-${l.id}"></span></summary><div class="lbody">${
   (LINE_BASES[l.id]||[]).map(b=>`<details class="part" id="bd-${b}" data-base="${b}" hidden><summary><span class="bn">${icSvg(BASE_IC[b])}${esc(BASE_NAME[b])}</span><small id="bs-${b}"></small></summary><div id="bb-${b}"></div></details>`).join('')}</div></details>`).join('');
 function openCurrent(){const c=cur();const ln=$('ln-'+c.line),bd=$('bd-'+c.base);if(!ln.open)ln.open=true;if(!bd.open)bd.open=true}
 
@@ -1173,7 +1276,7 @@ const SV_STEPS={};for(const s of SVL)(SV_STEPS[s.job]=SV_STEPS[s.job]||[]).push(
 const LINE_JOBS={};for(const [jid,,l] of SV_JOBS)(LINE_JOBS[l]=LINE_JOBS[l]||[]).push(jid);
 const JOB_ORDER=SV_LINES.flatMap(l=>LINE_JOBS[l.id]||[]);
 let sbuilt={};
-$('sladder').innerHTML=SV_LINES.map(l=>`<details class="line" id="sln-${l.id}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(SV_LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="sls-${l.id}"></small></div><span class="lval" id="slv-${l.id}"></span></summary><div class="lbody">${
+$('sladder').innerHTML=SV_LINES.map(l=>`<details class="line" id="sln-${l.id}" style="--lc:${l.c}" hidden><summary><i class="lic" style="background:${l.c}">${icSvg(SV_LINE_IC[l.id])}</i><div class="lsum"><b>${l.n}</b><small id="sls-${l.id}"></small></div><span class="lval" id="slv-${l.id}"></span></summary><div class="lbody">${
   (LINE_JOBS[l.id]||[]).map(j=>`<details class="part" id="sjd-${j}" hidden><summary><span class="bn">${icSvg(JOB_IC[j])}${esc(JOB_NAME[j])}</span><small id="sjs-${j}"></small></summary><div id="sjb-${j}"></div></details>`).join('')}</div></details>`).join('');
 function buildJob(j){const steps=SV_STEPS[j],upto=Math.min(S.sv.top+1,steps[steps.length-1].k);if(sbuilt[j]===upto)return;sbuilt[j]=upto;
   let h='';for(const s of steps){if(s.k>upto)break;
@@ -1228,9 +1331,10 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
   $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci;$('sSnd').checked=S.ui.snd;$('sVib').checked=S.ui.vib;renderCatalog();drawChart()}
 
 /* ---------- header ---------- */
-function renderHeader(){$('cash').textContent=moneyL(S.cashL);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=STORE;
+/* money rolls toward its new value instead of jumping */
+let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownCash)||Math.abs(S.cashL-shownCash)>6)shownCash=S.cashL;else shownCash+=(S.cashL-shownCash)*.35;$('cash').textContent=moneyL(Math.abs(S.cashL-shownCash)<.002?S.cashL:shownCash);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=STORE;
   const cells=[['shelf','Shelf',R.supply],['cu','Customers',R.dem],['ck','Checkout',R.ck],['sk','Stocking',R.sk]];
-  $('dash').innerHTML=cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}"><small>${n}</small><b class="num">${fmt(v)}/s</b></div>`).join('');
+  setHTML('dash',cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}"><small>${n}</small><b class="num">${fmt(v)}/s</b></div>`).join(''));
   const i=S.inc;$('inc').hidden=!i;if(i){const t=now(),m={spill:['Coffee spilled by the counter. Checkout is slower.','Mop it up'],jam:['A register jammed. Checkout is crawling.','Fix it'],thief:['A shoplifter is heading for the door.','Stop him'],
     back:[i.line?`Backorder: ${lc(LI[i.line].n)} can't restock for ${fmtT((i.end-t)/1000)}.`:'',''],lift:['A truck lift went down. The shop is short on equipment.','Call for repair'],
     sick:[`A technician called in sick. The shop is short-handed for ${fmtT((i.end-t)/1000)}.`,''],comeback:['A customer brought a truck back. The job has to be redone.','Fix it right']}[i.type];$('incTxt').textContent=m[0];$('incBtn').hidden=!m[1];$('incBtn').textContent=m[1]}}
@@ -1243,10 +1347,10 @@ function forceRender(){busy=false;for(const id of ['goals','log','cat','svClosed
 let lastTop=S.top,lastJob=S.sv.top,lastAisle='';
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.tab){tab=d.tab;document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));for(const [s] of TABS)$('t-'+s).hidden=s!==tab;scrollTo({top:0})}
-  else if(d.sku){const s=SI[d.sku];if(buySku(s,skuAmt(s)))feel('buy');unlock(false)}
-  else if(d.bld){const x=STEP[d.bld];if(x){if(buyBld(x,bAmt(x)))feel('buy');unlock(false);tick(1e-6,false)}}
-  else if(d.shop){const x=STEP[d.shop];if(x){if(buyShop(x,shAmt(x)))feel('buy');unlock(false);tick(1e-6,false)}}
-  else if(d.job){const s=SVI[d.job];if(s){if(buyJob(s,jobAmt(s)))feel('buy');unlock(false);tick(1e-6,false)}}
+  else if(d.sku){const s=SI[d.sku];if(buySku(s,skuAmt(s))){feel('buy');flyFrom(b)}unlock(false)}
+  else if(d.bld){const x=STEP[d.bld];if(x){if(buyBld(x,bAmt(x))){feel('buy');flyFrom(b)}unlock(false);tick(1e-6,false)}}
+  else if(d.shop){const x=STEP[d.shop];if(x){if(buyShop(x,shAmt(x))){feel('buy');flyFrom(b)}unlock(false);tick(1e-6,false)}}
+  else if(d.job){const s=SVI[d.job];if(s){if(buyJob(s,jobAmt(s))){feel('buy');flyFrom(b)}unlock(false);tick(1e-6,false)}}
   else if(d.open){if(openShop()){feel('big');note('The service shop is open!');tick(1e-6,false);openJob()}}
   else if(d.m){S.ui.mode=d.m==='max'?'max':+d.m}
   else if(d.theme){S.ui.theme=d.theme;applyTheme();save()}
@@ -1278,16 +1382,14 @@ S.t=now();/* no progress while the game is closed */
 openCurrent();if(S.sv.open)openJob();checkGoals();
 let ln=0;
 setInterval(()=>{const t=now(),dt=Math.min(1,(t-S.t)/1000);S.t=t;if(document.hidden)return;if(dt>0)tick(dt);
-  if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){openCurrent();feel('big')}else feel('step')}
+  if(S.top!==lastTop){const prev=LADDER[lastTop];lastTop=S.top;if(cur().base!==prev.base){const pb=$('bd-'+prev.base);if(pb)pb.open=false;if(cur().line!==prev.line){const pl=$('ln-'+prev.line);if(pl)pl.open=false}openCurrent();feel('big');celebrate(cur(),prev)}else feel('step');setTimeout(()=>flashRow('r-'+cur().id),60)}
   if(S.sv.top!==lastJob){const prev=SVL[lastJob];lastJob=S.sv.top;if(svCur().job!==prev.job&&S.sv.open){openJob();feel('big')}else feel('step')}
   {const k=JSON.stringify(S.sTop)+JSON.stringify(S.sv.sTop);if(k!==lastAisle){if(lastAisle)feel('step');lastAisle=k}}
   if(ln%100===0)sampleHist();if(sheetBase&&ln%10===0)renderSheet();
   if(++ln%5===0)events();if(ln%20===0)checkGoals();if(ln%3===0)render()},100);
 setInterval(save,5000);
 render();
-
-</script><script>
-/* ===== Parts Counter: feel, catalog, part lookup, income chart, lifetime stats ===== */
+</script><script>/* ===== Parts Counter: feel, catalog, part lookup, income chart, lifetime stats ===== */
 
 /* ---------- sound and vibration ---------- */
 let AC=null;
@@ -1360,9 +1462,78 @@ function lifeStats(){const st=S.st;let bb=null,bv=0;for(const k in st.br)if(st.b
   return [['Parts sold, all time',fmt(st.all)],['Most-sold brand',bb?`${BI[bb].n} (${fmt(bv)})`:'None yet'],['Most-sold part',pb?`${BASE_NAME[pb]} (${fmt(pv)})`:'None yet'],
     ['Trucks serviced',S.sv.open?fmt(st.trucks):'Shop not open'],['Labor hours sold',S.sv.open?fmt(st.hrs):'Shop not open']]}
 
+/* ---------- brand badges, purchase feedback, unlock moments ---------- */
+function flyFrom(btn){if(!S.ui.anim)return;const r=btn.getBoundingClientRect(),sm=btn.querySelector('small'),t=document.createElement('div');t.className='fly';
+  t.textContent='−'+(sm?sm.textContent:'');t.style.left=(r.left+r.width/2-30)+'px';t.style.top=(r.top-6)+'px';document.body.appendChild(t);setTimeout(()=>t.remove(),950)}
+function flashRow(id){const el=$(id);if(!el)return;el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash')}
+/* confetti burst */
+const cf=$('confetti'),cfx=cf.getContext('2d');let bits=[],cfOn=false;
+function confetti(){if(!S.ui.anim)return;const d=devicePixelRatio||1;cf.width=innerWidth*d;cf.height=innerHeight*d;cfx.setTransform(d,0,0,d,0,0);
+  const cols=['#f2541b','#2563eb','#0e9f6e','#fbbf24','#e11d48','#8e24aa'];for(let i=0;i<90;i++)bits.push({x:innerWidth/2,y:innerHeight*.35,vx:(Math.random()-.5)*520,vy:-Math.random()*520-120,r:Math.random()*6,c:cols[i%6],l:1.6+Math.random()});
+  if(!cfOn){cfOn=true;let t0=performance.now();const step=t=>{const dt=Math.min(.05,(t-t0)/1000);t0=t;cfx.clearRect(0,0,innerWidth,innerHeight);
+    for(const b of bits){b.vy+=900*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.l-=dt;b.r+=dt*6;cfx.save();cfx.translate(b.x,b.y);cfx.rotate(b.r);cfx.fillStyle=b.c;cfx.globalAlpha=Math.max(0,Math.min(1,b.l));cfx.fillRect(-4,-2,8,4);cfx.restore()}
+    bits=bits.filter(b=>b.l>0&&b.y<innerHeight+20);if(bits.length)requestAnimationFrame(step);else{cfOn=false;cfx.clearRect(0,0,innerWidth,innerHeight)}};requestAnimationFrame(step)}}
+/* a big card when a new part or a whole new department opens up */
+function celebrate(c,prev){confetti();const newLine=prev&&c.line!==prev.line,l=LI[c.line];
+  $('unlockBody').innerHTML=`<i class="lic" style="background:${l.c}">${icSvg(newLine?LINE_IC[c.line]:BASE_IC[c.base])}</i><small>${newLine?'New department':'New part'}</small><b>${esc(newLine?l.n:BASE_NAME[c.base])}</b>
+   <p>${newLine?`Starting with ${esc(lc(BASE_NAME[c.base]))}.`:`Part ${BASES.indexOf(c.base)+1} of ${NB} · ${esc(l.n)}`}<br>First up: ${bdg(c.b)}${esc(BI[c.b].n)}</p><button class="btn pri" data-close-unlock="1" style="width:100%">Let's go</button>`;
+  $('unlock').hidden=false;clearTimeout(celebrate.t);celebrate.t=setTimeout(()=>$('unlock').hidden=true,6000)}
+document.addEventListener('click',e=>{if(e.target.closest('[data-close-unlock]')||e.target.id==='unlock'){$('unlock').hidden=true}},true);
+
+/* ---------- next up: the one thing worth doing now ---------- */
+function nextUp(){const lim=R.lim,limN={cu:'Customers',ck:'Checkout',sk:'Stocking'};
+  if(FAC>=shelfCap())return `<div class="next"><span><b>Shelves are full.</b> Add shelving in the Store before stocking more.</span><button class="btn pri" data-tab="store">Store</button></div>`;
+  if(FAC&&lim!=='shelf'&&limN[lim]&&R.E<.97)return `<div class="next"><span><b>${limN[lim]} is your limit</b>: you're only selling ${Math.round(R.E*100)}% of what's on the shelves.</span><button class="btn pri" data-tab="store">Fix it</button></div>`;
+  const g=S.top<NS-1?gateNeed(S.top+1):-1;if(g>=0&&L(S.f,cur().id)>=needOf(cur()))return `<div class="next"><span><b>The next part is waiting on the shop.</b></span><button class="btn pri" data-tab="service">Service</button></div>`;
+  if(S.sv.open&&R.sv.work>0&&R.sv.E<.97&&R.sv.lim!=='vb')return `<div class="next"><span><b>The shop is held back</b> by ${({vc:'trucks coming in',vw:'service writers',vt:'technicians',ve:'tools'})[R.sv.lim]}.</span><button class="btn pri" data-tab="shop">Shop</button></div>`;
+  return ''}
+
+/* ---------- jump bar: shows the part you're on when it's scrolled away ---------- */
+{const j=$('jump');function upd(){if(tab!=='shelves'){j.hidden=true;return}const c=cur(),row=$('r-'+c.id)||$('bd-'+c.base),r=row&&row.getBoundingClientRect(),pr=$('prog').getBoundingClientRect();
+  const off=!r||r.bottom<120||r.top>innerHeight-90;j.hidden=!(off&&pr.bottom<100);if(!j.hidden){const need=needOf(c);
+  j.innerHTML=`<i class="lic" style="background:${LI[c.line].c}">${icSvg(BASE_IC[c.base])}</i><span>${esc(skuName(c))} · ${fmt(Math.min(L(S.f,c.id),need))}/${need}</span>`}}
+ addEventListener('scroll',upd,{passive:true});setInterval(upd,500);
+ j.addEventListener('click',()=>{openCurrent();setTimeout(()=>{const c=cur(),row=$('r-'+c.id)||$('bd-'+c.base);if(row)row.scrollIntoView({behavior:'smooth',block:'center'})},60)})}
+
+/* ---------- swipe left or right to change tabs ---------- */
+{let sx=0,sy=0,st=0;const order=['shelves','store','service','shop','more'];
+ document.querySelector('main').addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;st=Date.now()},{passive:true});
+ document.querySelector('main').addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;if(Date.now()-st>600||Math.abs(dx)<70||Math.abs(dy)>Math.abs(dx)*.6)return;
+   if(e.target.closest('.seg,.chips,canvas,input'))return;const i=order.indexOf(tab),n=order[i+(dx<0?1:-1)];if(n)$('tab-'+n).click()},{passive:true})}
+
+/* ---------- long-press a buy button for the details ---------- */
+{let timer=null,fired=false;
+ /* listen on the whole row: a gray (disabled) button doesn't get touches of its own */
+ document.addEventListener('pointerdown',e=>{const row=e.target.closest('.sku,.item'),b=row&&row.querySelector('button[data-sku],button[data-bld],button[data-shop],button[data-job]');if(!b)return;fired=false;clearTimeout(timer);
+   timer=setTimeout(()=>{fired=true;buzz(15);showDetails(b.dataset)},480)});
+ for(const ev of ['pointerup','pointercancel'])document.addEventListener(ev,()=>clearTimeout(timer));document.addEventListener('scroll',()=>clearTimeout(timer),{passive:true});
+ document.addEventListener('click',e=>{if(fired&&e.target.closest('.sku,.item')){e.stopPropagation();e.preventDefault();fired=false}},true);
+ document.addEventListener('contextmenu',e=>{if(e.target.closest('.sku,.item'))e.preventDefault()})}
+function showDetails(d){let name,own,baseL,g,each,eachTxt,cap=0;
+  if(d.sku){const s=SI[d.sku];name=skuName(s);own=L(S.f,s.id);baseL=s.lam;g=s.g;each=s.incL+lg(Math.max(R.E,1e-300));eachTxt='Earns per facing'}
+  else if(d.job){const s=SVI[d.job];name=svName(s);own=L(S.sv.f,s.id);baseL=s.lam;g=s.g;each=s.incL+lg(Math.max(R.sv.E,1e-300));eachTxt='Earns per job booked'}
+  else{const s=STEP[d.bld||d.shop],o=d.bld?S.b:S.sv.b,c=(d.bld?AISLE_SPEC:SHOP_SPEC)[s.g];name=s.n;own=L(o,s.id);baseL=s.baseL;g=s.g2;cap=MAXC;eachTxt=`Adds per copy`;each=null;var add=`+${fmt(s.amt)} ${c.unit}`}
+  const c1=costL(baseL,g,own,1),c10=costL(baseL,g,own,cap?Math.max(1,Math.min(10,cap-own)):10);
+  const rows=[['You own',fmt(own)+(cap?` of ${cap}`:'')],['Next one costs',moneyL(c1)],[`Next ${cap?Math.max(1,Math.min(10,cap-own)):10} cost`,moneyL(c10)],['Each one after costs',`×${g.toFixed(2)} more`],[eachTxt,each===null?add:moneyL(each)+'/s']];
+  if(each!==null)rows.push(['Pays for itself in',fmtT(10**(c1-each))]);rows.push(['That is',`${fmtT(10**(c1-R.incL))} of your current income`]);
+  sheetBase=null;$('sheet').hidden=false;document.body.style.overflow='hidden';
+  $('sheetBody').innerHTML=`<h3 style="margin:0 40px 10px 0">${esc(name)}</h3><div class="kv">${rows.map(([k,v])=>`<span>${k}</span><span>${v}</span>`).join('')}</div><p class="sub" style="margin:12px 0 0">Tip: press and hold any buy button to see this.</p>`}
+
+/* ---------- catalog search (look-up only) ---------- */
+$('catq').addEventListener('input',()=>{const q=$('catq').value.trim().toLowerCase();if(q.length<2){$('catres').innerHTML='';return}
+  const hits=BASES.filter(b=>BASE_NAME[b].toLowerCase().includes(q)).slice(0,24);
+  $('catres').innerHTML=hits.length?'<div class="tiles">'+hits.map(b=>{const c=baseCounts(b),l=LI[PARTS.find(p=>p.base===b).line];return `<button class="tile ${c.paS?'':'none'}" data-info="${b}"><i style="color:${c.paS?l.c:'var(--mute)'}">${icSvg(BASE_IC[b])}</i><b>${esc(BASE_NAME[b])}</b><small>${c.paS?`${c.brS} of ${c.br} brands`:'Not stocked'}</small></button>`}).join('')+'</div>':'<p class="sub">No parts match.</p>'});
+
+/* ---------- welcome back ---------- */
+setTimeout(()=>{if(!S.st||!S.st.totalL||S.st.totalL<=NEG/2||S.top<1)return;const c=cur(),lim={shelf:'Nothing, sales are keeping up',cu:'Customers',ck:'Checkout',sk:'Stocking'}[R.lim]||'Nothing';
+  const g=S.top<NS-1?gateNeed(S.top+1):-1;
+  $('welcomeBody').innerHTML=`<h3>Welcome back</h3><p class="sub" style="margin:0">${esc(rankOf(S.st.totalL))} at ${esc(STORE)}</p>
+   <div class="kv">${[['Working on',esc(BASE_NAME[c.base])+` (part ${BASES.indexOf(c.base)+1} of ${NB})`],['Next step',esc(skuName(c))+` · ${fmt(Math.min(L(S.f,c.id),needOf(c)))}/${needOf(c)}`],
+     ['Earning',moneyL(R.incL)+'/s'],['Holding you back',FAC>=shelfCap()?'Shelf space':g>=0&&L(S.f,c.id)>=needOf(c)?'The shop (next part waits on it)':lim],...(S.sv.open?[['Shop',`job step ${fmt(S.sv.top+1)} of ${fmt(NSV)}`]]:[])].map(([k,v])=>`<span>${k}</span><span>${v}</span>`).join('')}</div>
+   <button class="btn pri" style="width:100%" id="wgo">Back to the counter</button>`;$('welcome').hidden=false},900);
+document.addEventListener('click',e=>{if(e.target.id==='wgo'||e.target.id==='welcome')$('welcome').hidden=true});
 </script>
-<script>
-/* ===== Parts Counter Idle: store scene ===== */
+<script>/* ===== Parts Counter Idle: store scene ===== */
 {
 const cv=$('scene'),cx=cv.getContext('2d');let W=0,H=0,last=0,ph=0,peeps=[],spawn=0,hit=null;
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1376,6 +1547,18 @@ const lerp=(a,b,t)=>a+(b-a)*t,mix=(c1,c2,t)=>{const p=c=>[1,3,5].map(i=>parseInt
 /* daylight from the phone's clock: 1 at midday, 0 at night, with dawn and dusk in between */
 function daylight(){const d=new Date(),h=d.getHours()+d.getMinutes()/60;if(h<5.5||h>20.5)return 0;if(h<7.5)return (h-5.5)/2;if(h>18.5)return (20.5-h)/2;return 1}
 const STARS=Array.from({length:14},(_,i)=>[(i*37%100)/100,(i*53%60)/100]);
+/* the building grows up with you: gravel-lot shop, standard store, modern dealership, distribution center */
+const ERAS=[{wall:'#b08d6e',wall2:'#8e6e52',floor:'#8a8378',trim:'#6d4c41',lines:'wood'},{wall:'#d9d2c3',wall2:'#a89f8d',floor:'#8d8270',trim:'#b7ab95'},
+ {wall:'#eef1f5',wall2:'#b8c2cf',floor:'#9aa3ad',trim:'#2f6fb0',lines:'stripe'},{wall:'#c9ced4',wall2:'#8f969e',floor:'#7d848c',trim:'#f4b400',lines:'steel'}];
+const eraOf=()=>{const f=S.top/NS;return f<.02?0:f<.2?1:f<.55?2:3};
+/* today's weather, the same all day: snow mostly in winter */
+function weather(){const d=new Date(),seed=(d.getFullYear()*372+d.getMonth()*31+d.getDate())*2654435761%1000/1000,m=d.getMonth(),winter=m===11||m<2;
+  if(winter)return seed<.4?'snow':seed<.55?'cloud':seed<.65?'rain':'clear';return seed<.25?'rain':seed<.45?'cloud':'clear'}
+const DROPS=Array.from({length:26},(_,i)=>[(i*61%100)/100,(i*29%100)/100,.6+(i*17%10)/20]);
+let sparks=[],dog={x:0,dir:1,t:0},driver={x:-40,on:false,t:8};
+function dogDraw(x,y,dir,bob){cx.save();cx.translate(x,y);cx.scale(dir,1);cx.fillStyle='#8d5a2b';cx.fillRect(-9,-8+bob,16,6);cx.fillRect(5,-12+bob,6,6);cx.fillStyle='#5d3a1a';cx.fillRect(9,-13+bob,2,3);
+  cx.fillRect(-8,-2,2,4);cx.fillRect(4,-2,2,4);cx.fillRect(-12,-9+bob+Math.sin(ph*12)*1.5,4,2);cx.restore()}
+function box(x,y){cx.fillStyle='#c08a4a';cx.fillRect(x,y,9,7);cx.fillStyle='#8a5a2a';cx.fillRect(x,y+3,9,1)}
 function van(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);cx.fillStyle=c;cx.fillRect(0,-22,34,16);cx.fillRect(34,-16,10,10);cx.fillStyle='#cfe3f2';cx.fillRect(35,-14,6,5);
   cx.fillStyle='#1b1d20';for(const wx of [8,36]){cx.beginPath();cx.arc(wx,-5,4.5,0,7);cx.fill()}cx.restore()}
 function forklift(x,y,load){cx.fillStyle='#f4b400';cx.fillRect(x,y-16,18,12);cx.fillStyle='#1b1d20';cx.fillRect(x+3,y-26,2,10);cx.fillRect(x+12,y-26,2,10);cx.fillRect(x+3,y-26,11,2);
@@ -1389,7 +1572,13 @@ function semi(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);cx.fillStyle=c;
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
   const floorY=Math.round(H*.62);
   const day=daylight(),night=1-day;
-  cx.fillStyle=mix('#a89f8d','#d9d2c3',day);cx.fillRect(0,0,W,floorY);cx.fillStyle='#b7ab95';cx.fillRect(0,floorY-6,W,6);cx.fillStyle=mix('#6e6553','#8d8270',day);cx.fillRect(0,floorY,W,H-floorY);
+  const E=ERAS[eraOf()];cx.fillStyle=mix(E.wall2,E.wall,.4+.6*day);cx.fillRect(0,0,W,floorY);
+  if(E.lines==='wood'){cx.fillStyle='rgba(0,0,0,.08)';for(let x=0;x<W;x+=14)cx.fillRect(x,0,1,floorY)}
+  else if(E.lines==='steel'){cx.fillStyle='rgba(0,0,0,.07)';for(let x=0;x<W;x+=8)cx.fillRect(x,0,3,floorY)}
+  else if(E.lines==='stripe'){cx.fillStyle=E.trim;cx.fillRect(0,floorY-22,W,4)}
+  cx.fillStyle=E.trim;cx.fillRect(0,floorY-6,W,6);cx.fillStyle=mix(mix(E.floor,'#000000',.25),E.floor,.5+.5*day);cx.fillRect(0,floorY,W,H-floorY);
+  if(eraOf()===3){cx.fillStyle='#f4b400';for(let x=0;x<W;x+=24)cx.fillRect(x,H-5,12,3)}
+  if(eraOf()===2){cx.fillStyle='rgba(255,255,255,.08)';cx.fillRect(0,floorY,W,4)}
   const wx=8,wy=14,ww=Math.min(110,W*.26),wh=floorY-34;
   const sky=day>=1?'#9fc8e8':day<=0?'#18223b':day>.5?mix('#f2b279','#9fc8e8',(day-.5)*2):mix('#18223b','#f2b279',day*2);
   cx.fillStyle=sky;cx.fillRect(wx,wy,ww,wh);
@@ -1401,7 +1590,13 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   if(has('cu','Yard sign')){cx.fillStyle='#5d5446';cx.fillRect(wx+ww*.9,wy+wh*.66,1.5,10);cx.fillStyle='#ffd54f';cx.fillRect(wx+ww*.84,wy+wh*.6,12,7)}
   const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=['#c62828','#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)semi(wx+4+i*(ww/3),wy+wh-2,tc[i],ww/220);
   if(has('ck','Delivery van'))van(wx+ww*.55,wy+wh*.74,'#f5f5f5',ww/260);if(has('ck','Box truck'))van(wx+ww*.05,wy+wh*.74,'#e0e0e0',ww/200);
-  cx.strokeStyle='#5d5446';cx.lineWidth=4;cx.strokeRect(wx,wy,ww,wh);cx.lineWidth=1;
+  {const w=weather();cx.save();cx.beginPath();cx.rect(wx,wy,ww,wh);cx.clip();
+   if(w!=='clear'){cx.fillStyle=w==='cloud'?'rgba(230,234,240,.85)':'rgba(150,158,170,.85)';for(let i=0;i<3;i++){const cxp=wx+((i*ww*.4+ph*(mv?4:0))%(ww+30))-15;cx.beginPath();cx.ellipse(cxp,wy+10+i*5,14,6,0,0,7);cx.ellipse(cxp+10,wy+8+i*5,10,5,0,0,7);cx.fill()}}
+   if(w==='rain'){cx.strokeStyle='rgba(170,200,235,.8)';cx.lineWidth=1;cx.beginPath();for(const [a,b,v] of DROPS){const y=wy+((b*wh+ph*120*v*(mv?1:0))%wh),x=wx+a*ww;cx.moveTo(x,y);cx.lineTo(x-2,y+6)}cx.stroke()}
+   if(w==='snow'){cx.fillStyle='rgba(255,255,255,.9)';for(const [a,b,v] of DROPS){const y=wy+((b*wh+ph*18*v*(mv?1:0))%wh),x=wx+a*ww+Math.sin(ph*2+b*9)*3;cx.fillRect(x,y,2,2)}
+     cx.fillStyle='rgba(255,255,255,.85)';cx.fillRect(wx,wy+wh-4,ww,4)}
+   cx.restore()}
+  cx.strokeStyle=E.lines==='wood'?'#5d4037':E.lines==='stripe'?'#2f3a48':'#5d5446';cx.lineWidth=4;cx.strokeRect(wx,wy,ww,wh);cx.lineWidth=1;
   cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=8+night*10;cx.font='700 12px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('OPEN',wx+ww/2,wy+14);cx.shadowBlur=0;
   // shelving: one unit per aisle (plus the starter), bins coloured by the lines you stock
   const doors=!S.sv.open?1:has('vb','Second shop')?3:has('vb','Service bay')?2:1,sx=wx+ww+12,sw=W-sx-6-doors*38,unitW=26,units=Math.max(1,Math.min(1+Math.floor(shelfCap()/40),Math.floor(sw/unitW))),bh=(floorY-28)/4;
@@ -1416,17 +1611,29 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
       cx.fillStyle='#5d5446';cx.fillRect(bx-3,by-3,bw+6,73);cx.fillStyle=mix('#a9a296','#e9e4da',day);cx.fillRect(bx,by,bw,70);
       const up=busy?.55:.1;cx.fillStyle='#b9b2a4';for(let i=0;i<70*(1-up);i+=6)cx.fillRect(bx,by+i,bw,3);
       if(busy){if(has('vb','Truck lift')){cx.fillStyle='#f4b400';cx.fillRect(bx+1,by+70-36,3,34);cx.fillRect(bx+bw-4,by+70-36,3,34)}
-        const lift=has('vb','Truck lift')?6:0;cx.fillStyle=S.inc&&S.inc.type==='lift'?'#7a7a7a':tc[d%3];cx.fillRect(bx+5,by+70-30-lift,bw-10,26);cx.fillStyle='#cfe3f2';cx.fillRect(bx+9,by+70-26-lift,bw-18,8);
-        cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+11,by+68-lift,4,0,7);cx.arc(bx+bw-11,by+68-lift,4,0,7);cx.fill()}}
+        /* each bay cycles: a truck drives in, gets worked on (sparks fly), then drives out and the next one comes */
+        const cyc=mv?(ph*.07+d*.37):(d*.37+.5),t=cyc%1,ci=Math.floor(cyc)+d;let off=0;if(t<.12)off=(1-t/.12)*44;else if(t>.88)off=(t-.88)/.12*44;
+        const lift=has('vb','Truck lift')&&off===0?6:0;cx.save();cx.beginPath();cx.rect(bx,by,bw,70);cx.clip();
+        cx.fillStyle=S.inc&&S.inc.type==='lift'?'#7a7a7a':BODY[ci%BODY.length];cx.fillRect(bx+5,by+70-30-lift+off,bw-10,26);cx.fillStyle='#cfe3f2';cx.fillRect(bx+9,by+70-26-lift+off,bw-18,8);
+        cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+11,by+68-lift+off,4,0,7);cx.arc(bx+bw-11,by+68-lift+off,4,0,7);cx.fill();cx.restore();
+        if(mv&&off===0&&!(S.inc&&S.inc.type==='lift')&&Math.random()<.35)for(let q=0;q<2;q++)sparks.push({x:bx+bw/2+(Math.random()-.5)*10,y:by+70-34,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,l:.5})}}
     const bx=W-40;cx.fillStyle=night>.5?'#ffd54f':'#1b1d20';cx.font='700 9px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('SERVICE',bx-(doors-1)*19+17,floorY-76);
-    if(R.sv.work>0)person(W-40-(doors-1)*38-10,floorY-28,'#1565c0','#1565c0',mv?Math.sin(ph*5)*1.5:0)}
-  else{cx.fillStyle='#5d5446';cx.fillRect(W-38,floorY-80,30,80);cx.fillStyle='#9fc8e8';cx.fillRect(W-34,floorY-74,22,40)}
+    if(R.sv.work>0)person(W-40-(doors-1)*38-10,floorY-28,'#1565c0','#1565c0',mv?Math.sin(ph*5)*1.5:0);
+    /* the shop dog wanders in front of the bays */
+    {const L0=W-40-(doors-1)*38-6,R0=W-10;if(mv){dog.x+=dog.dir*dt*18;dog.t-=dt;if(dog.x<L0||dog.x>R0||dog.t<0){dog.dir*=-1;dog.t=2+Math.random()*4;dog.x=Math.max(L0,Math.min(R0,dog.x))}}else if(!dog.x)dog.x=(L0+R0)/2;
+     if(!dog.x)dog.x=L0;dogDraw(dog.x,H-4,dog.dir,mv?Math.abs(Math.sin(ph*10)):0)}}
+  for(const k of sparks){k.x+=k.vx*dt;k.y+=k.vy*dt;k.vy+=160*dt;k.l-=dt;cx.fillStyle=`rgba(255,${190+Math.random()*60|0},60,${Math.max(0,k.l*2)})`;cx.fillRect(k.x,k.y,2,2)}
+  sparks=sparks.filter(k=>k.l>0);if(sparks.length>80)sparks.splice(0,sparks.length-80);
+  if(!S.sv.open){cx.fillStyle='#5d5446';cx.fillRect(W-38,floorY-80,30,80);cx.fillStyle='#9fc8e8';cx.fillRect(W-34,floorY-74,22,40)}
   /* stocking gear on the open floor under the window */
   const gx=wx+4,gw=ww-10,gy=H-8;
   if(has('sk','Conveyor')){cx.fillStyle='#3c4148';cx.fillRect(gx,floorY+4,gw,4);cx.fillStyle='#b5651d';for(let i=0;i<3;i++){const x=gx+((ph*24*(mv?1:0)+i*gw/3)%gw);cx.fillRect(x,floorY-2,8,6)}}
   if(has('sk','Forklift')){const f=mv?(Math.sin(ph*.6)+1)/2:.3;forklift(gx+f*(gw-30),gy,Math.sin(ph*.6)>0)}
   else if(has('sk','Pallet jack')){cx.fillStyle='#c62828';cx.fillRect(gx+10,gy-16,3,14);cx.fillStyle='#555';cx.fillRect(gx+10,gy-3,18,3);cx.fillStyle='#b5651d';cx.fillRect(gx+14,gy-12,12,9)}
   else if(has('sk','Hand truck')){cx.strokeStyle='#555';cx.lineWidth=2;cx.beginPath();cx.moveTo(gx+10,gy-22);cx.lineTo(gx+14,gy-2);cx.lineTo(gx+22,gy-2);cx.stroke();cx.lineWidth=1;cx.fillStyle='#b5651d';cx.fillRect(gx+14,gy-12,9,9)}
+  if(mv&&!has('sk','Forklift')){driver.t-=dt;if(!driver.on&&driver.t<0){driver.on=true;driver.x=-20}
+    if(driver.on){driver.x+=dt*26;person(driver.x,gy-38,'#5d4037','#f4b400',Math.sin(ph*12)*1.5);if(driver.x<gx+gw-10){cx.fillStyle='#8d6e63';cx.fillRect(driver.x+8,gy-8,16,4);box(driver.x+10,gy-15);box(driver.x+15,gy-15)}
+      if(driver.x>gx+gw+30){driver.on=false;driver.t=25+Math.random()*20}}}
   if(has('sk','Warehouse robots')&&mv){cx.fillStyle='#ff7043';for(let i=0;i<2;i++){const x=gx+((ph*30+i*gw/2)%gw);cx.fillRect(x,gy-24,10,5)}}
   /* hanging lights, brighter at night */
   for(let i=0;i<3;i++){const lx=W*(.3+i*.22);cx.fillStyle='#3c3c3c';cx.fillRect(lx,0,1,8);cx.fillStyle='#f4f1de';cx.fillRect(lx-6,8,12,3);
@@ -1438,9 +1645,15 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){if(pos){cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)+8,cy-24,2,10);cx.fillStyle='#3949ab';cx.fillRect(rx(i)+3,cy-30,13,9)}cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)-8,cy-14,16,10);cx.fillStyle=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff6b5e':'#5cc98a';cx.fillRect(rx(i)-6,cy-12,12,4)}
   if(lanes>regs){cx.fillStyle='#fff';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(lanes-regs)} more`,cr+4,cy+14)}
   // customers walking in and out
-  if(mv&&FAC){spawn+=dt*Math.min(3,.3+Math.log10(1+R.moved)*.6);while(spawn>1){spawn--;if(peeps.length<10)peeps.push({x:W-20,tx:rx(Math.floor(Math.random()*regs)),y:cy+18,c:pick(BODY),st:0,w:0})}}
-  for(const p of peeps){if(p.st===0){p.x+=(p.tx-p.x)*Math.min(1,dt*2);if(Math.abs(p.x-p.tx)<2){p.st=1;p.w=1.2}}else if(p.st===1){p.w-=dt*(R.E<1?.5:1);if(p.w<=0)p.st=2}else p.x+=dt*120;
-    person(p.x,p.y-30,p.c,'#333',p.st!==1?Math.sin(ph*12)*2:0)}
+  /* customers come in, browse a shelf, carry a part to a register, pay, and leave */
+  const shelfR=sx+Math.min(sw,units*unitW)-10;
+  if(mv&&FAC){spawn+=dt*Math.min(3,.3+Math.log10(1+R.moved)*.6);while(spawn>1){spawn--;if(peeps.length<10)peeps.push({x:W-20,sxp:sx+10+Math.random()*Math.max(10,shelfR-sx-10),tx:rx(Math.floor(Math.random()*regs)),y:cy+18,c:pick(BODY),st:0,w:0})}}
+  for(const p of peeps){const walk=p.st===0||p.st===2||p.st===4;
+    if(p.st===0){p.x+=(p.sxp-p.x)*Math.min(1,dt*1.6);if(Math.abs(p.x-p.sxp)<2){p.st=1;p.w=.8+Math.random()*1.2}}
+    else if(p.st===1){p.w-=dt;if(p.w<=0)p.st=2}
+    else if(p.st===2){p.x+=(p.tx-p.x)*Math.min(1,dt*2);if(Math.abs(p.x-p.tx)<2){p.st=3;p.w=1.2}}
+    else if(p.st===3){p.w-=dt*(R.E<1?.5:1);if(p.w<=0)p.st=4}else p.x+=dt*120;
+    const yy=p.st<=1?p.y-40:p.y-30;person(p.x,yy,p.c,'#333',walk?Math.sin(ph*12)*2:0);if(p.st===2||p.st===3)box(p.x+6,yy+14);if(p.st===4){cx.fillStyle='#e8e2d6';cx.fillRect(p.x+6,yy+15,7,8)}}
   peeps=peeps.filter(p=>p.x<W+20);
   hit=null;
   if(S.inc&&S.inc.type==='spill'){const x=cl+(cr-cl)*.6,y=H-14;cx.fillStyle='rgba(110,70,30,.75)';cx.beginPath();cx.ellipse(x,y,16,5,0,0,7);cx.fill();hit={x,y}}
@@ -1450,7 +1663,6 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
 requestAnimationFrame(frame);
 cv.addEventListener('click',e=>{if(!hit)return;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
 }
-
 </script>
 </body>
 </html>
