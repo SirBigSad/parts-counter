@@ -459,9 +459,9 @@ for(const base of BASES){const ps=PARTS.filter(p=>p.base===base),brands=[...new 
 for(let k=0;k<LADDER.length;k++){const s=LADDER[k];s.first=k===0||LADDER[k-1].base!==s.base;s.last=k===LADDER.length-1||LADDER[k+1].base!==s.base}
 /* economy (all in log10 so prices can climb past 1e308):
    each product starts above what the one before it costs once you've stocked enough to unlock it */
-const lg=Math.log10,G=1.15,LG=lg(G);
+const lg=Math.log10,G=1.2,LG=lg(G);
 const needOf=s=>s.last?BASE_NEED:NEED;
-let lam=1;for(const s of LADDER){if(s.k>0){const p=LADDER[s.k-1];lam+=needOf(p)*LG+lg(1.12)}s.lam=lam;s.pay=18*10**(2.35*s.k/LADDER.length);s.incL=lam-lg(s.pay);s.u=.25*10**(.07*(lam-1)/(1+(lam-1)/3000));s.g=G}
+let lam=1;for(const s of LADDER){if(s.k>0){const p=LADDER[s.k-1];lam+=needOf(p)*LG+lg(1.12)}s.lam=lam;s.pay=32.4*10**(2.35*s.k/LADDER.length)*(1+2*Math.max(0,1-s.k/900));/* the early game pays back three times slower, easing off by about part 15 */s.incL=lam-lg(s.pay);s.u=.25*10**(.07*(lam-1)/(1+(lam-1)/3000));s.g=G}
 const NB=BASES.length,NS=LADDER.length;
 const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
 
@@ -470,7 +470,7 @@ const skuName=s=>`${BI[s.b].n} ${lc(PI[s.p].n)}`;
    Own 10 of a step to unlock the next one. Every step is priced close to what a product costs
    at the point on the parts ladder where the store will need it. */
 const AISLE_SPEC={
- ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:3,N:300,items:[
+ ck:{n:'Checkout',unit:'units/s',base:2,a0:.375,off:3.1,N:300,items:[
   ['Counter bell',['Brass','Chrome','Desk']],['Cash drawer',['APG','MMF','Star Micronics']],['Cash register',['Casio','Sharp','Royal']],
   ['Card reader',['Square','Clover','Verifone','Ingenico']],['Barcode scanner',['Honeywell','Zebra','Datalogic']],['Receipt printer',['Epson','Star Micronics','Bixolon']],
   ['Label printer',['Zebra','Brother','DYMO']],['Counter mat',['Rubber','Anti-fatigue','Gel']],['Parts catalog',['=Paper parts catalog','=Catalog binder set','=Catalog library']],
@@ -487,7 +487,7 @@ const AISLE_SPEC={
   ['Call center',['Day-shift','Two-shift','Around-the-clock']],['Shuttle fleet',['Small','Medium','Large']],['Automated order system',['Pilot','Full','Next-generation']],
   ['Same-day delivery network',['Metro','State','Regional']],['Parts network',['Regional','National','Continental']],['Overnight air freight',['Regional','National','International']],
   ['Global order platform',['Pilot','Full','Worldwide']]]},
- sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:3,N:300,items:[
+ sk:{n:'Stocking',unit:'units/s',base:2,a0:.5,off:3.1,N:300,items:[
   ['Box cutter',['Basic','Safety','Auto-retract']],['Step stool',['Plastic','Steel','Rolling']],['Hand truck',['Harper','Magliner','Wesco']],['Stock cart',['Rubbermaid','Uline','Akro-Mils']],
   ['Price gun',['Single-line','Two-line','Thermal']],['Part-time stock crew',['Weekend','Evening','Overnight']],['Rolling ladder',['Cotterman','Louisville','Werner']],
   ['Shelf labels',['Paper','Magnetic','Electronic']],['Inventory scanner',['Zebra','Honeywell','Datalogic']],['Pallet jack',['Crown','Raymond','Toyota']],
@@ -500,7 +500,7 @@ const AISLE_SPEC={
   ['Cross-dock',['Small','Regional','National']],['Distribution center',['Local','Regional','National']],['Truck fleet',['Small','Mid-size','Large']],
   ['Rail spur',['Short','Long','Double-track']],['Freight network',['Regional','National','Continental']],['Automated port',['River','Lake','Ocean']],
   ['Global logistics network',['Pilot','Full','Worldwide']]]},
- cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:3.1,N:300,items:[
+ cu:{n:'Customers',unit:'customers/s',base:.4,a0:.125,off:3.3,N:300,items:[
   ['Business cards',['Plain','Two-sided','Embossed']],['Flyers',['Truck stop','Feed store','Fuel island']],['Window sign',['Paper','Vinyl','Neon']],
   ['Free coffee',['=Free coffee pot','=Coffee bar','=Espresso machine']],['Newspaper ad',['Classified','Quarter-page','Full-page']],['Phone book ad',['Line','Box','Full-page']],
   ['Radio spot',['Farm report','Morning drive','Ballgame']],['Yard sign',['Small','Lit','Digital']],['Parts website',['Basic','Catalog','Ordering']],
@@ -512,7 +512,7 @@ const AISLE_SPEC={
   ['National fleet program',['Starter','Growing','Major']],['Truck stop chain deal',['Regional','National','Coast-to-coast']],['Spokesperson',['Local','Regional','National']],
   ['Nationwide campaign',['Spring','Year-round','Coast-to-coast']],['Household name',['Known','Famous','Legendary']],
   ['International campaign',['=Canada campaign','=Mexico campaign','=Worldwide campaign']]]},
- sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:2.9,N:720,items:[
+ sh:{n:'Shelf space',unit:'facings',base:40,a0:5,off:3.3,N:720,items:[
   ['Pegboard',['Small','Large','Wall']],['Slatwall',['4-foot','8-foot','16-foot']],['Wire shelving',['Edsal','Tennsco','Lyon']],['Bin shelving',['Akro-Mils','Lyon','Penco']],
   ['Steel shelving',['Lyon','Tennsco','Penco','Republic']],['Gondola',['Lozier','Madix']],['Endcap display',['Single','Double','Lit']],['Spinner rack',['Small','Tall','Double']],
   ['Drawer cabinet',['Lista','Stanley Vidmar','Lyon']],['Cantilever rack',['Light','Medium','Heavy']],['Tire rack',['Wall','Stacking','Mobile']],['Filter wall',['Small','Medium','Full']],['Battery rack',['Two-tier','Four-tier','Rolling']],['Hose reel rack',['Single','Double','Wall']],['Drum rack',['Two-drum','Four-drum','Bulk']],
@@ -532,7 +532,8 @@ const STEP={};
    needAt(g,k) is what group g has to keep up with at product step k; slot groups are spaced evenly. */
 const MAXC=25;/* a step holds at most this many copies: past that, move up to the next item */
 /* realAt(g,k): what group g really has to handle at product step k, given about 10 of each product */
-function buildAisles(SPEC,LAD,needAt,slot,realAt,ramp,early){const OUT={},NL=LAD.length;
+/* priceAt(k): what one copy should cost if it unlocks at product step k (c.off is then roughly log10 of seconds of income) */
+function buildAisles(SPEC,LAD,needAt,slot,realAt,priceAt,taper=1,bump=0){const OUT={},NL=LAD.length;
  for(const [g,c] of Object.entries(SPEC)){
   /* names: the listed items, then later generations of the last ten items */
   const names=[];c.items.forEach(([it,vs],i)=>vs.forEach(v=>names.push({it:i,item:it,n:v[0]==='='?v.slice(1):`${v} ${lc(it)}`})));
@@ -552,14 +553,16 @@ function buildAisles(SPEC,LAD,needAt,slot,realAt,ramp,early){const OUT={},NL=LAD
     const tgt=.9*Math.sqrt(need[k]*need[ks[Math.min(j+1,M-1)]]);
     let a=j===0?c.a0:Math.max(prevA*(isSlot?1:1.08),(tgt-cap)/MAXC);if(isSlot)a=Math.ceil(a);
     /* priced near what a product costs at the point this step is needed; each extra copy climbs gently, like parts do */
-    /* prices start cheap and grow into their full markup over the first stretch of the game */
-    const at=j?kb:0;let baseL=LAD[at].lam+c.off*Math.min(1,at/ramp)+(early||0)*Math.min(1,at/8)*Math.max(0,1-at/300);if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
-    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,kb:at,amt:a,baseL,g2:isSlot?1.15:1.2};
+    /* priced as a few seconds of the income you'd expect when the step unlocks */
+    const at=j?kb:0;let baseL=priceAt(at)+c.off*Math.min(1,at/taper)+bump*Math.min(1,at/5)*Math.max(0,1-at/120);if(j>0)baseL=Math.max(baseL,prevL+lg(1.3));
+    const s={id:g+j,g,j,it:names[j].it,item:names[j].item,n:names[j].n,at:k,kb:at,amt:a,baseL,g2:isSlot?1.2:1.28};
     out.push(s);STEP[s.id]=s;cap+=MAXC*a;prevL=baseL;prevA=a}
   OUT[g]=out}
  return OUT}
+/* expected earnings per second (log10) while working on product step k, calibrated against play */
+const incAt=k=>{const s=LADDER[k];return s.lam-lg(s.pay)+1};
 const CUMU=[],CUMF=[];{let u=0,f=0;for(const s of LADDER){u+=needOf(s)*s.u;f+=needOf(s);CUMU.push(u);CUMF.push(f)}}
-const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh',(g,k)=>g==='sh'?CUMF[k]*2:g==='cu'?2*CUMU[k]/PER_CUST:2*CUMU[k],15,2);
+const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh',(g,k)=>g==='sh'?CUMF[k]*2:g==='cu'?2*CUMU[k]/PER_CUST:2*CUMU[k],k=>incAt(k),8);
 
 
 const RANKS=[[-99,'Counter salesperson'],[4,'Senior counter salesperson'],[6,'Parts specialist'],[9,'Lead parts specialist'],[14,'Assistant parts manager'],[22,'Parts manager'],
@@ -649,16 +652,16 @@ const NSV=SVL.length,SV_JOBS_N=SV_JOBS.length;
 const svNeed=s=>s.last?BASE_NEED:NEED;
 const svName=s=>`${SV_LV[s.lv][0]} ${lc(JOB_NAME[s.job])}${s.fit?', '+s.fit:''}`;
 
-/* where the shop opens: once part 5 is on the shelves, and it costs about 300 times that part's price */
+/* where the shop opens: once part 5 is on the shelves */
 const SV_OPEN_K=LADDER.findIndex(s=>s.base===BASES[4]);
-const SV_OPEN_L=LADDER[SV_OPEN_K].lam+2.5;
+const SV_OPEN_L=incAt(SV_OPEN_K)-1.6+lg(7200);/* a couple of hours of what you'll be earning then */
 /* each job step is pinned to a point further up the parts list and priced well above it */
-const SV_OFF=1,SV_MINC=NEED*lg(1.25)+lg(1.15);
+const SV_OFF=1,SV_MINC=NEED*lg(1.32)+lg(1.15);
 {let prev=-1;SVL[0].lam=LADDER[SV_OPEN_K].lam+SV_OFF;for(const s of SVL){s.kp=Math.round(SV_OPEN_K+s.k*(NS-1-SV_OPEN_K)/(NSV-1));const p=LADDER[s.kp];
   s.lam=Math.max(p.lam+SV_OFF,prev+SV_MINC);prev=s.lam;const x=s.lam-SVL[0].lam;s.u=.25*10**(.07*x/(1+x/3000));
   /* a job costs about 10 times a part at the same point and pays the same per copy, so it pays back far slower */
   s.pay=p.pay*.5;s.incL=s.lam-lg(s.pay)}
- for(const s of SVL){const n=SVL[s.k+1];s.g=n?Math.max(1.25,10**((n.lam-s.lam)/(svNeed(s)+.5))):SVL[s.k-1].g}}
+ for(const s of SVL){const n=SVL[s.k+1];s.g=n?Math.max(1.32,10**((n.lam-s.lam)/(svNeed(s)+.5))):SVL[s.k-1].g}}
 /* once the shop exists, every new part needs the shop to keep up: you can't sell what nobody installs.
    The shop must have unlocked the last job step priced at or below the new part's price. */
 const SV_GAP=.7,SV_GATE={};{let j=0;for(const s of LADDER){if(!s.first||s.k<=SV_OPEN_K)continue;while(j<NSV-1&&SVL[j+1].lam<=s.lam-SV_GAP)j++;SV_GATE[s.k]=j}}
@@ -668,33 +671,33 @@ const gateOf=s=>SV_GATE[s.k]===undefined?-1:SV_GATE[s.k];
 /* ---------- the shop: five sections, built like the store aisles ---------- */
 const PER_TRUCK=4;
 const SHOP_SPEC={
- vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:6,N:900,items:[
+ vb:{n:'Service bays',unit:'job slots',base:20,a0:4,off:4.5,N:900,items:[
   ['Outdoor work pad',['Gravel','Paved','Covered']],['Service bay',['Single','Drive-through','Heated']],['Truck lift',['Rotary','Stertil-Koni','Mohawk']],
   ['Lube pit',['Single','Double','Express']],['Tire bay',['Single','Double','Express']],['Alignment bay',['Standard','Wide','Drive-on']],['Wash bay',['Manual','Brush','Touchless']],
   ['Trailer bay',['Single','Double','Pull-through']],['Paint booth',['Small','Truck-size','Downdraft']],['Body shop',['Small','Large','Full']],
   ['Heavy repair bay',['Single','Double','Crane-equipped']],['Shop building',['Steel','Insulated','Heated']],['Second shop',['Small','Large']],['Mobile service yard',['Small','Large']],
   ['Truck center',['Regional','Flagship']],['Service campus',['Starter','Full']],['Mega service center',['Single','Twin']],['National service network',['Regional','Coast-to-coast']]]},
- vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:8,N:240,items:[
+ vt:{n:'Technicians',unit:'labor hrs/s',base:2,a0:.5,off:6.5,N:240,items:[
   ['Shop helper',['Weekend','Evening','Day']],['Apprentice technician',['First-year','Second-year','Third-year']],['Lube technician',['Part-time','Full-time','Lead']],
   ['Tire technician',['Part-time','Full-time','Lead']],['Trailer technician',['Part-time','Full-time','Lead']],['Brake technician',['Junior','Certified','Senior']],
   ['Diesel technician',['Level 1','Level 2','Level 3']],['Electrical specialist',['Junior','Senior','Master']],['A/C technician',['Certified','Senior','Lead']],
   ['Mobile technician',['One-truck','Two-truck','Fleet']],['Body technician',['Junior','Senior','Master']],['Night shift',['Small','Full','Double']],
   ['Master technician',['Certified','Senior','Shop-leading']],['Shop foreman',['Day','Night','Lead']],['Technician school partnership',['Local','State','National']],
   ['Service team',['Regional','National']],['Technician network',['Regional','National','Continental']]]},
- vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:8,N:240,items:[
+ vw:{n:'Service writers',unit:'labor hrs/s',base:2,a0:.5,off:6.5,N:240,items:[
   ['Service counter',['Small','Busy','Full']],['Repair order forms',['Paper','Carbon copy','Digital']],['Service writer',['Trainee','Experienced','Senior']],
   ['Shop management system',['Fullbay','Karmak','Decisiv']],['Estimate software',['Basic','Pro','Fleet']],['Service advisor',['Junior','Senior','Lead']],
   ['Warranty clerk',['Part-time','Full-time','Lead']],['Shop parts runner',['Part-time','Full-time','Lead']],['Appointment desk',['One-line','Four-line','Call-ahead']],
   ['Fleet coordinator',['Local','Regional','National']],['Service manager',['New','Experienced','Veteran']],['Dispatch board',['Whiteboard','Digital','Live-map']],
   ['Service operations center',['Regional','National','Continental']]]},
- vc:{n:'Service customers',unit:'trucks/s',base:.3,a0:.1,off:8,N:240,items:[
+ vc:{n:'Service customers',unit:'trucks/s',base:.3,a0:.1,off:6.5,N:240,items:[
   ['Free inspection sign',['Paper','Vinyl','Lit']],['Shop flyers',['Truck stop','Fuel island','Truck wash']],['Service coupon',['Oil change','Brake','PM']],
   ['Driver lounge',['=Coffee pot in the lounge','=Driver showers','=Full driver lounge']],['Service website',['Basic','Booking','Fleet']],
   ['Online reviews',['=A few good reviews','=Hundreds of good reviews','=Top-rated shop']],['Loaner truck',['=Loaner day cab','=Loaner sleeper','=Loaner fleet']],
   ['Shuttle service',['Local','Hotel','Citywide']],['Fleet service rep',['Part-time','Full-time','Senior']],['Fleet PM program',['Starter','Growing','Major']],
   ['Authorized service center',['=Cummins authorized service','=PACCAR authorized service','=Allison authorized service','=Eaton authorized service']],
   ['Roadside assistance program',['Local','Regional','National']],['24-hour service',['Weekend','Weeknight','Around-the-clock']],['National service contract',['Regional','National','Coast-to-coast']]]},
- ve:{n:'Tools & equipment',unit:'labor hrs/s',base:2,a0:.5,off:8,N:240,items:[
+ ve:{n:'Tools & equipment',unit:'labor hrs/s',base:2,a0:.5,off:6.5,N:240,items:[
   ['Hand tools',['Basic','Pro','Master']],['Impact gun',['Milwaukee','DeWalt','Ingersoll Rand']],['Creeper',['Basic','Padded','Rolling-seat']],
   ['Oil drain cart',['Lincoln Industrial','Graco','Balcrank']],['Floor jack',['Basic','Air','Long-reach']],['Tire machine',['Coats','Hunter','Hofmann']],
   ['Wheel balancer',['Coats','Hunter','Hofmann']],['Diagnostic laptop',['Basic','Dealer','Multi-brand']],['Brake lathe',['Ammco','Hunter','Ranger']],
@@ -704,7 +707,7 @@ const SHOP_SPEC={
   ['Predictive maintenance system',['Pilot','Fleet','Network']]]}};
 const SNEEDU=k=>Math.max(3,(13*k+5)*SVL[k].u),SNEEDF=k=>20+13*k;
 const SCUMU=[],SCUMF=[];{let u=0,f=0;for(const s of SVL){u+=svNeed(s)*s.u;f+=svNeed(s);SCUMU.push(u);SCUMF.push(f)}}
-const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb',(g,k)=>g==='vb'?SCUMF[k]*2:g==='vc'?2*SCUMU[k]/PER_TRUCK:2*SCUMU[k],150);
+const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb',(g,k)=>g==='vb'?SCUMF[k]*2:g==='vc'?2*SCUMU[k]/PER_TRUCK:2*SCUMU[k],k=>incAt(SVL[k].kp));
 
 /* ---------- service goals and logbook ---------- */
 A.push({id:'svopen',n:'Open the service shop',ok:()=>S.sv.open});
@@ -1054,11 +1057,11 @@ function tick(dt,quiet){recount();
     Object.assign(R,{supply,dem,ck,sk,moved,E,line,lim})}}
 function unlock(quiet){while(S.top<NS-1){const s=LADDER[S.top];if(L(S.f,s.id)<needOf(s)||gateNeed(S.top+1)>=0)break;S.top++;const n=LADDER[S.top];
     if(!quiet)note(n.first?`New part unlocked: ${BASE_NAME[n.base]}!`:`Unlocked: ${skuName(n)}.`)}
-  for(const g in AISLE){const st=AISLE[g];while(S.sTop[g]<st.length-1&&L(S.b,st[S.sTop[g]].id)>=UNLOCK_N&&S.top>=st[S.sTop[g]+1].kb){S.sTop[g]++;if(!quiet)note(`New in the store: ${st[S.sTop[g]].n}.`)}}
+  for(const g in AISLE){const st=AISLE[g];while(S.sTop[g]<st.length-1&&L(S.b,st[S.sTop[g]].id)>=UNLOCK_N&&(g==='sh'||S.top>=st[S.sTop[g]+1].kb)){S.sTop[g]++;if(!quiet)note(`New in the store: ${st[S.sTop[g]].n}.`)}}
   if(!S.sv.open)return;
   while(S.sv.top<NSV-1){const s=SVL[S.sv.top];if(L(S.sv.f,s.id)<svNeed(s))break;S.sv.top++;const n=SVL[S.sv.top];
     if(!quiet)note(n.first?`New job in the shop: ${JOB_NAME[n.job]}!`:`Shop unlocked: ${svName(n)}.`)}
-  for(const g in SHOP){const st=SHOP[g];while(S.sv.sTop[g]<st.length-1&&L(S.sv.b,st[S.sv.sTop[g]].id)>=UNLOCK_N&&S.sv.top>=st[S.sv.sTop[g]+1].kb){S.sv.sTop[g]++;if(!quiet)note(`New for the shop: ${st[S.sv.sTop[g]].n}.`)}}}
+  for(const g in SHOP){const st=SHOP[g];while(S.sv.sTop[g]<st.length-1&&L(S.sv.b,st[S.sv.sTop[g]].id)>=UNLOCK_N&&(g==='vb'||S.sv.top>=st[S.sv.sTop[g]+1].kb)){S.sv.sTop[g]++;if(!quiet)note(`New for the shop: ${st[S.sv.sTop[g]].n}.`)}}}
 
 /* ---------- buying ---------- */
 function buySku(s,k){if(s.k>S.top||FAC+k>shelfCap())return false;const c=costL(s.lam,s.g,L(S.f,s.id),k);if(!canPay(c))return false;S.cashL=subL(S.cashL,c);S.f[s.id]=L(S.f,s.id)+k;FAC+=k;return true}
@@ -1156,7 +1159,7 @@ function renderCaps(o,vals,need,lim,slot,used,lbl){const own=o.own(),tops=o.tops
     $('cg-'+g).innerHTML=g===slot?`<b class="num">${fmt(used)} / ${fmt(v)}</b> ${c.unit}`:`<b class="num" style="color:${isLim?'var(--bad)':'inherit'}">${fmt(v)}</b> / ${fmt(need)} ${lbl[g]||'needed'}`;
     const pct=g===slot?used/v:Math.min(1,v/Math.max(need,1e-9)),m=$('cm-'+g);m.style.width=Math.min(100,pct*100)+'%';m.style.background=(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)';
     const n=L(own,cs.id);
-    const nx=st[top+1],wait=nx&&n>=UNLOCK_N?(o===SHOP_O?(S.sv.top<nx.kb?`It unlocks once the shop reaches job step ${fmt(nx.kb+1)} (you're on ${fmt(S.sv.top+1)}).`:''):(S.top<nx.kb?`It unlocks once you reach ${esc(lc(BASE_NAME[LADDER[nx.kb].base]))} on the parts list (part ${BASES.indexOf(LADDER[nx.kb].base)+1}).`:'')):'';
+    const nx=st[top+1],wait=nx&&n>=UNLOCK_N&&g!=='sh'&&g!=='vb'?(o===SHOP_O?(S.sv.top<nx.kb?`It unlocks once the shop reaches job step ${fmt(nx.kb+1)} (you're on ${fmt(S.sv.top+1)}).`:''):(S.top<nx.kb?`It unlocks once you reach ${esc(lc(BASE_NAME[LADDER[nx.kb].base]))} on the parts list (part ${BASES.indexOf(LADDER[nx.kb].base)+1}).`:'')):'';
     setHTML('cp-'+g,top<st.length-1?`<small>Step ${top+1} of ${st.length} · Own ${UNLOCK_N} ${esc(cs.n)} to unlock ${esc(nx.n)}. ${wait}</small><div class="meter"><i style="width:${Math.min(1,n/UNLOCK_N)*100}%"></i></div><small class="num">${fmt(Math.min(n,UNLOCK_N))} / ${UNLOCK_N}</small>`
       :`<small>Step ${st.length} of ${st.length} · Everything here is unlocked.</small>`);
     setHTML('ci-'+g,sItem(st,cs.it,c,false,o));
