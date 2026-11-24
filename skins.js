@@ -55,7 +55,7 @@ const SKINS=[
  {id:'n',n:'Split-Flap Board',s:'dark',f:'Inter',d:'Roboto Mono',g:['Inter:wght@400;600;700','Roboto+Mono:wght@500;700'],
   bg:'#111111',card:'#1b1b1b',ink:'#f5f5f0',mute:'#9a9a92',line:'#2a2a2a',soft:'#222',acc:'#ffc629',oa:'#111',acc2:'#2b2410',good:'#7be495',bad:'#ff7a6b',
   hb:'#111',hi:'#f5f5f0',hm:'#9a9a92',ht:'#222',hg:'#7be495',r:'8px',sh:'none',br:'6px',
-  x:'& #cash,& .dash b{background-image:linear-gradient(transparent 48%,rgba(0,0,0,.7) 48% 52%,transparent 52%)}& #cash{background-color:#222;padding:2px 8px;border-radius:4px}& .dash .lim small::after{content:" · DELAYED"}'},
+  x:'& #cash,& .dash b{background-image:linear-gradient(transparent 48%,rgba(0,0,0,.7) 48% 52%,transparent 52%)}& #cash{background-color:#222;padding:2px 8px;border-radius:4px}'},
  {id:'o',n:'Comic Panels',s:'light',f:'Nunito',d:'Bangers',g:['Nunito:wght@500;700;900','Bangers'],
   bg:'#ffffff',card:'#ffffff',ink:'#111',mute:'#444',line:'#111',soft:'#f2f2f2',acc:'#ffe14d',oa:'#111',acc2:'#fff6c2',good:'#1a8a2e',bad:'#e03535',
   hb:'#ffe14d',hi:'#111',hm:'#333',ht:'#fff',hg:'#1a8a2e',r:'0',cb:'3px solid #111',sh:'4px 4px 0 #111',br:'0',
