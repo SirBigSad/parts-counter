@@ -44,18 +44,24 @@ const costL=(baseL,g,n,k)=>baseL+n*lg(g)+lg((g**Math.min(k,2000)-1)/(g-1))+(k>20
 const canPay=cL=>S.cashL>=cL-1e-12;
 const maxAff=(baseL,g,n,room)=>{const x=S.cashL+lg(g-1)-baseL-n*lg(g);const y=x>15?x:lg(10**x+1);return Math.max(0,Math.min(room,Math.floor(y/lg(g)+1e-9)))};
 const skuAmt=s=>{const room=Math.max(1,Math.min(shelfCap()-FAC,MAXC-L(S.f,s.id))),m=S.ui.mode;return Math.max(1,Math.min(m==='max'?maxAff(s.lam,s.g,L(S.f,s.id),room)||1:m,room))};
-/* store and shop prices follow what you are making right now: the newest item in an aisle costs about
-   STORE_WAIT seconds of your current income, so when you need it you wait a little, never long, never zero.
-   Every other item in the aisle costs the same per unit it adds. Each copy costs 8% more than the last. */
+/* each copy of a store or shop item costs 8% more than the last (g2) */
 const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 /* priced off the best income you have reached, so a slow minute never makes prices swing */
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
-/* an item never gets cheaper when the next one unlocks: while it is the newest in its aisle its price is
-   remembered, and afterwards it costs at least that until your income catches up */
-function bPrice(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],top=st[Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g])];
-  const own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),v=own+lg(b.amt/top.amt),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id;
-  if(top.id===b.id||fl[k]===undefined&&b.j<=(isS?S.sTop:S.sv.sTop)[b.g])fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],own);
-  return Math.max(v,fl[k]===undefined?NEG:fl[k])}
+/* store and shop prices only ever climb:
+   - the newest item in an aisle costs at least STORE_WAIT (or SHOP_WAIT) seconds of your best income,
+   - and its first copy always costs 20% more than the 25th copy of the item before it,
+   - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
+     ones stays the cheaper choice and moving up always costs more. */
+const NEXT_UP=lg(1.2);
+function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
+    own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
+    after=p=>bBase(p)+lg(p.g2)*MAXC+NEXT_UP;
+  if(b.j>tj)return Math.max(own,after(st[b.j-1]));
+  if(b.j===tj){const v=Math.max(own,b.j>0?after(st[b.j-1]):NEG);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
+  if(fl[k]===undefined)fl[k]=own+lg(b.amt/st[tj].amt);
+  return fl[k]}
+const bPrice=b=>bBase(b);
 const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.b,b.id),room)||1:m))};
 const cur=()=>LADDER[S.top];
 
