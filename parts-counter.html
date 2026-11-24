@@ -160,6 +160,18 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
 .sheet .x{position:absolute;right:10px;top:8px;width:40px;height:40px;border:0;background:none;font-size:28px;color:var(--mute);cursor:pointer}
 .sheet h4{margin:16px 0 6px;font:700 17px 'Barlow Condensed',sans-serif}.blist>div{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
 .pill{font-size:12px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}.blist small{grid-column:2;color:var(--mute)}.blist .dim{opacity:.5}.fits{margin:0;color:var(--mute);font-size:14px;line-height:1.5}details.older>summary{cursor:pointer;color:var(--mute);font-weight:600;font-size:14px;padding:8px 0}
+.ticker{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:5px 8px;margin:8px 0 2px;overflow:hidden;font-size:13px}
+.ticker .tk{background:var(--acc);color:var(--on-acc);font:700 11px/1 "Barlow Condensed",sans-serif;letter-spacing:.06em;padding:4px 6px;border-radius:5px;flex:none}
+.ticker .tw{flex:1;overflow:hidden;white-space:nowrap;position:relative}.ticker #tickTxt{display:inline-block;padding-left:100%;animation:tick 22s linear infinite;color:var(--ink)}
+.noanim .ticker #tickTxt{animation:none;padding-left:0;white-space:normal}@keyframes tick{to{transform:translateX(-100%)}}
+@media (prefers-reduced-motion:reduce){.ticker #tickTxt{animation:none;padding-left:0;white-space:normal}}
+.spots{display:grid;grid-template-columns:1fr 1fr;gap:6px}.spot{display:flex;flex-direction:column;padding:7px 8px 7px 26px;border:1px solid var(--line);border-radius:8px;position:relative;background:var(--soft)}
+.spot i{position:absolute;left:8px;top:10px;width:12px;height:12px;border-radius:3px;border:1px solid var(--line)}.spot b{font-size:13px}.spot small{color:var(--mute);font-size:11px}.spot.no b{color:var(--mute)}
+.plaqs{display:grid;grid-template-columns:1fr 1fr;gap:6px}.plaq{padding:8px;border-radius:8px;background:linear-gradient(160deg,#8d6e63,#5d4037);border:2px solid #d4af37;color:#fdf6e3;display:flex;flex-direction:column;gap:2px}
+.plaq b{font-size:12.5px;line-height:1.25}.plaq small{font-size:11px;opacity:.85}
+.fld{display:flex;flex-direction:column;gap:5px;font-size:14px;margin:0 0 12px}.fld input{font:inherit;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+.sws{display:flex;gap:8px;flex-wrap:wrap}.sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}.sw.on{outline:3px solid var(--acc);outline-offset:2px}
+.triv{font-size:13px;color:var(--mute);border-left:3px solid var(--acc);padding:2px 0 2px 8px;margin:8px 0;text-align:left}
 </style>
 </head>
 <body>
@@ -169,6 +181,7 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
 </header>
 <main>
   <div class="stage" id="stage"><canvas id="scene" aria-label="Your parts store"></canvas></div>
+  <div class="ticker" id="ticker"><span class="tk">NEWS</span><div class="tw"><span id="tickTxt"></span></div></div>
   <div class="banner" id="inc" hidden><span id="incTxt"></span><button class="btn pri" id="incBtn" hidden></button></div>
 
   <section id="t-shelves">
@@ -218,15 +231,22 @@ details.cat>summary{display:flex;justify-content:space-between;align-items:cente
     </div>
     <h2>Income</h2><div class="card"><canvas id="chart" style="width:100%;height:150px;display:block"></canvas><p class="sub" id="chartCap" style="margin:6px 0 0"></p></div>
     <h2>Catalog</h2><div class="card"><div class="capg"><span id="catSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="catM"></i></div><p class="sub" style="margin:0 0 4px">Every part in the catalog. Tap one to see its brands, what it fits and how much you've sold.</p><input class="search" id="catq" type="search" placeholder="Look up a part (oil filter, turbo, wiper…)" style="margin:6px 0 4px"><div id="catres"></div><div id="cat"></div></div>
+    <h2>Plaque wall</h2><div class="card"><div class="capg"><span id="plaqSum"></span></div><div class="meter" style="margin:8px 0 8px"><i id="plaqM"></i></div><div id="plaqList" class="plaqs"></div></div>
+    <h2>Spotter's log</h2><div class="card"><div class="capg"><span id="spotSum"></span></div><div class="meter" style="margin:8px 0 6px"><i id="spotM"></i></div><p class="sub" style="margin:0 0 8px">Trucks roll past the lot while you play. Rare ones don't come by often.</p><div id="spotList" class="spots"></div></div>
     <h2>Goals</h2><div class="card"><div class="capg"><span id="achs"></span></div><div class="meter" style="margin:8px 0 4px"><i id="achm"></i></div>
       <div class="chips" style="margin:8px 0"><button class="chip on" data-af="todo">To do</button><button class="chip" data-af="done">Reached</button></div><div id="goals"></div></div>
     <h2>Logbook</h2><div class="card log" id="log"></div>
     <h2>Stats</h2><div class="card"><div class="kv" id="stats"></div></div>
+    <h2>Make it yours</h2><div class="card">
+      <label class="fld">Store name<input id="fName" maxlength="28" autocomplete="off"></label>
+      <label class="fld">Shop dog's name<input id="fDog" maxlength="16" placeholder="Diesel" autocomplete="off"></label>
+      <div class="fld">Company truck paint<div class="sws" id="fPaint"></div></div></div>
     <h2>Settings</h2><div class="card">
       <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
       <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
       <label class="tog">Sound effects<input type="checkbox" id="sSnd"></label>
       <label class="tog">Vibration<input type="checkbox" id="sVib"></label>
+      <label class="tog">Shop radio (background music)<input type="checkbox" id="sRadio"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
       <button class="btn" id="copy">Copy save code</button>
@@ -1089,9 +1109,9 @@ const NEG=-1e9;
 const addL=(a,b)=>{if(a<=NEG/2)return b;if(b<=NEG/2)return a;const m=Math.max(a,b);return m+lg(10**(a-m)+10**(b-m))};
 const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)return a;return a+lg(1-10**d)};
 const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
-const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true},
+const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true,radio:false},fun:{spot:{},pl:{},name:'',dog:'',paint:''},
   st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now(),all:0,sold:{},br:{},trucks:0,hrs:0},hist:[],t:Date.now()});
-function load(d){if(!d||typeof d!=='object'||(d.v||0)<6)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
+function load(d){if(!d||typeof d!=='object'||(d.v||0)<6)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),fun:Object.assign(f.fun,d.fun,{spot:Object.assign({},(d.fun||{}).spot),pl:Object.assign({},(d.fun||{}).pl)}),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
   {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});
    for(const k of Object.keys(s.sv.f))if(!SVI[k])delete s.sv.f[k];for(const k of Object.keys(s.sv.b))if(!STEP[k])delete s.sv.b[k];s.sv.top=Math.min(s.sv.top||0,NSV-1)}
   for(const k of Object.keys(s.b))if(!STEP[k])delete s.b[k];
@@ -1332,7 +1352,7 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
 
 /* ---------- header ---------- */
 /* money rolls toward its new value instead of jumping */
-let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownCash)||Math.abs(S.cashL-shownCash)>6)shownCash=S.cashL;else shownCash+=(S.cashL-shownCash)*.35;$('cash').textContent=moneyL(Math.abs(S.cashL-shownCash)<.002?S.cashL:shownCash);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=STORE;
+let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownCash)||Math.abs(S.cashL-shownCash)>6)shownCash=S.cashL;else shownCash+=(S.cashL-shownCash)*.35;$('cash').textContent=moneyL(Math.abs(S.cashL-shownCash)<.002?S.cashL:shownCash);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=typeof storeName==='function'?storeName():STORE;
   const cells=[['shelf','Shelf',R.supply],['cu','Customers',R.dem],['ck','Checkout',R.ck],['sk','Stocking',R.sk]];
   setHTML('dash',cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}"><small>${n}</small><b class="num">${fmt(v)}/s</b></div>`).join(''));
   const i=S.inc;$('inc').hidden=!i;if(i){const t=now(),m={spill:['Coffee spilled by the counter. Checkout is slower.','Mop it up'],jam:['A register jammed. Checkout is crawling.','Fix it'],thief:['A shoplifter is heading for the door.','Stop him'],
@@ -1340,7 +1360,7 @@ let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownC
     sick:[`A technician called in sick. The shop is short-handed for ${fmtT((i.end-t)/1000)}.`,''],comeback:['A customer brought a truck back. The job has to be redone.','Fix it right']}[i.type];$('incTxt').textContent=m[0];$('incBtn').hidden=!m[1];$('incBtn').textContent=m[1]}}
 function render(){recount();SCI=S.ui.sci;renderHeader();document.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',String(S.ui.mode)===x.dataset.m));
   if(tab==='shelves'){$('shelfTxt').textContent=`Shelf space ${fmt(FAC)} of ${fmt(shelfCap())} facings`;renderLadder()}
-  if(tab==='store')renderStore();if(tab==='service')renderService();if(tab==='shop')renderShop();if(tab==='more')renderMore()}
+  if(tab==='store')renderStore();if(tab==='service')renderService();if(tab==='shop')renderShop();if(tab==='more'){renderMore();if(typeof renderFun==='function')renderFun()}}
 function forceRender(){busy=false;for(const id of ['goals','log','cat','svClosed','shClosed',...['ck','sk','cu','sh','vb','vt','vw','vc','ve'].flatMap(g=>['ci-'+g,'co-'+g,'cp-'+g])])$(id)._h=null;render()}
 
 /* ---------- input ---------- */
@@ -1434,7 +1454,7 @@ function renderSheet(){if(!sheetBase)return;const b=sheetBase,st=BASE_STEPS[b],l
    <p class="sub" style="margin:6px 0 10px">Part ${idx+1} of ${NB} · ${esc(l.n)}${reached?'':' · not on your shelves yet'}</p>
    <div class="kv">${[['Retail',prices.length>1?`${money(Math.min(...prices))} – ${money(Math.max(...prices))}`:money(prices[0])],['Products',`${fmt(st.length)} (${brands.length} brands × ${fits.length||1} fitments)`],
      ['Facings',fmt(fac)],['Sold so far',fmt(S.st.sold[b]||0)+' units'],['Earning now',moneyL(earn)+'/s']].map(([k,v])=>`<span>${k}</span><span>${v}</span>`).join('')}</div>
-   <h4>Brands</h4><div class="blist">${brands.map(x=>`<div class="${x.open?'':'dim'}"><span class="pill p${x.t}">${TIER[x.t].n}</span><b>${esc(x.n)}</b><small>${x.stk} of ${x.all} stocked · ${fmt(x.fac)} facings</small></div>`).join('')}</div>
+   ${typeof triviaFor==='function'&&triviaFor(b)?`<p class="triv">${esc(triviaFor(b))}</p>`:''}<h4>Brands</h4><div class="blist">${brands.map(x=>`<div class="${x.open?'':'dim'}"><span class="pill p${x.t}">${TIER[x.t].n}</span><b>${esc(x.n)}</b><small>${x.stk} of ${x.all} stocked · ${fmt(x.fac)} facings</small></div>`).join('')}</div>
    ${fits.length?`<h4>Fits</h4><p class="fits">${fits.map(esc).join(' · ')}</p>`:`<h4>Fits</h4><p class="fits">Universal: fits any truck.</p>`}`}
 document.addEventListener('click',e=>{const t=e.target.closest('[data-info]');if(t){e.preventDefault();e.stopPropagation();openSheet(t.dataset.info);return}
   if(e.target.closest('[data-close]')||e.target.id==='sheet')closeSheet()},true);
@@ -1476,7 +1496,7 @@ function confetti(){if(!S.ui.anim)return;const d=devicePixelRatio||1;cf.width=in
 /* a big card when a new part or a whole new department opens up */
 function celebrate(c,prev){confetti();const newLine=prev&&c.line!==prev.line,l=LI[c.line];
   $('unlockBody').innerHTML=`<i class="lic" style="background:${l.c}">${icSvg(newLine?LINE_IC[c.line]:BASE_IC[c.base])}</i><small>${newLine?'New department':'New part'}</small><b>${esc(newLine?l.n:BASE_NAME[c.base])}</b>
-   <p>${newLine?`Starting with ${esc(lc(BASE_NAME[c.base]))}.`:`Part ${BASES.indexOf(c.base)+1} of ${NB} · ${esc(l.n)}`}<br>First up: ${bdg(c.b)}${esc(BI[c.b].n)}</p><button class="btn pri" data-close-unlock="1" style="width:100%">Let's go</button>`;
+   <p>${newLine?`Starting with ${esc(lc(BASE_NAME[c.base]))}.`:`Part ${BASES.indexOf(c.base)+1} of ${NB} · ${esc(l.n)}`}<br>First up: ${bdg(c.b)}${esc(BI[c.b].n)}</p>${typeof triviaFor==='function'&&triviaFor(c.base)?`<p class="triv">${esc(triviaFor(c.base))}</p>`:''}<button class="btn pri" data-close-unlock="1" style="width:100%">Let's go</button>`;
   $('unlock').hidden=false;clearTimeout(celebrate.t);celebrate.t=setTimeout(()=>$('unlock').hidden=true,6000)}
 document.addEventListener('click',e=>{if(e.target.closest('[data-close-unlock]')||e.target.id==='unlock'){$('unlock').hidden=true}},true);
 
@@ -1527,11 +1547,289 @@ $('catq').addEventListener('input',()=>{const q=$('catq').value.trim().toLowerCa
 /* ---------- welcome back ---------- */
 setTimeout(()=>{if(!S.st||!S.st.totalL||S.st.totalL<=NEG/2||S.top<1)return;const c=cur(),lim={shelf:'Nothing, sales are keeping up',cu:'Customers',ck:'Checkout',sk:'Stocking'}[R.lim]||'Nothing';
   const g=S.top<NS-1?gateNeed(S.top+1):-1;
-  $('welcomeBody').innerHTML=`<h3>Welcome back</h3><p class="sub" style="margin:0">${esc(rankOf(S.st.totalL))} at ${esc(STORE)}</p>
+  $('welcomeBody').innerHTML=`<h3>Welcome back</h3><p class="sub" style="margin:0">${esc(rankOf(S.st.totalL))} at ${esc(typeof storeName==="function"?storeName():STORE)}</p>
    <div class="kv">${[['Working on',esc(BASE_NAME[c.base])+` (part ${BASES.indexOf(c.base)+1} of ${NB})`],['Next step',esc(skuName(c))+` · ${fmt(Math.min(L(S.f,c.id),needOf(c)))}/${needOf(c)}`],
      ['Earning',moneyL(R.incL)+'/s'],['Holding you back',FAC>=shelfCap()?'Shelf space':g>=0&&L(S.f,c.id)>=needOf(c)?'The shop (next part waits on it)':lim],...(S.sv.open?[['Shop',`job step ${fmt(S.sv.top+1)} of ${fmt(NSV)}`]]:[])].map(([k,v])=>`<span>${k}</span><span>${v}</span>`).join('')}</div>
    <button class="btn pri" style="width:100%" id="wgo">Back to the counter</button>`;$('welcome').hidden=false},900);
 document.addEventListener('click',e=>{if(e.target.id==='wgo'||e.target.id==='welcome')$('welcome').hidden=true});
+</script>
+<script>/* ===== Parts Counter Idle: fun stuff. Spotter's log, plaques, trivia, career uniform, make-it-yours,
+   regulars, seasons, shop radio and the news ticker. None of it changes how much anything earns or costs. ===== */
+
+/* ---------- small shared helpers ---------- */
+const storeName=()=>(S.fun&&S.fun.name)||STORE;
+const dogName=()=>(S.fun&&S.fun.dog)||'Diesel';
+const PAINTS=['#c62828','#1565c0','#2e7d32','#ef6c00','#f4b400','#6a1b9a','#212121','#eceff1'];
+const paint=()=>(S.fun&&S.fun.paint)||PAINTS[0];
+const rankIdx=()=>Math.max(0,RANKS.filter(r=>S.st.totalL>=r[0]).length-1);
+const curBase=()=>LADDER[Math.min(S.top,LADDER.length-1)].base;
+const curPart=()=>lc(BASE_NAME[curBase()]);
+const curBrand=()=>BI[LADDER[Math.min(S.top,LADDER.length-1)].b].n;
+function topBrand(){let b=null,m=-1;for(const k in S.st.br)if(S.st.br[k]>m){m=S.st.br[k];b=k}return b&&BI[b]?BI[b].n:curBrand()}
+
+/* today's weather from the date, the same all day: snow mostly in winter, rain more often in spring */
+function weatherToday(){const d=new Date(),seed=(d.getFullYear()*372+d.getMonth()*31+d.getDate())*2654435761%1000/1000,m=d.getMonth();
+  if(m===11||m<2)return seed<.4?'snow':seed<.55?'cloud':seed<.65?'rain':'clear';
+  if(m===3||m===4)return seed<.4?'rain':seed<.6?'cloud':'clear';
+  return seed<.25?'rain':seed<.45?'cloud':'clear'}
+/* which holiday decorations are up today, from the real date */
+function seasonToday(){const d=new Date(),m=d.getMonth()+1,day=d.getDate();
+  if((m===12&&day===31)||(m===1&&day<=2))return 'newyear';
+  if(m===12)return 'xmas';if(m===10)return 'fall';if(m===11)return 'thanks';
+  if(m===2&&day>=7&&day<=14)return 'valentine';if(m===3&&day>=10&&day<=17)return 'shamrock';
+  if((m===6&&day>=28)||(m===7&&day<=6))return 'july';return ''}
+
+/* ---------- spotter's log: trucks that roll past the lot ---------- */
+/* weight: how often it shows up (30 common, 10 uncommon, 3 rare, 1 legendary) */
+const TRUCKS=[
+ ['Freightliner Cascadia',30,'#eceff1'],['Kenworth T680',30,'#1565c0'],['Peterbilt 579',30,'#c62828'],['Volvo VNL 860',30,'#455a64'],['International LT',30,'#e0e0e0'],
+ ['Mack Anthem',30,'#212121'],['Freightliner M2 106',30,'#f5f5f5'],['International MV',30,'#ffffff'],['Isuzu NPR',30,'#eceff1'],['Hino L6',30,'#90a4ae'],
+ ['Kenworth T880',10,'#f4b400'],['Peterbilt 567',10,'#ef6c00'],['Mack Granite',10,'#d32f2f'],['Western Star 49X',10,'#1b5e20'],['Western Star 57X',10,'#0d47a1'],
+ ['Volvo VNR',10,'#607d8b'],['Freightliner 122SD',10,'#37474f'],['International HX',10,'#b71c1c'],['Kenworth W990',10,'#6a1b9a'],['Peterbilt 389',10,'#880e4f'],
+ ['Mack Pinnacle',10,'#263238'],['Freightliner eCascadia',10,'#26a69a'],['Volvo VNR Electric',10,'#00897b'],['Autocar ACX',10,'#fbc02d'],
+ ['Kenworth W900L',3,'#4a148c'],['Peterbilt 379',3,'#1a237e'],['International 9900i',3,'#3e2723'],['Freightliner Coronado',3,'#bf360c'],['Western Star 4900',3,'#004d40'],
+ ['Mack RD688',3,'#f57f17'],['Ford LTL9000',3,'#33691e'],['Volvo VHD',3,'#78909c'],
+ ['1974 Peterbilt 359',1,'#b71c1c'],['Mack R-model',1,'#e65100'],['Kenworth K100 cabover',1,'#ffffff'],['GMC Astro 95',1,'#1565c0'],['Mack B-61',1,'#827717'],
+ ['International Transtar',1,'#5d4037'],['Freightliner FLD 120',1,'#283593'],['Marmon 57P',1,'#9e9d24'],['Diamond T 921',1,'#2e7d32'],['White Freightliner cabover',1,'#cfd8dc']];
+const RAR={30:'Common',10:'Uncommon',3:'Rare',1:'Legendary'};
+const TRUCK_W=TRUCKS.reduce((a,t)=>a+t[1],0);
+let spotIn=40+Math.random()*60,spotNow=null;
+function spotTruck(){let r=Math.random()*TRUCK_W,i=0;for(;i<TRUCKS.length-1;i++){r-=TRUCKS[i][1];if(r<0)break}
+  const [n,w,c]=TRUCKS[i],first=!S.fun.spot[i];S.fun.spot[i]=(S.fun.spot[i]||0)+1;spotNow={i,n,c,t:0};
+  if(first){note(`Spotted a ${n}. ${RAR[w]}, and new in your spotter's log.`);if(w<=3)feel('step')}}
+
+/* ---------- plaques on the wall ---------- */
+const PLAQ=[];
+for(const [v,t] of [[100,'100'],[1e4,'10,000'],[1e6,'1 million'],[1e8,'100 million'],[1e10,'10 billion'],[1e12,'1 trillion'],[1e15,'1 quadrillion'],[1e18,'1 quintillion']])
+  PLAQ.push(['u'+v,`${t} units sold`,()=>S.st.all>=v]);
+for(const l of LINES)PLAQ.push(['d'+l.id,`${l.n}: every part mastered`,()=>(LINE_BASES[l.id]||[]).length>0&&(LINE_BASES[l.id]||[]).every(b=>{const st=BASE_STEPS[b];return L(S.f,st[st.length-1].id)>=BASE_NEED})]);
+PLAQ.push(['sv','Opened the service shop',()=>S.sv.open]);
+for(const [v,t] of [[100,'100'],[1e4,'10,000'],[1e6,'1 million'],[1e9,'1 billion']])PLAQ.push(['t'+v,`${t} trucks serviced`,()=>S.st.trucks>=v]);
+for(const [h,t] of [[1,'1 hour'],[10,'10 hours'],[50,'50 hours'],[100,'100 hours'],[250,'250 hours'],[500,'500 hours'],[1000,'1,000 hours']])PLAQ.push(['h'+h,`${t} behind the counter`,()=>S.st.play>=h*3600]);
+for(const [v,t] of [[10,'10'],[100,'100'],[1000,'1,000']])PLAQ.push(['i'+v,`${t} problems handled`,()=>S.st.incidents>=v]);
+for(const [v,t] of [[10,'10 truck models'],[25,'25 truck models']])PLAQ.push(['s'+v,`Spotted ${t}`,()=>Object.keys(S.fun.spot).length>=v]);
+PLAQ.push(['sAll','Spotted every truck in the log',()=>Object.keys(S.fun.spot).length>=TRUCKS.length]);
+PLAQ.push(['leg','Spotted a legendary truck',()=>TRUCKS.some((t,i)=>t[1]===1&&S.fun.spot[i])]);
+for(let i=2;i<RANKS.length;i+=3)PLAQ.push(['r'+i,`Promoted to ${RANKS[i][1].toLowerCase()}`,()=>rankIdx()>=i]);
+function checkPlaques(quiet){for(const [id,n,ok] of PLAQ)if(!S.fun.pl[id]&&ok()){S.fun.pl[id]=Date.now();if(!quiet){note(`New plaque for the wall: ${n}.`);feel('step')}}}
+
+/* ---------- trivia: one real fact for every part ---------- */
+const TRIVIA=[
+ [/oil filter/i,'A heavy-truck oil filter can hold more than a gallon of oil, and most diesels change it every 25,000 to 50,000 miles.'],
+ [/fuel water separator/i,'Water in diesel is heavier than fuel, so a separator lets it sink into a bowl you drain from the bottom.'],
+ [/fuel filter/i,'Modern common-rail injectors run near 30,000 psi. Fuel filters catch dirt too small to see that would wreck them.'],
+ [/cabin air/i,'The cabin air filter cleans the air the driver breathes for 10 or more hours a day.'],
+ [/air filter|prefilter/i,'A big diesel can pull in enough air every minute to fill a small bedroom, all of it through the air filter.'],
+ [/coolant filter/i,'Coolant filters often carry additives that slowly dissolve to protect cylinder liners from pitting.'],
+ [/def/i,'DEF is about one-third urea and two-thirds purified water. It freezes at 12°F, so trucks have heaters for it.'],
+ [/15w-40|10w-30|5w-40|oil,/i,'In 15W-40, the "W" stands for winter. The first number is how it flows cold, the second how it holds up hot.'],
+ [/coolant|antifreeze/i,'Extended-life coolant can last 600,000 miles or more in a heavy truck if it is kept topped up and tested.'],
+ [/grease/i,'A tractor-trailer can have 30 or more grease fittings, from kingpins and U-joints to fifth wheel plates.'],
+ [/gear oil|transmission oil|transmission fluid/i,'Heavy-truck manual transmissions usually take straight 50-weight synthetic, not regular gear oil.'],
+ [/brake fluid/i,'Most big trucks use air brakes, so brake fluid is mainly for medium-duty trucks with hydraulic brakes.'],
+ [/refrigerant/i,'R-134a has been the standard truck A/C refrigerant since the mid-1990s, when it replaced R-12.'],
+ [/glove|rag|towel/i,'Nitrile gloves replaced latex in most shops because they hold up much better to diesel and brake cleaner.'],
+ [/brake cleaner/i,'Brake cleaner evaporates fast and leaves no residue, which is why techs use it on almost everything.'],
+ [/penetrating|anti-seize|thread locker/i,'Rust can weld a bolt in place. Penetrating oil creeps into the threads to break that bond.'],
+ [/zip tie|tape|loom|heat shrink|connector|solder|wire/i,'Corrosion in wiring is one of the most common causes of electrical problems on trucks, especially in salt states.'],
+ [/socket|wrench set|torque wrench/i,'Lug nuts on a typical heavy truck are torqued to around 450 to 500 foot-pounds.'],
+ [/impact wrench/i,'A 1-inch drive impact wrench can put out well over 1,500 foot-pounds to break loose rusted wheel nuts.'],
+ [/jack|stand/i,'Never work under a truck held up only by a jack. Jack stands rated for the load are the rule in every shop.'],
+ [/scan tool|diagnostic/i,'Heavy trucks talk over the J1939 network, and a scan tool reads fault codes from every module on it.'],
+ [/multimeter/i,'A truck electrical system runs at 12 volts, but four batteries in parallel can push over 3,000 cold-cranking amps.'],
+ [/compressor/i,'A truck air compressor keeps the tanks around 120 psi, and the governor cuts it out when they are full.'],
+ [/triangle|flare/i,'Federal rules say a stopped truck needs three warning triangles set out within 10 minutes.'],
+ [/fire extinguisher/i,'Commercial trucks are required to carry a fire extinguisher, usually at least a 5 B:C rating.'],
+ [/conspicuity/i,'The red-and-white reflective tape on trailers has been required since the 1990s and has prevented many rear-end crashes at night.'],
+ [/strap|binder|chain|load lock|cargo bar|e-track/i,'Cargo rules say the total working load limit of your tie-downs has to be at least half the weight of the load.'],
+ [/chock/i,'Wheel chocks keep a parked trailer from rolling when it is uncoupled at a dock.'],
+ [/eld/i,'Electronic logging devices have been required on most U.S. trucks since 2017 to track hours of service.'],
+ [/tire chain/i,'Some mountain passes require trucks to carry chains in winter, even on dry days.'],
+ [/headlamp|headlight/i,'LED headlights draw far less power and can last the life of the truck.'],
+ [/marker|clearance|cab marker/i,'The three amber lights on a truck cab roof mark it as a vehicle over 80 inches wide.'],
+ [/battery/i,'Most heavy trucks carry three or four Group 31 batteries wired together to crank a big diesel.'],
+ [/alternator/i,'A heavy-duty alternator can put out 160 to 320 amps to keep up with lights, electronics and sleeper loads.'],
+ [/starter/i,'A heavy-truck starter can draw over 1,000 amps while cranking a cold engine.'],
+ [/7-way|trailer cord|trailer harness/i,'The 7-way plug carries trailer lights, brakes signals and power. The green pin is usually the right turn signal.'],
+ [/abs/i,'ABS has been required on new air-braked tractors since 1997 and on trailers since 1998.'],
+ [/backup alarm/i,'Backup alarms beep at around 97 to 112 decibels so people can hear them over a noisy job site.'],
+ [/glow plug/i,'Glow plugs heat the cylinders so a diesel can start in the cold, since diesels have no spark plugs.'],
+ [/inverter/i,'Drivers use inverters to run microwaves, coffee makers and TVs off the truck batteries.'],
+ [/dash camera|backup camera|blind spot/i,'Camera systems help with blind spots that can hide a whole car beside a tractor-trailer.'],
+ [/tire pressure|inflator/i,'Underinflated tires are a leading cause of blowouts and cost fuel, so many fleets use tire pressure monitors.'],
+ [/control module|instrument cluster/i,'A modern truck can have more than a dozen computer modules talking to each other.'],
+ [/brake shoe|brake lining|brake drum/i,'Drum brakes on a loaded truck can reach several hundred degrees on a long downhill grade.'],
+ [/rotor|disc brake|caliper/i,'Air disc brakes stop shorter and fade less than drums, and they are showing up on more new trucks every year.'],
+ [/spring brake chamber/i,'Spring brakes use a huge spring to hold the truck. Air pressure is what holds them off, so losing air applies them.'],
+ [/slack adjuster/i,'Automatic slack adjusters have been required since 1994. They keep the brakes in adjustment as linings wear.'],
+ [/air dryer/i,'An air dryer pulls moisture out of compressed air so water does not freeze in the brake lines.'],
+ [/valve/i,'An air brake system relies on a network of valves to send air to the right chambers in a fraction of a second.'],
+ [/glad hand/i,'Glad hands get their name from looking like two hands shaking when they are coupled.'],
+ [/s-cam|cam bushing/i,'In drum brakes, an S-shaped cam rotates to push the shoes against the drum.'],
+ [/air tank|drain valve/i,'Air tanks should be drained daily, or water and oil build up and can freeze in winter.'],
+ [/wiper/i,'Heavy-truck windshields are big enough that wiper blades are often 22 inches or longer.'],
+ [/mirror/i,'Truck mirrors are heated on many models so ice and fog clear without the driver getting out.'],
+ [/air ride seat|seat/i,'Air ride seats float on an air bag to soak up bumps over a long day on the road.'],
+ [/cb/i,'CB radio channel 19 has long been the trucker channel for road and traffic talk.'],
+ [/bunk heater|apu|auxiliary power/i,'Bunk heaters and APUs let drivers stay warm overnight without idling the main engine.'],
+ [/windshield/i,'Many truck windshields are two-piece, so only one side has to be replaced after a rock chip.'],
+ [/sleeper/i,'Big sleepers can be over 70 inches long with room for a bunk, fridge, microwave and storage.'],
+ [/belt/i,'A serpentine belt drives the alternator, water pump, A/C and more. If it breaks, the truck is not going far.'],
+ [/radiator|hose|thermostat|water pump|fan|coolant tank|cap|charge air/i,'Cooling problems are one of the top reasons heavy trucks break down on the road.'],
+ [/wheel seal|hub|bearing/i,'Wheel-end failures can cause a wheel to come off, so seals and bearings get checked at every inspection.'],
+ [/lug nut|stud/i,'Wheel nut indicators, the little arrows on lug nuts, show at a glance if a nut has started to loosen.'],
+ [/mud flap/i,'Many states require mud flaps behind the rear wheels to keep rocks and spray off the cars behind.'],
+ [/wheel/i,'Aluminum wheels can save over 20 pounds each compared with steel, which adds up to more cargo.'],
+ [/kingpin|tie rod|drag link|pitman|steering/i,'Front-end parts wear slowly, so play in the steering often shows up as uneven tire wear first.'],
+ [/shock|air spring|leaf spring|torque rod|u-bolt|equalizer|suspension|bushing|height control/i,'Air suspensions keep a smooth ride whether the trailer is empty or loaded to 80,000 pounds.'],
+ [/fifth wheel/i,'The fifth wheel is the coupling plate on the tractor. Its name comes from horse-drawn carriages.'],
+ [/landing gear/i,'Landing gear legs hold up the front of a parked trailer, and they are cranked down by hand.'],
+ [/trailer|roll-up|bulkhead|icc bumper|side skirt/i,'A 53-foot trailer is the most common size in the U.S., with room for 26 standard pallets.'],
+ [/tow|winch|snatch block|wheel lift|wrecker|rollback|dollies|hook/i,'Heavy wreckers can lift and tow a fully loaded tractor-trailer.'],
+ [/hydraulic|pto|wet kit|cylinder seal|quick coupler|diverter/i,'A PTO takes power from the transmission to run things like dump bodies, cranes and pumps.'],
+ [/fuel tank|fuel cap|fuel tank strap|sending unit/i,'Two 150-gallon tanks give many tractors a range of well over 1,500 miles.'],
+ [/injector/i,'A diesel injector can fire several times per combustion stroke to make the engine quieter and cleaner.'],
+ [/fuel/i,'Diesel fuel lubricates the fuel system itself, which is why low-sulfur fuel needed added lubricity.'],
+ [/turbo|vgt/i,'A turbocharger can spin over 100,000 rpm, driven by exhaust gas that would otherwise go to waste.'],
+ [/egr/i,'EGR sends some exhaust back into the engine to cool combustion and cut NOx.'],
+ [/gasket/i,'A head gasket has to seal combustion pressure, coolant and oil all at the same time.'],
+ [/sensor/i,'A heavy truck can have dozens of sensors feeding the engine computer every second.'],
+ [/piston|liner|rod|bearing set|crank|cam|valve spring|rocker|cylinder head|flywheel|damper/i,'Heavy diesels are built to run a million miles or more before a major overhaul.'],
+ [/engine brake/i,'An engine brake, often called a Jake brake, turns the engine into an air compressor to slow the truck.'],
+ [/clutch/i,'Heavy-truck clutches often have two discs to handle the torque of a big diesel.'],
+ [/u-joint|driveshaft|yoke|center support/i,'A driveline that is out of phase can shake the whole truck, so U-joints are set up carefully.'],
+ [/transmission|shift|synchron|mainshaft|input shaft|range cylinder/i,'Many truck manual transmissions have 10, 13 or 18 speeds, though automated manuals are now the norm.'],
+ [/differential|axle/i,'A tandem drive axle has an inter-axle differential so both axles can turn at slightly different speeds.'],
+ [/dpf/i,'A diesel particulate filter traps soot and burns it off in a process called regeneration.'],
+ [/doc/i,'A diesel oxidation catalyst helps heat up the exhaust so the DPF can burn off soot.'],
+ [/scr|nox/i,'SCR uses DEF to turn NOx into nitrogen and water vapor, cutting NOx by around 90 percent.'],
+ [/kit/i,'Kits bundle every part a job needs, so the truck is not stuck in the bay waiting on one missing piece.'],
+ [/bumper|hood|fender|fairing|door|tool box|deck plate|sleeper extender/i,'Fairings and skirts can improve a tractor-trailer\'s fuel economy by several percent at highway speed.'],
+ [/chrome|stack|visor|light bar|horn|grille|ornament/i,'Chrome and lights are a big part of truck culture, and show trucks can have hundreds of extra lights.'],
+ [/muffler|exhaust/i,'Exhaust stacks route hot gas up and away from the cab and anyone standing near the truck.'],
+ [/retread/i,'Retreading lets a tire casing be reused several times, and most truck tires on the road have been retreaded.'],
+ [/tire/i,'A steer tire on a heavy truck carries more than 6,000 pounds, and a blowout up front is the most dangerous kind.']];
+const LINE_FACT={f:'Filters and fluids are the most sold parts at almost every truck parts counter.',s:'Shop supplies get used up on every job, so they never stop selling.',to:'A well-equipped heavy-truck tech can own over $50,000 in tools.',
+ sf:'DOT roadside inspections check lights, brakes, tires and paperwork.',l:'Lighting problems are among the most common roadside inspection violations.',el:'Trucks today carry more computing power than early spacecraft.',
+ b:'Air brakes were invented by George Westinghouse in the 1860s, first for trains.',c:'For many drivers, the cab is a home away from home for weeks at a time.',k:'A heavy diesel makes enough heat to warm several houses.',
+ w:'A tractor-trailer has 18 wheels, which is where the name "18-wheeler" comes from.',tr:'There are several trailers on the road for every tractor in the U.S.',tw:'Heavy towing operators train for years to recover overturned trucks safely.',
+ hy:'Hydraulics let a small pump lift many tons by pushing fluid that can\'t be squeezed.',fu:'A heavy truck can burn over 20,000 gallons of diesel in a year.',e:'Heavy-duty diesel engines commonly make 1,650 to 2,050 foot-pounds of torque.',
+ d:'The drivetrain carries all that torque from the engine to the drive tires.',a:'Today\'s diesels emit a tiny fraction of the soot and NOx of trucks from the 1990s.',kt:'Kits save techs trips to the parts counter in the middle of a job.',
+ bd:'Aerodynamic bodywork became a big focus as fuel prices climbed.',x:'The look of a big rig is a matter of pride for many owner-operators.',t:'A set of new tires for a tractor-trailer can cost thousands of dollars.',
+ md:'Medium-duty trucks do much of the local delivery work in towns and cities.',vo:'Vocational trucks are built for one job, like dumping, mixing or plowing.',bu:'School buses are among the safest vehicles on the road.',
+ ag:'Farm and construction equipment often runs the same diesel engines as trucks.',rv:'Big diesel motorhomes, called diesel pushers, put the engine in the back.',rf:'Refrigerated trailers can hold temperatures well below zero for frozen loads.',
+ h:'An in-frame overhaul rebuilds an engine while it stays in the truck.',ut:'Used trucks are how many owner-operators get started.',nt:'A new Class 8 tractor can cost well over $150,000.',ev:'Electric trucks use regenerative braking to put energy back into the batteries.'};
+function triviaFor(b){const n=BASE_NAME[b]||'',hit=TRIVIA.find(([re])=>re.test(n));if(hit)return hit[1];const l=BASE_STEPS[b]&&BASE_STEPS[b][0].line;return LINE_FACT[l]||''}
+
+/* ---------- career uniform: your character dresses up as you get promoted ---------- */
+function uniform(){const r=rankIdx();
+  if(r<2)return {body:'#c8371d',hat:'#1b1d20'};if(r<4)return {body:'#1565c0',hat:'#0d47a1'};
+  if(r<6)return {body:'#eceff1',hat:'#4e342e',tie:'#1565c0'};if(r<9)return {body:'#455a64',hat:'#3e2723',tie:'#c62828'};
+  if(r<12)return {body:'#1a237e',hat:'#3e2723',tie:'#f4b400'};return {body:'#111111',hat:'#9e9e9e',tie:'#d4af37'}}
+
+/* ---------- regulars who stop by and talk ---------- */
+const REGS=[
+ {n:'Big Mike',who:'runs a towing outfit',body:'#37474f',hat:'#ff6f00',lines:['Got three wrecks on the hook this week. Keep that shelf full.','My winch line snapped again. Story of my life.','You ever tow a cement mixer? Don\'t.']},
+ {n:'Dolores',who:'manages a delivery fleet',body:'#6a1b9a',hat:'#4a148c',lines:['I\'ve got 40 trucks and every one of them wants filters today.','My drivers say you\'re the only counter that picks up the phone.','Put it on the fleet account, hon.']},
+ {n:'Ray',who:'owner-operator',body:'#795548',hat:'#212121',lines:['Just did 3,000 miles in five days. Coffee first, then parts.','My truck\'s older than you and runs better than most.','Fuel prices are robbing me blind.']},
+ {n:'Gus',who:'old-timer mechanic',body:'#5d4037',hat:'#9e9e9e',lines:['Back in my day we fixed it with a hammer and a prayer.','Kids today plug a laptop into a truck. Unbelievable.','I\'ve been coming to this counter since before it had a computer.']},
+ {n:'Tammy',who:'dispatcher',body:'#00838f',hat:'#004d40',lines:['I need a truck back on the road by 3. No pressure.','Every driver I have is calling me at once.','Tell me you\'ve got it in stock. Please.']},
+ {n:'Hank',who:'farmer',body:'#2e7d32',hat:'#f9a825',lines:['Harvest is coming and the grain truck is acting up.','Rain\'s holding off, so I\'m in a hurry.','Same part as last year. You know the one.']},
+ {n:'Priya',who:'fleet maintenance manager',body:'#283593',hat:'#1a237e',lines:['I track every part by the mile. Don\'t sell me junk.','Our PM schedule runs like clockwork, mostly.','Downtime costs me more than any part ever will.']},
+ {n:'Earl',who:'runs the school bus garage',body:'#f9a825',hat:'#3e2723',lines:['Fifty buses and a summer to fix them all.','If a bus doesn\'t start, 60 kids are late. No pressure.','The kids broke another window latch.']},
+ {n:'Rosa',who:'owns a dump truck outfit',body:'#bf360c',hat:'#212121',lines:['Gravel season is the best season.','My trucks eat tires like candy.','Hydraulic hose blew on the job site. Again.']},
+ {n:'Walt',who:'retired, drives a motorhome',body:'#90a4ae',hat:'#eceff1',lines:['The wife and I are heading to Arizona for the winter.','This motorhome has a diesel in the back. Loud but reliable.','I don\'t need anything. Just came to chat.']}];
+function regLine(r){const opts=[...r.lines,
+  `Finally got ${curPart()}s in, huh? About time.`,`${curBrand()}? My cousin swears by those.`,`Heard you made ${rankOf(S.st.totalL).toLowerCase()}. Don't forget us little guys.`,
+  `Where's ${dogName()}? I brought a treat.`,`Nobody beats ${storeName()} on ${curPart()}s.`,
+  ...({snow:['This snow is killing my schedule.','Plows are out. Business is booming.'],rain:['Wipers are going to sell out in this rain.','Rain all day. Perfect parts counter weather.'],
+     cloud:['Gray out there today.'],clear:['Nice day to be on the road.']}[weatherToday()]),
+  ...({xmas:['Merry Christmas. Got any stocking stuffers for a trucker?'],thanks:['Smoking a turkey this year. Need a new thermometer, ha.'],fall:['Pumpkin spice everything. Even the coffee here.'],
+     july:['Happy Fourth! Don\'t set the shop on fire.'],newyear:['Happy New Year. Same truck, new problems.'],valentine:['Bought my wife a new air freshener for the truck. Romantic, right?'],shamrock:['I\'m wearing green, don\'t pinch me.']}[seasonToday()]||[])];
+  return pick(opts)}
+let regIn=70+Math.random()*60,regNow=null;
+function regVisit(){const r=pick(REGS),line=regLine(r);regNow={r,line};if(!(S.ui.anim&&!matchMedia('(prefers-reduced-motion: reduce)').matches))note(`${r.n}: "${line}"`)}
+
+/* ---------- seasons: decorations drawn into the store picture ---------- */
+function drawSeason(cx,W,H,floorY,ph,x0,mv){const s=seasonToday();if(!s)return;const y0=4;
+  if(s==='xmas'){cx.strokeStyle='#2e7d32';cx.lineWidth=1.5;cx.beginPath();for(let x=x0;x<=W;x+=4)cx.lineTo(x,y0+6+Math.sin(x*.12)*3);cx.stroke();
+    const C=['#ff5252','#ffd740','#69f0ae','#40c4ff'];for(let i=0,x=x0+6;x<W;x+=14,i++){const on=mv?((ph*2+i)|0)%4!==0:true;cx.fillStyle=on?C[i%4]:'#555';cx.beginPath();cx.arc(x,y0+9+Math.sin(x*.12)*3,2.2,0,7);cx.fill()}
+    const wx=W-24,wy=floorY-104;if(wy>20){cx.strokeStyle='#1b5e20';cx.lineWidth=4;cx.beginPath();cx.arc(wx,wy,8,0,7);cx.stroke();cx.fillStyle='#d32f2f';cx.fillRect(wx-3,wy+6,6,4)}}
+  else if(s==='newyear'){cx.fillStyle='#1a237e';cx.fillRect(x0+10,y0,Math.min(150,W-x0-20),14);cx.fillStyle='#ffd740';cx.font='700 10px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('HAPPY NEW YEAR',x0+10+Math.min(150,W-x0-20)/2,y0+11);
+    if(mv)for(let i=0;i<10;i++){cx.fillStyle=['#ff5252','#ffd740','#40c4ff','#69f0ae'][i%4];cx.fillRect(x0+((i*53+ph*20)%(W-x0)),(i*37+ph*30)%floorY,2,3)}}
+  else if(s==='july'||s==='valentine'||s==='shamrock'||s==='thanks'){
+    const C={july:['#d32f2f','#ffffff','#1565c0'],valentine:['#e91e63','#f8bbd0','#d81b60'],shamrock:['#2e7d32','#66bb6a','#1b5e20'],thanks:['#e65100','#f9a825','#8d6e63','#bf360c']}[s];
+    cx.strokeStyle='#5d4037';cx.lineWidth=1;cx.beginPath();cx.moveTo(x0,y0+2);cx.lineTo(W,y0+2);cx.stroke();
+    for(let i=0,x=x0+2;x<W-8;x+=12,i++){cx.fillStyle=C[i%C.length];
+      if(s==='thanks'){cx.beginPath();cx.ellipse(x+5,y0+8,4,6,(i%2?.5:-.5),0,7);cx.fill()}
+      else if(s==='valentine'){cx.beginPath();cx.arc(x+3,y0+6,2.5,0,7);cx.arc(x+7,y0+6,2.5,0,7);cx.fill();cx.beginPath();cx.moveTo(x+.5,y0+7);cx.lineTo(x+5,y0+12);cx.lineTo(x+9.5,y0+7);cx.fill()}
+      else if(s==='shamrock'){for(const [a,b] of [[3,5],[7,5],[5,2]]){cx.beginPath();cx.arc(x+a,y0+b+2,2.4,0,7);cx.fill()}}
+      else{cx.beginPath();cx.moveTo(x,y0+2);cx.lineTo(x+10,y0+2);cx.lineTo(x+5,y0+11);cx.fill()}}}
+  else if(s==='fall'){for(let i=0;i<3;i++){const px=x0+8+i*16,py=H-8;cx.fillStyle='#ef6c00';cx.beginPath();cx.ellipse(px,py,7-i,5-i*.5,0,0,7);cx.fill();cx.fillStyle='#33691e';cx.fillRect(px-1,py-7+i*.5,2,3)}
+    cx.fillStyle='#bf360c';for(let i=0,x=x0+2;x<W-8;x+=16,i++){cx.beginPath();cx.ellipse(x+5,y0+6,4,6,(i%2?.6:-.6),0,7);cx.fill()}}}
+
+/* ---------- shop radio: a soft generated loop, only while the game is open ---------- */
+const RADIO={on:false,next:0,step:0,bar:0,prog:0,timer:null,gain:null};
+const PROGS=[[[0,4,7,11],[9,12,16,19],[5,9,12,16],[7,11,14,17]],[[2,5,9,12],[7,11,14,17],[0,4,7,11],[0,4,7,11]],[[9,12,16,19],[5,9,12,16],[0,4,7,11],[7,11,14,17]],[[5,9,12,16],[4,7,11,14],[2,5,9,12],[7,11,14,17]]];
+const midi=n=>440*2**((n-69)/12);
+function radioTick(){const a=ac();if(!a||!RADIO.on||document.hidden)return;const spb=60/78/2;
+  while(RADIO.next<a.currentTime+.4){const t=RADIO.next,s=RADIO.step%16,ch=PROGS[RADIO.prog][RADIO.bar%4],root=48;
+    if(s===0){for(const n of ch)rTone(a,midi(root+12+n),t,spb*15,'triangle',.018);rTone(a,midi(root-12+ch[0]),t,spb*7,'sine',.06)}
+    if(s===8)rTone(a,midi(root-12+ch[0]+(Math.random()<.5?7:0)),t,spb*7,'sine',.05);
+    if(s%4===0)rKick(a,t);if(s%2===1)rHat(a,t,.012);if(s===4||s===12)rHat(a,t,.03,true);
+    if(Math.random()<.22&&s%2===0){const n=ch[(Math.random()*4)|0]+24+(Math.random()<.3?12:0);rTone(a,midi(root+n),t,spb*2,'sine',.022)}
+    RADIO.next+=spb;RADIO.step++;if(RADIO.step%16===0){RADIO.bar++;if(RADIO.bar%16===0)RADIO.prog=(RADIO.prog+1+((Math.random()*(PROGS.length-1))|0))%PROGS.length}}}
+function rOut(a){if(!RADIO.gain){RADIO.gain=a.createGain();RADIO.gain.gain.value=.8;const f=a.createBiquadFilter();f.type='lowpass';f.frequency.value=2600;RADIO.gain.connect(f).connect(a.destination)}return RADIO.gain}
+function rTone(a,f,t,d,type,vol){const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(rOut(a));o.start(t);o.stop(t+d+.05)}
+function rKick(a,t){const o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(40,t+.15);g.gain.setValueAtTime(.09,t);g.gain.exponentialRampToValueAtTime(.0001,t+.25);o.connect(g).connect(rOut(a));o.start(t);o.stop(t+.3)}
+function rHat(a,t,vol,snare){const d=snare?.12:.03,n=Math.floor(a.sampleRate*d),buf=a.createBuffer(1,n,a.sampleRate),c=buf.getChannelData(0);for(let i=0;i<n;i++)c[i]=(Math.random()*2-1)*(1-i/n)**2;
+  const src=a.createBufferSource(),g=a.createGain(),f=a.createBiquadFilter();f.type=snare?'bandpass':'highpass';f.frequency.value=snare?1800:7000;src.buffer=buf;g.gain.value=vol;src.connect(f).connect(g).connect(rOut(a));src.start(t)}
+function radioSet(on){RADIO.on=on;if(on){const a=ac();if(!a)return;RADIO.next=a.currentTime+.1;if(!RADIO.timer)RADIO.timer=setInterval(radioTick,100)}else if(RADIO.timer){clearInterval(RADIO.timer);RADIO.timer=null}}
+
+/* ---------- news ticker ---------- */
+function headline(){const p=curPart(),br=curBrand(),tb=topBrand(),st=storeName(),dg=dogName(),rk=rankOf(S.st.totalL).toLowerCase(),w=weatherToday();
+  const H=[`Local ${rk} spotted restocking ${p}s at record speed`,`${br} says demand for ${p}s is "through the roof"`,`${tb} reports its best quarter ever, thanks mostly to one parts counter`,
+   `${dg}, the ${st} shop dog, named employee of the month again`,`Study finds 9 out of 10 truckers want their parts "yesterday"`,`Man asks for blinker fluid; counter staff remain calm`,
+   `Fleet manager "just looking," buys $40,000 in filters`,`Coffee pot at ${st} running on its third refill before 7 a.m.`,`Driver swears the noise "only happens when the mechanic isn't around"`,
+   `Experts agree: if it's not leaking, it's probably out of oil`,`Owner-operator celebrates a million miles; truck reportedly unimpressed`,`Parts catalog now thicker than most phone books ever were`,
+   `Local tech finds 10mm socket after six-year search`,`Survey: "It was making a noise" remains the most common problem description`,`Grease monkey union demands better hand cleaner`,
+   `Dispatcher promises load "should be ready by now"`,`Area truck stop runs out of beef jerky; drivers in mourning`,`Breaking: someone actually read the owner's manual`,
+   `Tire prices up, tread depth down, everyone confused`,`Diesel tech's hands declared permanently black`,`${st} customers report "short wait, long story"`,
+   `Weather service: ${({snow:'snow means chains, chains mean sales',rain:'rain means wiper season is here',cloud:'gray skies, no excuse to skip the PM',clear:'clear roads and plenty of trucks out'})[w]}`,
+   `Mechanic tightens bolt "just one more turn"; bolt disagrees`,`Local man insists his 1987 cabover "just needs a little work"`,`New study: trucks know when you're about to go on vacation`,
+   `Parts counter phone rings 400 times; staff answer 399`,`Truck washes up spotless, immediately drives through mud`,`Owner-operator names truck "Betsy," refuses to explain`,
+   `${p}s now officially the hottest item in the county`,`Industry analysts baffled by how one store sells so many ${p}s`];
+  const s=seasonToday();if(s)H.push(({xmas:'Santa reportedly upgrading the sleigh to air disc brakes',thanks:'Truckers give thanks for open roads and hot coffee',fall:'Leaf-peepers jam scenic routes; drivers less than thrilled',
+   july:'Fireworks stands report record sales to truck drivers',newyear:'Resolution season: drivers vow to finally fix that air leak',valentine:'Local trucker buys his rig a new air freshener for Valentine\'s Day',shamrock:'Green trucks get extra luck this week, experts claim'})[s]);
+  return pick(H)}
+function nextHeadline(){const el=$('tickTxt');if(el)el.textContent=headline()}
+
+/* ---------- More tab cards ---------- */
+function renderFun(){if(!$('spotSum'))return;const got=Object.keys(S.fun.spot).length;
+  $('spotSum').innerHTML=`<b class="num">${got}</b> of ${TRUCKS.length} trucks spotted`;$('spotM').style.width=got/TRUCKS.length*100+'%';
+  setHTML('spotList',TRUCKS.map((t,i)=>{const n=S.fun.spot[i];return `<div class="spot ${n?'':'no'}"><i style="background:${n?t[2]:'transparent'}"></i><b>${n?esc(t[0]):'???'}</b><small>${RAR[t[1]]}${n>1?` · seen ${fmt(n)}×`:''}</small></div>`}).join(''));
+  const pl=PLAQ.filter(p=>S.fun.pl[p[0]]).sort((a,b)=>S.fun.pl[b[0]]-S.fun.pl[a[0]]);
+  $('plaqSum').innerHTML=`<b class="num">${pl.length}</b> of ${PLAQ.length} plaques on the wall`;$('plaqM').style.width=pl.length/PLAQ.length*100+'%';
+  setHTML('plaqList',pl.length?pl.map(([id,n])=>`<div class="plaq"><b>${esc(n)}</b><small>${new Date(S.fun.pl[id]).toLocaleDateString()}</small></div>`).join(''):'<div class="empty">Your first plaque comes at 100 units sold.</div>');
+  const ae=document.activeElement;if(ae!==$('fName'))$('fName').value=S.fun.name||'';if(ae!==$('fDog'))$('fDog').value=S.fun.dog||'';$('fName').placeholder=STORE;
+  setHTML('fPaint',PAINTS.map(c=>`<button class="sw ${paint()===c?'on':''}" data-paint="${c}" style="background:${c}" aria-label="Paint color"></button>`).join(''));
+  $('sRadio').checked=!!S.ui.radio}
+
+/* ---------- wiring ---------- */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-paint]');if(b){S.fun.paint=b.dataset.paint;save();renderFun()}});
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='fName'){S.fun.name=t.value.slice(0,28).trim();save()}if(t.id==='fDog'){S.fun.dog=t.value.slice(0,16).trim();save()}});
+document.addEventListener('change',e=>{if(e.target.id==='sRadio'){S.ui.radio=e.target.checked;radioSet(S.ui.radio);save()}},true);
+/* audio can only start after a tap, so the radio waits for the first one */
+document.addEventListener('pointerdown',()=>{if(S.ui.radio&&!RADIO.on)radioSet(true)},{passive:true});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&RADIO.on){const a=ac();if(a)RADIO.next=a.currentTime+.1}});
+checkPlaques(true);
+document.body.classList.toggle('noanim',!S.ui.anim);
+let funT=0;setInterval(()=>{document.body.classList.toggle('noanim',!S.ui.anim);if(document.hidden)return;funT++;
+  if((spotIn-=1)<=0){spotTruck();spotIn=60+Math.random()*120}
+  if((regIn-=1)<=0){regVisit();regIn=90+Math.random()*120}
+  if(funT%5===0)checkPlaques(false);
+  if(funT%2===0&&typeof tab!=='undefined'&&tab==='more')renderFun()},1000);
+{const el=$('tickTxt');if(el){nextHeadline();el.addEventListener('animationiteration',nextHeadline);setInterval(()=>{if(!S.ui.anim)nextHeadline()},9000)}}
 </script>
 <script>/* ===== Parts Counter Idle: store scene ===== */
 {
@@ -1551,10 +1849,13 @@ const STARS=Array.from({length:14},(_,i)=>[(i*37%100)/100,(i*53%60)/100]);
 const ERAS=[{wall:'#b08d6e',wall2:'#8e6e52',floor:'#8a8378',trim:'#6d4c41',lines:'wood'},{wall:'#d9d2c3',wall2:'#a89f8d',floor:'#8d8270',trim:'#b7ab95'},
  {wall:'#eef1f5',wall2:'#b8c2cf',floor:'#9aa3ad',trim:'#2f6fb0',lines:'stripe'},{wall:'#c9ced4',wall2:'#8f969e',floor:'#7d848c',trim:'#f4b400',lines:'steel'}];
 const eraOf=()=>{const f=S.top/NS;return f<.02?0:f<.2?1:f<.55?2:3};
-/* today's weather, the same all day: snow mostly in winter */
-function weather(){const d=new Date(),seed=(d.getFullYear()*372+d.getMonth()*31+d.getDate())*2654435761%1000/1000,m=d.getMonth(),winter=m===11||m<2;
-  if(winter)return seed<.4?'snow':seed<.55?'cloud':seed<.65?'rain':'clear';return seed<.25?'rain':seed<.45?'cloud':'clear'}
 const DROPS=Array.from({length:26},(_,i)=>[(i*61%100)/100,(i*29%100)/100,.6+(i*17%10)/20]);
+let dogHit=null,dogTap=0;
+function bubble(x,y,txt){cx.font='600 10px Barlow,sans-serif';const words=txt.split(' '),lines=[];let cur='';const mw=Math.min(170,W*.5);
+  for(const w of words){const t=cur?cur+' '+w:w;if(cx.measureText(t).width>mw&&cur){lines.push(cur);cur=w}else cur=t}if(cur)lines.push(cur);const ls=lines.slice(0,4),bw=Math.max(...ls.map(l=>cx.measureText(l).width))+12,bh=ls.length*12+8;
+  let bx=Math.max(4,Math.min(W-bw-4,x-bw/2)),by=Math.max(2,y-bh-8);cx.fillStyle='rgba(255,255,255,.96)';cx.strokeStyle='#1b1d20';cx.lineWidth=1;cx.beginPath();cx.roundRect?cx.roundRect(bx,by,bw,bh,6):cx.rect(bx,by,bw,bh);cx.fill();cx.stroke();
+  cx.beginPath();cx.moveTo(Math.max(bx+6,Math.min(bx+bw-6,x))-4,by+bh);cx.lineTo(Math.max(bx+6,Math.min(bx+bw-6,x)),by+bh+6);cx.lineTo(Math.max(bx+6,Math.min(bx+bw-6,x))+4,by+bh);cx.fill();
+  cx.fillStyle='#1b1d20';cx.textAlign='left';ls.forEach((l,i)=>cx.fillText(l,bx+6,by+14+i*12))}
 let sparks=[],dog={x:0,dir:1,t:0},driver={x:-40,on:false,t:8};
 function dogDraw(x,y,dir,bob){cx.save();cx.translate(x,y);cx.scale(dir,1);cx.fillStyle='#8d5a2b';cx.fillRect(-9,-8+bob,16,6);cx.fillRect(5,-12+bob,6,6);cx.fillStyle='#5d3a1a';cx.fillRect(9,-13+bob,2,3);
   cx.fillRect(-8,-2,2,4);cx.fillRect(4,-2,2,4);cx.fillRect(-12,-9+bob+Math.sin(ph*12)*1.5,4,2);cx.restore()}
@@ -1588,14 +1889,17 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   if(has('cu','Billboard')){const bx2=wx+ww*.5,by2=wy+wh*.36;cx.fillStyle='#5d5446';cx.fillRect(bx2+ww*.12,by2+wh*.14,2,wh*.22);cx.fillStyle='#fff';cx.fillRect(bx2,by2,ww*.28,wh*.15);cx.fillStyle='#c8371d';cx.fillRect(bx2,by2,ww*.28,wh*.05)}
   cx.fillStyle=mix('#2f3a2c','#7d8c6a',day);cx.fillRect(wx,wy+wh*.7,ww,wh*.3);
   if(has('cu','Yard sign')){cx.fillStyle='#5d5446';cx.fillRect(wx+ww*.9,wy+wh*.66,1.5,10);cx.fillStyle='#ffd54f';cx.fillRect(wx+ww*.84,wy+wh*.6,12,7)}
-  const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=['#c62828','#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)semi(wx+4+i*(ww/3),wy+wh-2,tc[i],ww/220);
-  if(has('ck','Delivery van'))van(wx+ww*.55,wy+wh*.74,'#f5f5f5',ww/260);if(has('ck','Box truck'))van(wx+ww*.05,wy+wh*.74,'#e0e0e0',ww/200);
-  {const w=weather();cx.save();cx.beginPath();cx.rect(wx,wy,ww,wh);cx.clip();
+  const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=[paint(),'#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)semi(wx+4+i*(ww/3),wy+wh-2,tc[i],ww/220);
+  if(has('ck','Delivery van'))van(wx+ww*.55,wy+wh*.74,paint(),ww/260);if(has('ck','Box truck'))van(wx+ww*.05,wy+wh*.74,paint(),ww/200);
+  /* a truck from the spotter's log rolls past */
+  if(spotNow){spotNow.t+=dt;const f=spotNow.t/7;if(f>1)spotNow=null;else{cx.save();cx.beginPath();cx.rect(wx,wy,ww,wh);cx.clip();semi(wx-60+f*(ww+80),wy+wh*.93,spotNow.c,ww/200);cx.restore()}}
+  {const w=weatherToday();cx.save();cx.beginPath();cx.rect(wx,wy,ww,wh);cx.clip();
    if(w!=='clear'){cx.fillStyle=w==='cloud'?'rgba(230,234,240,.85)':'rgba(150,158,170,.85)';for(let i=0;i<3;i++){const cxp=wx+((i*ww*.4+ph*(mv?4:0))%(ww+30))-15;cx.beginPath();cx.ellipse(cxp,wy+10+i*5,14,6,0,0,7);cx.ellipse(cxp+10,wy+8+i*5,10,5,0,0,7);cx.fill()}}
    if(w==='rain'){cx.strokeStyle='rgba(170,200,235,.8)';cx.lineWidth=1;cx.beginPath();for(const [a,b,v] of DROPS){const y=wy+((b*wh+ph*120*v*(mv?1:0))%wh),x=wx+a*ww;cx.moveTo(x,y);cx.lineTo(x-2,y+6)}cx.stroke()}
    if(w==='snow'){cx.fillStyle='rgba(255,255,255,.9)';for(const [a,b,v] of DROPS){const y=wy+((b*wh+ph*18*v*(mv?1:0))%wh),x=wx+a*ww+Math.sin(ph*2+b*9)*3;cx.fillRect(x,y,2,2)}
      cx.fillStyle='rgba(255,255,255,.85)';cx.fillRect(wx,wy+wh-4,ww,4)}
    cx.restore()}
+  {const n=Object.keys(S.fun.pl).length,max=Math.max(0,Math.floor((ww+4)/12));for(let i=0;i<Math.min(n,max);i++){const px=wx+i*12;cx.fillStyle='#6d4c41';cx.fillRect(px,1,10,9);cx.fillStyle='#d4af37';cx.fillRect(px+2,3,6,5)}}
   cx.strokeStyle=E.lines==='wood'?'#5d4037':E.lines==='stripe'?'#2f3a48':'#5d5446';cx.lineWidth=4;cx.strokeRect(wx,wy,ww,wh);cx.lineWidth=1;
   cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=8+night*10;cx.font='700 12px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('OPEN',wx+ww/2,wy+14);cx.shadowBlur=0;
   // shelving: one unit per aisle (plus the starter), bins coloured by the lines you stock
@@ -1618,10 +1922,10 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
         cx.fillStyle='#1b1d20';cx.beginPath();cx.arc(bx+11,by+68-lift+off,4,0,7);cx.arc(bx+bw-11,by+68-lift+off,4,0,7);cx.fill();cx.restore();
         if(mv&&off===0&&!(S.inc&&S.inc.type==='lift')&&Math.random()<.35)for(let q=0;q<2;q++)sparks.push({x:bx+bw/2+(Math.random()-.5)*10,y:by+70-34,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,l:.5})}}
     const bx=W-40;cx.fillStyle=night>.5?'#ffd54f':'#1b1d20';cx.font='700 9px "Barlow Condensed",sans-serif';cx.textAlign='center';cx.fillText('SERVICE',bx-(doors-1)*19+17,floorY-76);
-    if(R.sv.work>0)person(W-40-(doors-1)*38-10,floorY-28,'#1565c0','#1565c0',mv?Math.sin(ph*5)*1.5:0);
+    if(R.sv.work>0){const busyN=Math.max(1,Math.round(doors*R.sv.E));for(let d=0;d<Math.min(doors,busyN);d++)person(W-40-d*38-6,floorY-28,'#1565c0','#1565c0',mv?Math.sin(ph*5+d)*1.5:0)}
     /* the shop dog wanders in front of the bays */
     {const L0=W-40-(doors-1)*38-6,R0=W-10;if(mv){dog.x+=dog.dir*dt*18;dog.t-=dt;if(dog.x<L0||dog.x>R0||dog.t<0){dog.dir*=-1;dog.t=2+Math.random()*4;dog.x=Math.max(L0,Math.min(R0,dog.x))}}else if(!dog.x)dog.x=(L0+R0)/2;
-     if(!dog.x)dog.x=L0;dogDraw(dog.x,H-4,dog.dir,mv?Math.abs(Math.sin(ph*10)):0)}}
+     if(!dog.x)dog.x=L0;dogDraw(dog.x,H-4,dog.dir,mv?Math.abs(Math.sin(ph*10)):0);dogHit={x:dog.x,y:H-10};if(dogTap>0){dogTap-=dt;bubble(dog.x,H-16,dogName()+' wags')}}}
   for(const k of sparks){k.x+=k.vx*dt;k.y+=k.vy*dt;k.vy+=160*dt;k.l-=dt;cx.fillStyle=`rgba(255,${190+Math.random()*60|0},60,${Math.max(0,k.l*2)})`;cx.fillRect(k.x,k.y,2,2)}
   sparks=sparks.filter(k=>k.l>0);if(sparks.length>80)sparks.splice(0,sparks.length-80);
   if(!S.sv.open){cx.fillStyle='#5d5446';cx.fillRect(W-38,floorY-80,30,80);cx.fillStyle='#9fc8e8';cx.fillRect(W-34,floorY-74,22,40)}
@@ -1638,22 +1942,25 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   /* hanging lights, brighter at night */
   for(let i=0;i<3;i++){const lx=W*(.3+i*.22);cx.fillStyle='#3c3c3c';cx.fillRect(lx,0,1,8);cx.fillStyle='#f4f1de';cx.fillRect(lx-6,8,12,3);
     if(night>.2){const g=cx.createRadialGradient(lx,12,2,lx,12,70);g.addColorStop(0,`rgba(255,236,170,${.28*night})`);g.addColorStop(1,'rgba(255,236,170,0)');cx.fillStyle=g;cx.fillRect(lx-70,8,140,90)}}
+  drawSeason(cx,W,H,floorY,ph,wx+ww+6,mv);
   // counter and registers
   const lanes=Object.keys(S.b).filter(k=>k.startsWith('ck')).reduce((a,k)=>a+S.b[k],0),regs=Math.min(lanes,Math.max(1,Math.floor((W-sx-30-doors*38)/34))),cy=floorY+10,cl=sx,cr=Math.min(W-14-doors*38,sx+regs*34+40),rx=i=>cl+22+i*34;
-  for(let i=0;i<regs;i++)person(rx(i),cy-46,i===0?'#c8371d':'#2f5d7c',i===0?'#1b1d20':'#2f5d7c',mv?Math.sin(ph*4+i)*1.2:0);
+  const U=uniform();for(let i=0;i<regs;i++){const bb=mv?Math.sin(ph*4+i)*1.2:0;person(rx(i),cy-46,i===0?U.body:'#2f5d7c',i===0?U.hat:'#2f5d7c',bb);if(i===0&&U.tie){cx.fillStyle=U.tie;cx.fillRect(rx(i)-1,cy-46+bb+10,2,9)}}
   cx.fillStyle='#6b4f3a';cx.fillRect(cl,cy,cr-cl,22);cx.fillStyle='#8b6b52';cx.fillRect(cl-2,cy-4,cr-cl+4,6);
+  if(cr-cl>60){cx.save();cx.beginPath();cx.rect(cl,cy,cr-cl,22);cx.clip();cx.fillStyle='#f3e5c8';const sn=storeName().toUpperCase();let fs=11;cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`;const tw=cx.measureText(sn).width;if(tw>cr-cl-8){fs=Math.floor(fs*(cr-cl-8)/tw);cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`}if(fs>=6){cx.textAlign='center';cx.fillText(sn,(cl+cr)/2,cy+14)}cx.restore()}
   const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){if(pos){cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)+8,cy-24,2,10);cx.fillStyle='#3949ab';cx.fillRect(rx(i)+3,cy-30,13,9)}cx.fillStyle='#2b2b2b';cx.fillRect(rx(i)-8,cy-14,16,10);cx.fillStyle=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff6b5e':'#5cc98a';cx.fillRect(rx(i)-6,cy-12,12,4)}
   if(lanes>regs){cx.fillStyle='#fff';cx.font='600 11px Barlow,sans-serif';cx.textAlign='left';cx.fillText(`+${fmt(lanes-regs)} more`,cr+4,cy+14)}
   // customers walking in and out
   /* customers come in, browse a shelf, carry a part to a register, pay, and leave */
   const shelfR=sx+Math.min(sw,units*unitW)-10;
   if(mv&&FAC){spawn+=dt*Math.min(3,.3+Math.log10(1+R.moved)*.6);while(spawn>1){spawn--;if(peeps.length<10)peeps.push({x:W-20,sxp:sx+10+Math.random()*Math.max(10,shelfR-sx-10),tx:rx(Math.floor(Math.random()*regs)),y:cy+18,c:pick(BODY),st:0,w:0})}}
+  if(regNow&&mv){const r=regNow.r;peeps.push({x:W-20,sxp:sx+10+Math.random()*Math.max(10,shelfR-sx-10),tx:rx(0),y:cy+18,c:r.body,hat:r.hat,st:0,w:0,reg:regNow,bt:7});regNow=null}else if(regNow&&!mv)regNow=null;
   for(const p of peeps){const walk=p.st===0||p.st===2||p.st===4;
     if(p.st===0){p.x+=(p.sxp-p.x)*Math.min(1,dt*1.6);if(Math.abs(p.x-p.sxp)<2){p.st=1;p.w=.8+Math.random()*1.2}}
     else if(p.st===1){p.w-=dt;if(p.w<=0)p.st=2}
     else if(p.st===2){p.x+=(p.tx-p.x)*Math.min(1,dt*2);if(Math.abs(p.x-p.tx)<2){p.st=3;p.w=1.2}}
     else if(p.st===3){p.w-=dt*(R.E<1?.5:1);if(p.w<=0)p.st=4}else p.x+=dt*120;
-    const yy=p.st<=1?p.y-40:p.y-30;person(p.x,yy,p.c,'#333',walk?Math.sin(ph*12)*2:0);if(p.st===2||p.st===3)box(p.x+6,yy+14);if(p.st===4){cx.fillStyle='#e8e2d6';cx.fillRect(p.x+6,yy+15,7,8)}}
+    const yy=p.st<=1?p.y-40:p.y-30;person(p.x,yy,p.c,p.hat||'#333',walk?Math.sin(ph*12)*2:0);if(p.reg&&p.bt>0&&p.st>=1){p.bt-=dt;bubble(p.x,yy-4,p.reg.r.n+': '+p.reg.line);if(p.st===3)p.w=Math.max(p.w,.1)}if(p.st===2||p.st===3)box(p.x+6,yy+14);if(p.st===4){cx.fillStyle='#e8e2d6';cx.fillRect(p.x+6,yy+15,7,8)}}
   peeps=peeps.filter(p=>p.x<W+20);
   hit=null;
   if(S.inc&&S.inc.type==='spill'){const x=cl+(cr-cl)*.6,y=H-14;cx.fillStyle='rgba(110,70,30,.75)';cx.beginPath();cx.ellipse(x,y,16,5,0,0,7);cx.fill();hit={x,y}}
@@ -1661,7 +1968,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
     cx.fillStyle='#c0c0c0';cx.fillRect(x+6,y+14,14,4);hit={x,y:y+15}}
 }
 requestAnimationFrame(frame);
-cv.addEventListener('click',e=>{if(!hit)return;const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(!hit)return;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
 }
 </script>
 </body>
