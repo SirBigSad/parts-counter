@@ -196,8 +196,8 @@ let SAVE_LOCK=false;
 function save(){if(SAVE_LOCK)return;S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
-$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
-$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender()}));
+$('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.rid=Date.now();S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
+$('wipe').addEventListener('click',e=>arm(e.currentTarget,()=>{try{localStorage.removeItem(KEY)}catch(er){}S=fresh();S.rid=Date.now();save();resetLadder();applyTheme();tick(1e-6,false);note('Saved data reset. A fresh start.');forceRender();if(typeof syncNow==='function')syncNow(false)}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)save();S.t=now()});
 
 /* ---------- appearance: auto follows the phone, or force light or dark ---------- */
