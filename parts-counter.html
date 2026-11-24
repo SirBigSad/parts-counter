@@ -1481,7 +1481,9 @@ document.addEventListener('toggle',e=>{const el=e.target;if(el.tagName!=='DETAIL
 document.addEventListener('change',e=>{const t=e.target;if(t.id==='sAnim')S.ui.anim=t.checked;if(t.id==='sSci')S.ui.sci=t.checked;if(t.id==='sSnd'){S.ui.snd=t.checked;if(t.checked)feel('step')}if(t.id==='sVib'){S.ui.vib=t.checked;if(t.checked)buzz(30)}forceRender()});
 $('incBtn').addEventListener('click',()=>{fixInc();forceRender()});
 function arm(btn,fn){if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l;fn()}else{btn.dataset.l=btn.textContent;btn.dataset.arm=1;btn.textContent='Tap again to confirm';setTimeout(()=>{if(btn.dataset.arm){delete btn.dataset.arm;btn.textContent=btn.dataset.l}},3000)}}
-function save(){S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+/* SAVE_LOCK stops the old game from saving over a save that was just loaded, while the page reloads */
+let SAVE_LOCK=false;
+function save(){if(SAVE_LOCK)return;S.t=now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 function resetLadder(){sbuilt={};for(const j of JOB_ORDER){$('sjb-'+j).innerHTML='';$('sjd-'+j).open=false}for(const l of SV_LINES)$('sln-'+l.id).open=false;if(S.sv.open)openJob();built={};for(const b of BASES){$('bb-'+b).innerHTML='';$('bd-'+b).open=false}for(const l of LINES)$('ln-'+l.id).open=false;openCurrent()}
 $('copy').addEventListener('click',async()=>{save();const code=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{await navigator.clipboard.writeText(code);note('Save code copied.')}catch(e){$('imp').value=code;$('imp').select();note('Copy the code from the box.')}});
 $('load').addEventListener('click',()=>{try{const d=JSON.parse(decodeURIComponent(escape(atob($('imp').value.trim()))));if(!d||!d.f||(d.v||0)<4)throw 0;S=load(d);S.t=now();save();resetLadder();applyTheme();$('imp').value='';tick(1e-6,false);note('Save loaded.');forceRender()}catch(e){note("That code didn't work.")}});
@@ -2124,7 +2126,12 @@ async function gistFind(){for(let p=1;p<=5;p++){const list=await gh(`/gists?per_
    the save, so it tells which copy is further along even if a device saved again without playing */
 const playOf=d=>(d&&d.st&&d.st.play)||0;
 async function syPull(ask){const cloud=await gistRead();if(!cloud||!cloud.v)return false;
-  if(playOf(cloud)>playOf(S)+5){localStorage.setItem(KEY,JSON.stringify(cloud));syStatus(`Loaded your cloud save (${fmtTime(playOf(cloud))} played).`);location.reload();return true}return false}
+  if(playOf(cloud)>playOf(S)+5){
+    /* never reload twice in a row: if a cloud load just happened and this device still looks behind, stop and push instead */
+    let last=0;try{last=+sessionStorage.getItem('pc-sync-reload')||0}catch(e){}if(Date.now()-last<60000)return false;
+    try{sessionStorage.setItem('pc-sync-reload',Date.now())}catch(e){}
+    switchTo(cloud);syStatus(`Loaded your cloud save (${fmtTime(playOf(cloud))} played).`);return true}return false}
+function switchTo(d){SAVE_LOCK=true;localStorage.setItem(KEY,JSON.stringify(d));location.reload()}
 let syBusy=false;
 async function syncNow(manual){if(!SY.on||!SY.token||!SY.gist||syBusy||!navigator.onLine)return;syBusy=true;
   try{if(await syPull(false))return;await gistWrite();syStatus('Synced '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}
@@ -2143,7 +2150,7 @@ document.addEventListener('click',async e=>{const id=e.target.closest('button')&
   if(id==='syGo')syConnect();else if(id==='syNow')syncNow(true);else if(id==='syStop')syOff();
   else if(id==='syCopy'){const c=toCode();$('syCode').value=c;try{await navigator.clipboard.writeText(c);note('Save code copied. Paste it into the game on your other device.')}catch(_){$('syCode').select();note('Save code is in the box. Copy it from there.')}}
   else if(id==='syFile'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([toCode()],{type:'text/plain'}));a.download='parts-counter-save.txt';a.click()}
-  else if(id==='syLoad'){const b=$('syLoad');try{const d=fromCode($('syCode').value);if(!b.dataset.arm){b.dataset.arm=1;b.textContent=`Tap again to replace this game (${fmtTime(playOf(d))} played)`;setTimeout(()=>{delete b.dataset.arm;b.textContent='Load this save'},6000);return}localStorage.setItem(KEY,JSON.stringify(d));location.reload()}catch(err){note(err.message)}}});
+  else if(id==='syLoad'){const b=$('syLoad');try{const d=fromCode($('syCode').value);if(!b.dataset.arm){b.dataset.arm=1;b.textContent=`Tap again to replace this game (${fmtTime(playOf(d))} played)`;setTimeout(()=>{delete b.dataset.arm;b.textContent='Load this save'},6000);return}switchTo(d)}catch(err){note(err.message)}}});
 document.addEventListener('change',e=>{if(e.target.id==='syPick'&&e.target.files[0]){e.target.files[0].text().then(t=>{$('syCode').value=t.trim();note('Save file read. Tap Load this save to use it.')})}});
 
 /* check the cloud when the game opens, then every minute, and when you switch away */
