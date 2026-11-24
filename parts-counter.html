@@ -1324,8 +1324,12 @@ const skuAmt=s=>{const room=Math.max(1,Math.min(shelfCap()-FAC,MAXC-L(S.f,s.id))
 const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 /* priced off the best income you have reached, so a slow minute never makes prices swing */
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
+/* an item never gets cheaper when the next one unlocks: while it is the newest in its aisle its price is
+   remembered, and afterwards it costs at least that until your income catches up */
 function bPrice(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],top=st[Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g])];
-  return incNow()+(isS?STORE_WAIT:SHOP_WAIT)+lg(b.amt/top.amt)}
+  const own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),v=own+lg(b.amt/top.amt),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id;
+  if(top.id===b.id||fl[k]===undefined&&b.j<=(isS?S.sTop:S.sv.sTop)[b.g])fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],own);
+  return Math.max(v,fl[k]===undefined?NEG:fl[k])}
 const bAmt=b=>{const room=Math.max(1,MAXC-L(S.b,b.id)),m=S.ui.mode;return Math.max(1,Math.min(room,m==='max'?maxAff(bPrice(b),b.g2,L(S.b,b.id),room)||1:m))};
 const cur=()=>LADDER[S.top];
 
