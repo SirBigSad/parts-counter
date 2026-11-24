@@ -218,13 +218,14 @@ h3.bn{font-size:18px}
 .card{margin-bottom:14px}
 .card.aisle{background:linear-gradient(180deg,color-mix(in srgb,var(--lc) 16%,var(--card)),var(--card) 90px);border-top:3px solid var(--lc)}
 .card.aisle .lic{background:var(--lc)!important}
-.gauge{width:64px;height:36px;flex:none}.gauge path{fill:none;stroke-width:7;stroke-linecap:round}.gauge .bg{stroke:var(--line)}.gauge text{font:700 11px 'Barlow Condensed',sans-serif;fill:var(--ink);text-anchor:middle}
+.gauge{position:relative;width:76px;display:flex;flex-direction:column;align-items:center;flex:none}.gauge svg{width:46px;height:46px;transform:rotate(-90deg)}.gauge circle{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .4s}.gauge .bg{stroke:var(--line)}
+.gauge b{position:absolute;top:0;height:46px;display:grid;place-items:center;font:700 13px 'Barlow Condensed',sans-serif;color:var(--ink)}.gauge small{font-size:10.5px;line-height:1.15;color:var(--mute);text-align:center;margin-top:2px}
 .aisle .capg{align-items:center}
 details.intro{margin:0 0 10px}details.intro>summary{list-style:none;cursor:pointer;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 2px}
 details.intro>summary::-webkit-details-marker{display:none}details.intro .ib{margin:0}
 .row:has(>.seg){position:fixed;left:50%;transform:translateX(-50%);width:min(calc(100% - 20px),700px);bottom:calc(70px + env(safe-area-inset-bottom));z-index:11;background:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(10px);border-radius:14px;padding:6px 10px;margin:0!important;box-shadow:var(--sh);border:1px solid var(--line)}
 main{padding-bottom:calc(140px + env(safe-area-inset-bottom))!important}
-.aisle .capg{display:flex!important;flex-wrap:nowrap!important;justify-content:space-between;align-items:center}.aisle .capg>span{flex:none;display:block;width:64px}.aisle .capg>h3{flex:1 1 auto!important;min-width:0;width:auto}
+.aisle .capg{display:flex!important;flex-wrap:nowrap!important;justify-content:space-between;align-items:center}.aisle .capg>span{flex:none;display:block;width:76px}.aisle .capg>h3{flex:1 1 auto!important;min-width:0;width:auto}
 .ring{position:relative;width:52px;height:52px;flex:none}.ring svg{position:absolute;inset:0;width:52px;height:52px;transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:5}.ring .bg{stroke:var(--line)}.ring .fg{stroke:var(--acc);stroke-linecap:round;transition:stroke-dashoffset .4s}
 .ring i{position:absolute;inset:9px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--lc,var(--acc)) 18%,var(--card));color:var(--lc,var(--acc))}.ring i svg.ic{width:20px;height:20px;position:static;transform:none}
 .phead{display:flex;align-items:center;gap:12px}.phead h3{margin:0}.phead .sub{margin:2px 0 0!important}
@@ -259,7 +260,7 @@ nav.bar button{z-index:0}nav.bar button[aria-selected=true] svg *{fill:currentCo
   </section>
 
   <section id="t-store" hidden>
-    <details class="intro"><summary>Keep the four links ahead of your shelves <span class="ib">i</span></summary><p class="sub">You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up. Store prices rise as you climb the parts list, so a store buy costs about what a part does.</p></details>
+    <details class="intro"><summary>Keep the four links ahead of your shelves <span class="ib">i</span></summary><p class="sub">Each ring shows how much a link can handle compared with what your shelves can sell. Green means it keeps up, red means it is holding you back. On Shelf space, the ring shows how full your shelves are. You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up. Store prices rise as you climb the parts list, so a store buy costs about what a part does.</p></details>
     <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
     <div id="caps"></div>
   </section>
@@ -277,7 +278,7 @@ nav.bar button{z-index:0}nav.bar button[aria-selected=true] svg *{fill:currentCo
     <div id="shClosed"></div>
     <div id="shOpen" hidden>
       <div class="card"><div class="capg"><h3 class="bn" id="shHead"></h3></div><div class="kv" id="shFlow" style="margin-top:8px"></div></div>
-      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies.</p>
+      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies. Each ring shows how much a part of the shop can handle compared with the work your bays are booked for. Red means it is holding you back.</p>
       <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
       <div id="shcaps"></div>
     </div>
@@ -762,6 +763,8 @@ function buildAisles(SPEC,LAD,needAt,slot,realAt,priceAt,taper=1,bump=0){const O
 const incAt=k=>{const s=LADDER[k];return s.lam-lg(s.pay)+1};
 const CUMU=[],CUMF=[];{let u=0,f=0;for(const s of LADDER){u+=needOf(s)*s.u;f+=needOf(s);CUMU.push(u);CUMF.push(f)}}
 const AISLE=buildAisles(AISLE_SPEC,LADDER,(g,k)=>g==='sh'?NEEDF(k):g==='cu'?NEEDU(k)/PER_CUST:NEEDU(k),'sh',(g,k)=>g==='sh'?CUMF[k]*2:g==='cu'?2*CUMU[k]/PER_CUST:2*CUMU[k],k=>incAt(k),8);
+/* every shelf item holds at least one facing more than the one before it */
+for(const st of [AISLE.sh])for(let j=1;j<st.length;j++)st[j].amt=Math.max(st[j].amt,st[j-1].amt+1);
 
 
 const RANKS=[[-99,'Counter salesperson'],[4,'Senior counter salesperson'],[6,'Parts specialist'],[9,'Lead parts specialist'],[14,'Assistant parts manager'],[22,'Parts manager'],
@@ -907,6 +910,7 @@ const SHOP_SPEC={
 const SNEEDU=k=>Math.max(3,(13*k+5)*SVL[k].u),SNEEDF=k=>20+13*k;
 const SCUMU=[],SCUMF=[];{let u=0,f=0;for(const s of SVL){u+=svNeed(s)*s.u;f+=svNeed(s);SCUMU.push(u);SCUMF.push(f)}}
 const SHOP=buildAisles(SHOP_SPEC,SVL,(g,k)=>g==='vb'?SNEEDF(k):g==='vc'?SNEEDU(k)/PER_TRUCK:SNEEDU(k),'vb',(g,k)=>g==='vb'?SCUMF[k]*2:g==='vc'?2*SCUMU[k]/PER_TRUCK:2*SCUMU[k],k=>incAt(SVL[k].kp));
+for(let j=1;j<SHOP.vb.length;j++)SHOP.vb[j].amt=Math.max(SHOP.vb[j].amt,SHOP.vb[j-1].amt+1);
 
 /* ---------- service goals and logbook ---------- */
 A.push({id:'svopen',n:'Open the service shop',ok:()=>S.sv.open});
@@ -1366,7 +1370,9 @@ function openCurrent(){const c=cur();const ln=$('ln-'+c.line),bd=$('bd-'+c.base)
 const STORE_O={spec:AISLE_SPEC,ais:AISLE,own:()=>S.b,tops:()=>S.sTop,attr:'bld',amt:b=>bAmt(b),ic:AISLE_IC};
 const SHOP_O={spec:SHOP_SPEC,ais:SHOP,own:()=>S.sv.b,tops:()=>S.sv.sTop,attr:'shop',amt:b=>shAmt(b),ic:SHOP_IC};
 const AISLE_C={ck:'#3d8bfd',sk:'#2ec4a6',cu:'#f15bb5',sh:'#ffb627',vb:'#9b5de5',vt:'#00bbf9',vw:'#ff7a3d',vc:'#22b573',ve:'#ff5a5f'};
-const gauge=(p,c)=>{const a=Math.PI*Math.max(0,Math.min(.999,p)),x=32-26*Math.cos(a),y=32-26*Math.sin(a);return `<svg class="gauge" viewBox="0 0 64 36"><path class="bg" d="M6 32A26 26 0 0 1 58 32"/>${p>0?`<path d="M6 32A26 26 0 0 ${a>Math.PI/2?0:0} 1 ${x.toFixed(1)} ${y.toFixed(1)}" style="stroke:${c}"/>`:''}<text x="32" y="33">${p>=1?'OK':Math.round(p*100)+'%'}</text></svg>`};
+/* a ring that fills toward what the shelves need (or how full the shelves are), with a plain label under it */
+const gauge=(p,c,slot)=>{const RC=2*Math.PI*17,f=Math.max(0,Math.min(1,p)),t=slot?Math.round(p*100)+'%':p>=1?'×'+(p>=10?Math.round(p):p.toFixed(1)):Math.round(p*100)+'%';
+  return `<div class="gauge"><svg viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle cx="20" cy="20" r="17" style="stroke:${c}" stroke-dasharray="${RC.toFixed(1)}" stroke-dashoffset="${(RC*(1-f)).toFixed(1)}"/></svg><b>${t}</b><small>${slot?'shelf used':p>=1?'more than needed':'of what\'s needed'}</small></div>`};
 function capCards(el,o){$(el).innerHTML=Object.entries(o.spec).map(([g,c])=>`<div class="card aisle" style="--lc:${AISLE_C[g]||'var(--acc)'}"><div class="capg"><h3 class="bn"><i class="lic">${icSvg(o.ic[g])}</i>${c.n}</h3><span id="cgg-${g}"></span></div><div id="cg-${g}" class="cgv"></div><div class="meter" style="margin:8px 0 2px"><i id="cm-${g}"></i></div>
   <div class="sprog" id="cp-${g}"></div><div id="ci-${g}"></div><div id="co-${g}"></div></div>`).join('')}
 capCards('caps',STORE_O);capCards('shcaps',SHOP_O);
@@ -1379,7 +1385,7 @@ const sItem=(st,it,c,all,o)=>{const tops=o.tops(),rows=st.filter(s=>s.it===it&&(
 function renderCaps(o,vals,need,lim,slot,used,lbl){const own=o.own(),tops=o.tops();
   for(const [g,c] of Object.entries(o.spec)){const v=vals[g],isLim=lim===g,st=o.ais[g],top=tops[g],cs=st[top];
     $('cg-'+g).innerHTML=g===slot?`<b class="num">${fmt(used)} / ${fmt(v)}</b> ${c.unit}`:`<b class="num" style="color:${isLim?'var(--bad)':'inherit'}">${fmt(v)}</b> / ${fmt(need)} ${lbl[g]||'needed'}`;
-    const pct=g===slot?used/v:Math.min(1,v/Math.max(need,1e-9)),m=$('cm-'+g);setHTML('cgg-'+g,gauge(g===slot?used/Math.max(v,1e-9):v/Math.max(need,1e-9),(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)'));m.style.width=Math.min(100,pct*100)+'%';m.style.background=(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)';
+    const pct=g===slot?used/v:Math.min(1,v/Math.max(need,1e-9)),m=$('cm-'+g);setHTML('cgg-'+g,gauge(g===slot?used/Math.max(v,1e-9):v/Math.max(need,1e-9),(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)',g===slot));m.style.width=Math.min(100,pct*100)+'%';m.style.background=(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)';
     const n=L(own,cs.id);
     const nx=st[top+1],wait=nx&&n>=UNLOCK_N&&g!=='sh'&&g!=='vb'?(o===SHOP_O?(S.sv.top<nx.kb?`It unlocks once the shop reaches job step ${fmt(nx.kb+1)} (you're on ${fmt(S.sv.top+1)}).`:''):(S.top<nx.kb?`It unlocks once you reach ${esc(lc(BASE_NAME[LADDER[nx.kb].base]))} on the parts list (part ${BASES.indexOf(LADDER[nx.kb].base)+1}).`:'')):'';
     setHTML('cp-'+g,top<st.length-1?`<small>Step ${top+1} of ${st.length} · Own ${UNLOCK_N} ${esc(cs.n)} to unlock ${esc(nx.n)}. ${wait}</small><div class="meter"><i style="width:${Math.min(1,n/UNLOCK_N)*100}%"></i></div><small class="num">${fmt(Math.min(n,UNLOCK_N))} / ${UNLOCK_N}</small>`
@@ -1976,7 +1982,8 @@ function forklift(x,y,load){rr(x,y-17,19,13,3,'#ffb627');rr(x+2,y-28,13,3,1.5,'#
   rr(x+18,y-31,3,29,1.5,'#6b6488');rr(x+18,y-5,11,2.5,1,'#6b6488');if(load)rr(x+20,y-14,9,9,1.5,'#e0a35a');wheel(x+4,y-2,3.2);wheel(x+15,y-2,3.2)}
 /* people: a soft capsule body and a round head, no outlines */
 function person(x,y,body,hat,bob){y+=bob;cx.fillStyle='rgba(20,15,40,.16)';cx.beginPath();cx.ellipse(x,y+30,9,2.6,0,0,7);cx.fill();
-  rr(x-8,y+9,16,22,8,body);cx.fillStyle=tint(body,.18);rr(x-6,y+11,5,14,3,tint(body,.18));
+  rr(x-8,y+9,16,22,8,body);rr(x-6,y+11,5,14,3,tint(body,.22));rr(x+4,y+12,3,15,1.5,shade(body,.18));
+  cx.save();cx.translate(x-7,y+13);cx.rotate(.25+bob*.08);rr(-2,0,4,12,2,shade(body,.08));cx.restore();cx.save();cx.translate(x+7,y+13);cx.rotate(-.25-bob*.08);rr(-2,0,4,12,2,shade(body,.12));cx.restore();
   cx.fillStyle='#f2c29b';cx.beginPath();cx.arc(x,y+2,6.2,0,7);cx.fill();cx.fillStyle=shade('#f2c29b',.12);cx.beginPath();cx.arc(x+2.5,y+3,3.5,0,7);cx.fill();
   cx.fillStyle=hat;cx.beginPath();cx.arc(x,y,6.6,Math.PI*1.02,Math.PI*1.98);cx.fill();rr(x-1,y-1.4,9,2.6,1.3,hat);
   cx.fillStyle='#2a1f3d';cx.beginPath();cx.arc(x+3,y+2.5,.9,0,7);cx.fill()}
@@ -1997,6 +2004,8 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   const skyT=day>=1?'#5fb4e8':day<=0?'#141236':day>.5?mix('#ff8a6a','#5fb4e8',(day-.5)*2):mix('#141236','#ff8a6a',day*2),skyB=day>=1?'#bfe8f5':day<=0?'#3b2d6b':day>.5?mix('#ffd18a','#bfe8f5',(day-.5)*2):mix('#3b2d6b','#ffd18a',day*2);
   cx.save();cx.beginPath();cx.roundRect?cx.roundRect(wx,wy,ww,wh,8):cx.rect(wx,wy,ww,wh);cx.clip();cx.fillStyle=vg(wy,wy+wh,skyT,skyB);cx.fillRect(wx,wy,ww,wh);
   for(const [hc,hy,amp,fr] of [[mix('#2b2558','#7fb3a0',day),.62,6,.05],[mix('#1f1a45','#4f8f7a',day),.7,4,.08]]){cx.fillStyle=hc;cx.beginPath();cx.moveTo(wx,wy+wh);for(let x=0;x<=ww;x+=4)cx.lineTo(wx+x,wy+wh*hy-Math.sin(x*fr+hy*9)*amp-amp);cx.lineTo(wx+ww,wy+wh);cx.fill()}
+  /* soft rounded clouds drift across the window */
+  if(day>.15)for(let i=0;i<3;i++){const cxp=wx+((ph*(mv?4:0)+i*ww*.45+20)%(ww+60))-30,cyp=wy+10+i*9,a=.55+.35*day,c1=`rgba(255,255,255,${a})`;cx.fillStyle=c1;for(const [dx,dy,r] of [[0,4,7],[8,0,9],[17,4,7],[8,6,8]]){cx.beginPath();cx.arc(cxp+dx,cyp+dy,r*.8,0,7);cx.fill()}cx.fillStyle=`rgba(200,190,240,${a*.35})`;cx.fillRect(cxp-5,cyp+8,28,3)}
   if(night>.5){cx.fillStyle='rgba(255,255,255,'+(night-.5)*1.6+')';for(const [a,b] of STARS)cx.fillRect(wx+a*ww,wy+b*wh*.6,1.5,1.5);glow(wx+ww*.8,wy+16,16,'255,250,220',.35);cx.fillStyle='#fff6dc';cx.beginPath();cx.arc(wx+ww*.8,wy+16,5,0,7);cx.fill()}
   else if(day>.5){glow(wx+ww*.82,wy+16,22,'255,220,120',.5);cx.fillStyle='#ffe08a';cx.beginPath();cx.arc(wx+ww*.82,wy+16,6.5,0,7);cx.fill()}
   /* outside: billboard and yard sign from marketing, delivery vehicles from checkout */
@@ -2014,7 +2023,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
      cx.fillStyle='rgba(255,255,255,.85)';cx.fillRect(wx,wy+wh-4,ww,4)}
    cx.restore()}
   {const n=Object.keys(S.fun.pl).length,max=Math.max(0,Math.floor((ww+4)/12));for(let i=0;i<Math.min(n,max);i++){const px=wx+i*12;rr(px,1,10,9,2,'#7a4a3a');rr(px+2,3,6,5,1,'#ffcf4a')}}
-  cx.restore();cx.strokeStyle=shade(E.trim,.2);cx.lineWidth=4;cx.beginPath();cx.roundRect?cx.roundRect(wx,wy,ww,wh,8):cx.rect(wx,wy,ww,wh);cx.stroke();cx.lineWidth=1;cx.fillStyle='rgba(255,255,255,.12)';cx.beginPath();cx.moveTo(wx+ww*.15,wy+4);cx.lineTo(wx+ww*.32,wy+4);cx.lineTo(wx+ww*.12,wy+wh-4);cx.lineTo(wx+4,wy+wh-4);cx.fill();
+  cx.restore();if(day>.3){const a=.10*day;const lg2=cx.createLinearGradient(wx,wy,wx+ww*1.4,floorY+30);lg2.addColorStop(0,`rgba(255,240,200,${a})`);lg2.addColorStop(1,'rgba(255,240,200,0)');cx.fillStyle=lg2;cx.beginPath();cx.moveTo(wx+ww*.1,wy);cx.lineTo(wx+ww,wy);cx.lineTo(wx+ww*1.8,H);cx.lineTo(wx+ww*.6,H);cx.fill()}cx.strokeStyle=shade(E.trim,.2);cx.lineWidth=4;cx.beginPath();cx.roundRect?cx.roundRect(wx,wy,ww,wh,8):cx.rect(wx,wy,ww,wh);cx.stroke();cx.lineWidth=1;cx.fillStyle='rgba(255,255,255,.12)';cx.beginPath();cx.moveTo(wx+ww*.15,wy+4);cx.lineTo(wx+ww*.32,wy+4);cx.lineTo(wx+ww*.12,wy+wh-4);cx.lineTo(wx+4,wy+wh-4);cx.fill();
   /* lot lights come on after dark */
   if(night>.3){const a=Math.min(1,(night-.3)*2);for(const fx of [.28,.72]){const lx=wx+ww*fx,ly=wy+wh*.2;cx.strokeStyle='#555';cx.lineWidth=1.5;cx.beginPath();cx.moveTo(lx,wy+wh);cx.lineTo(lx,ly);cx.stroke();
     const gr=cx.createRadialGradient(lx,ly,1,lx,ly+wh*.5,wh*.7);gr.addColorStop(0,`rgba(255,214,120,${.55*a})`);gr.addColorStop(1,'rgba(255,214,120,0)');cx.fillStyle=gr;cx.beginPath();cx.moveTo(lx-3,ly);cx.lineTo(lx-wh*.45,wy+wh);cx.lineTo(lx+wh*.45,wy+wh);cx.lineTo(lx+3,ly);cx.fill();
@@ -2083,7 +2092,15 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   if(S.inc&&S.inc.type==='spill'){const x=cl+(cr-cl)*.6,y=H-14;cx.fillStyle='rgba(140,90,40,.8)';cx.beginPath();cx.ellipse(x,y,16,5,0,0,7);cx.fill();cx.fillStyle='rgba(255,255,255,.3)';cx.beginPath();cx.ellipse(x-5,y-1,5,1.5,0,0,7);cx.fill();hit={x,y}}
   if(S.inc&&S.inc.type==='thief'){const f=1-Math.max(0,(S.inc.end-now())/2e4),x=sx+20+f*(W-sx-50),y=H-46;person(x,y,'#2a2440','#2a2440',Math.sin(ph*14)*2);
     rr(x+6,y+14,14,4,2,'#c9c4dc');hit={x,y:y+15}}
+  finish(W,H,floorY,mv,day);
 }
+/* the finishing pass: drifting specks of light, a warm top light, a cool shadow at the bottom and a soft vignette */
+const MOTES=Array.from({length:22},()=>({x:Math.random(),y:Math.random(),r:.6+Math.random()*1.6,s:.004+Math.random()*.012,p:Math.random()*7}));
+function finish(W,H,floorY,mv,day){
+  for(const m of MOTES){if(mv){m.y-=m.s*.016*3;m.x+=Math.sin(ph*.6+m.p)*.0004;if(m.y<-.02){m.y=1.02;m.x=Math.random()}}
+    const a=(.25+.25*Math.sin(ph*2+m.p))*(.4+.6*(1-day*.5));glow(m.x*W,m.y*H,m.r*4,'255,236,190',a*.5);cx.fillStyle=`rgba(255,248,225,${a})`;cx.beginPath();cx.arc(m.x*W,m.y*H,m.r*.7,0,7);cx.fill()}
+  let g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(255,190,120,.10)');g.addColorStop(.55,'rgba(255,190,120,0)');g.addColorStop(1,'rgba(40,20,90,.22)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  g=cx.createRadialGradient(W/2,H*.45,Math.min(W,H)*.35,W/2,H*.45,Math.max(W,H)*.75);g.addColorStop(0,'rgba(20,10,50,0)');g.addColorStop(1,'rgba(20,10,50,.38)');cx.fillStyle=g;cx.fillRect(0,0,W,H)}
 requestAnimationFrame(frame);
 cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(!hit)return;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
 }
