@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22512%22%20height%3D%22512%22%20viewBox%3D%220%200%20200%20200%22%3E%3Cdefs%3E%3CradialGradient%20id%3D%22bg%22%20cx%3D%22.5%22%20cy%3D%22.4%22%20r%3D%22.8%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%235a4bb5%22/%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%231e1a4a%22/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect%20width%3D%22200%22%20height%3D%22200%22%20rx%3D%2244%22%20fill%3D%22url%28%23bg%29%22/%3E%3Cg%20transform%3D%22translate%28100%20112%29%20scale%281.35%29%22%3E%3Cpath%20d%3D%22M0%20-40%20L60%20-10%20L0%2020%20L-60%20-10Z%22%20fill%3D%22%235c6aa8%22/%3E%3Cpath%20d%3D%22M-60%20-10%20L0%2020%20L0%2030%20L-60%200Z%22%20fill%3D%22%233b3f7e%22/%3E%3Cpath%20d%3D%22M60%20-10%20L0%2020%20L0%2030%20L60%200Z%22%20fill%3D%22%232f3270%22/%3E%3Cpath%20d%3D%22M-40%20-18%20L-40%20-48%20L0%20-68%20L0%20-38Z%22%20fill%3D%22%23c9685f%22/%3E%3Cpath%20d%3D%22M0%20-38%20L0%20-68%20L40%20-48%20L40%20-18Z%22%20fill%3D%22%23f0a46c%22/%3E%3Cpath%20d%3D%22M-30%20-28%20L-30%20-44%20L-12%20-53%20L-12%20-37Z%22%20fill%3D%22%239fd7e0%22/%3E%3Crect%20x%3D%226%22%20y%3D%22-50%22%20width%3D%2210%22%20height%3D%2220%22%20rx%3D%222%22%20fill%3D%22%238a6a9e%22/%3E%3Crect%20x%3D%2220%22%20y%3D%22-44%22%20width%3D%2210%22%20height%3D%2220%22%20rx%3D%222%22%20fill%3D%22%238a6a9e%22/%3E%3Cpath%20d%3D%22M-26%20-8%20L6%208%20L6%202%20L-26%20-14Z%22%20fill%3D%22%23e0907a%22/%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%222%22%20r%3D%225%22%20fill%3D%22%232ec4a6%22/%3E%3Crect%20x%3D%2226%22%20y%3D%227%22%20width%3D%228%22%20height%3D%2210%22%20rx%3D%224%22%20fill%3D%22%232ec4a6%22/%3E%3C/g%3E%3C/svg%3E">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Parts Counter</title>
@@ -242,9 +243,42 @@ nav.bar button{z-index:0}nav.bar button[aria-selected=true] svg *{fill:currentCo
 @media (prefers-reduced-motion:reduce){#unlock .u .lic,#unlock .u::after{animation:none}}
 
 .stage{height:250px}@media (min-width:700px){.stage{height:300px}}
+
+/* ---------- getting around ---------- */
+.dash>div{cursor:pointer}.dash>div:active{transform:scale(.97)}
+.jumpflash{animation:jf 1.2s ease-out}@keyframes jf{0%,30%{box-shadow:0 0 0 3px var(--acc),var(--sh)}100%{box-shadow:var(--sh)}}
+.fsb{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:10px;border:0;background:rgba(20,15,40,.45);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:2;backdrop-filter:blur(4px)}
+.fsb svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.stage.full{position:fixed!important;inset:0;height:auto!important;width:auto!important;border-radius:0!important;margin:0!important;z-index:60}
+body.fsopen{overflow:hidden}
+details.fold{margin:0 0 6px}details.fold>summary{list-style:none;cursor:pointer;font:700 20px 'Barlow Condensed',sans-serif;padding:12px 2px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);margin-bottom:10px}
+details.fold>summary::-webkit-details-marker{display:none}details.fold>summary::after{content:'';width:9px;height:9px;border-right:2.5px solid var(--mute);border-bottom:2.5px solid var(--mute);transform:rotate(45deg);transition:transform .2s;margin-right:6px}
+details.fold[open]>summary::after{transform:rotate(-135deg)}
+body.hidelock .item.locked,body.hidelock .sku.locked{display:none}
+.tog.mini{display:flex;justify-content:flex-end;gap:8px;font-size:13px;color:var(--mute);margin:0 0 4px}
+body.bigtext main,body.bigtext header{zoom:1.12}
+body.cb{--good:#3d8bfd;--bad:#ff8c1a}body.cb .dash .lim{border-color:#ff8c1a!important;background:color-mix(in srgb,#ff8c1a 25%,transparent)!important}body.cb .dash .lim .db i{background:#ff8c1a}
+#splash{position:fixed;inset:0;z-index:100;background:radial-gradient(circle at 50% 40%,#4b3f99,#1e1a4a);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;transition:opacity .45s}
+#splash b{font:700 34px 'Barlow Condensed',sans-serif;letter-spacing:.02em}#splash small{opacity:.75;font-size:14px}#splash svg{animation:spl 1s ease-out both}
+#splash.out{opacity:0;pointer-events:none}@keyframes spl{from{transform:translateY(12px) scale(.9);opacity:0}to{transform:none;opacity:1}}
+.tut{position:fixed;z-index:70;max-width:min(300px,86vw);background:#fffdf7;color:#2a1f3d;border-radius:14px;padding:12px 14px;box-shadow:0 10px 30px rgba(20,15,50,.35);font-size:14px;line-height:1.4}
+.tut p{margin:0 0 8px}.tut .btn{padding:6px 12px;min-height:0;font-size:13px}.tut::before{content:'';position:absolute;left:calc(var(--ax,50%) - 8px);top:-8px;border:8px solid transparent;border-top:0;border-bottom-color:#fffdf7}
+.tut.up::before{top:auto;bottom:-8px;border-bottom:0;border-top:8px solid #fffdf7}
+@media (min-width:1100px){
+ main{display:grid;grid-template-columns:minmax(380px,42%) minmax(0,1fr);column-gap:24px;align-items:start;max-width:1500px!important}
+ main>.stage{grid-column:1;grid-row:1 / span 3;position:sticky;top:150px;height:calc(100vh - 230px)!important;max-height:640px;margin:0}
+ main>.ticker{grid-column:1;grid-row:4;position:sticky;top:calc(100vh - 70px)}
+ main>.banner,main>section{grid-column:2}
+ main>section{grid-row:1 / span 6}
+ #t-shelves:not([hidden]){display:block!important}#t-shelves>#prog{position:static!important}
+ #t-store:not([hidden]) #caps,#t-shop:not([hidden]) #shcaps{grid-template-columns:1fr!important}
+ .row:has(>.seg){left:auto;right:24px;transform:none;width:calc(58% - 60px)}
+ main>.ticker{position:static}
+}
 </style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><svg viewBox="0 0 200 140" width="220"><g transform="translate(100 70)"><path d="M0 -40 L60 -10 L0 20 L-60 -10Z" fill="#5c6aa8"/><path d="M-60 -10 L0 20 L0 30 L-60 0Z" fill="#3b3f7e"/><path d="M60 -10 L0 20 L0 30 L60 0Z" fill="#2f3270"/><path d="M-40 -18 L-40 -48 L0 -68 L0 -38Z" fill="#c9685f"/><path d="M0 -38 L0 -68 L40 -48 L40 -18Z" fill="#f0a46c"/><path d="M-30 -28 L-30 -44 L-12 -53 L-12 -37Z" fill="#9fd7e0"/><rect x="6" y="-50" width="10" height="20" rx="2" fill="#8a6a9e"/><rect x="20" y="-44" width="10" height="20" rx="2" fill="#8a6a9e"/><path d="M-26 -8 L6 8 L6 2 L-26 -14Z" fill="#e0907a"/><circle cx="30" cy="2" r="5" fill="#2ec4a6"/><rect x="26" y="7" width="8" height="10" rx="4" fill="#2ec4a6"/></g></svg><b>Parts Counter</b><small>Fremont Truck &amp; Parts</small></div>
 <header id="top">
   <div class="hrow"><div class="who"><b id="rank"></b><small id="where"></small></div><div class="money"><div id="cash" class="num">$0</div><div id="cps">$0/s</div></div></div>
   <div class="dash" id="dash"></div>
@@ -262,6 +296,7 @@ nav.bar button{z-index:0}nav.bar button[aria-selected=true] svg *{fill:currentCo
   </section>
 
   <section id="t-store" hidden>
+    <label class="tog mini">Hide locked items<input type="checkbox" id="sHide"></label>
     <details class="intro"><summary>Keep the four links ahead of your shelves <span class="ib">i</span></summary><p class="sub">Each ring shows how much a link can handle compared with what your shelves can sell. Green means it keeps up, red means it is holding you back. On Shelf space, the ring shows how full your shelves are. You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up. Store prices rise as you climb the parts list, so a store buy costs about what a part does.</p></details>
     <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
     <div id="caps"></div>
@@ -328,6 +363,9 @@ nav.bar button{z-index:0}nav.bar button[aria-selected=true] svg *{fill:currentCo
       <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
       <label class="tog">Sound effects<input type="checkbox" id="sSnd"></label>
       <label class="tog">Vibration<input type="checkbox" id="sVib"></label>
+      <label class="tog">Bigger text<input type="checkbox" id="sBig"></label>
+      <label class="tog">Color-blind friendly colors (blue and orange)<input type="checkbox" id="sCb"></label>
+      <label class="tog">Hide locked items in Store and Shop<input type="checkbox" id="sHide2"></label>
       <label class="tog">Shop radio (background music)<input type="checkbox" id="sRadio"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
@@ -1373,9 +1411,9 @@ const STORE_O={spec:AISLE_SPEC,ais:AISLE,own:()=>S.b,tops:()=>S.sTop,attr:'bld',
 const SHOP_O={spec:SHOP_SPEC,ais:SHOP,own:()=>S.sv.b,tops:()=>S.sv.sTop,attr:'shop',amt:b=>shAmt(b),ic:SHOP_IC};
 const AISLE_C={ck:'#3d8bfd',sk:'#2ec4a6',cu:'#f15bb5',sh:'#ffb627',vb:'#9b5de5',vt:'#00bbf9',vw:'#ff7a3d',vc:'#22b573',ve:'#ff5a5f'};
 /* a ring that fills toward what the shelves need (or how full the shelves are), with a plain label under it */
-const gauge=(p,c,slot)=>{const RC=2*Math.PI*17,f=Math.max(0,Math.min(1,p)),t=slot?Math.round(p*100)+'%':p>=1?'×'+(p>=10?Math.round(p):p.toFixed(1)):Math.round(p*100)+'%';
+const gauge=(p,c,slot)=>{const RC=2*Math.PI*17,f=Math.max(0,Math.min(1,p)),t=slot?Math.round(p*100)+'%':p>=10?'×10+':p>=1?'×'+p.toFixed(1):Math.round(p*100)+'%';
   return `<div class="gauge"><svg viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle cx="20" cy="20" r="17" style="stroke:${c}" stroke-dasharray="${RC.toFixed(1)}" stroke-dashoffset="${(RC*(1-f)).toFixed(1)}"/></svg><b>${t}</b><small>${slot?'shelf used':p>=1?'more than needed':'of what\'s needed'}</small></div>`};
-function capCards(el,o){$(el).innerHTML=Object.entries(o.spec).map(([g,c])=>`<div class="card aisle" style="--lc:${AISLE_C[g]||'var(--acc)'}"><div class="capg"><h3 class="bn"><i class="lic">${icSvg(o.ic[g])}</i>${c.n}</h3><span id="cgg-${g}"></span></div><div id="cg-${g}" class="cgv"></div><div class="meter" style="margin:8px 0 2px"><i id="cm-${g}"></i></div>
+function capCards(el,o){$(el).innerHTML=Object.entries(o.spec).map(([g,c])=>`<div class="card aisle" id="cap-${g}" style="--lc:${AISLE_C[g]||'var(--acc)'}"><div class="capg"><h3 class="bn"><i class="lic">${icSvg(o.ic[g])}</i>${c.n}</h3><span id="cgg-${g}"></span></div><div id="cg-${g}" class="cgv"></div><div class="meter" style="margin:8px 0 2px"><i id="cm-${g}"></i></div>
   <div class="sprog" id="cp-${g}"></div><div id="ci-${g}"></div><div id="co-${g}"></div></div>`).join('')}
 capCards('caps',STORE_O);capCards('shcaps',SHOP_O);
 const sRow=(s,c,o)=>{const own=o.own(),tops=o.tops();if(s.j>tops[s.g])return `<div class="item locked"><h3 class="bn">${icSvg(s.ic)}${esc(s.n)}</h3><span class="lock">${LOCK}</span><p>+${fmt(s.amt)} ${c.unit} each · first one ${moneyL(bPrice(s))}</p></div>`;
@@ -1462,7 +1500,7 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
 /* money rolls toward its new value instead of jumping */
 let shownCash=null;function renderHeader(){if(shownCash===null||!isFinite(shownCash)||Math.abs(S.cashL-shownCash)>6)shownCash=S.cashL;else shownCash+=(S.cashL-shownCash)*.35;$('cash').innerHTML=mHTML(Math.abs(S.cashL-shownCash)<.002?S.cashL:shownCash);$('cps').textContent='+'+moneyL(R.incL)+'/s';$('rank').textContent=rankOf(S.st.totalL);$('where').textContent=typeof storeName==='function'?storeName():STORE;
   const cells=[['shelf','Shelf',R.supply],['cu','Customers',R.dem],['ck','Checkout',R.ck],['sk','Stocking',R.sk]];
-  {const mx=Math.max(...cells.map(c=>c[2]),1e-9);setHTML('dash',cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}"><small>${n}</small><b class="num">${fmt(v)}/s</b><span class="db"><i style="width:${Math.max(4,v/mx*100)}%"></i></span></div>`).join(''))}
+  {const mx=Math.max(...cells.map(c=>c[2]),1e-9);setHTML('dash',cells.map(([k,n,v])=>`<div class="${R.lim===k&&FAC?'lim':''}" data-jump="${k==='shelf'?'sh':k}" role="button" tabindex="0"><small>${n}</small><b class="num">${fmt(v)}/s</b><span class="db"><i style="width:${Math.max(4,v/mx*100)}%"></i></span></div>`).join(''))}
   const i=S.inc;$('inc').hidden=!i;if(i){const t=now(),m={spill:['Coffee spilled by the counter. Checkout is slower.','Mop it up'],jam:['A register jammed. Checkout is crawling.','Fix it'],thief:['A shoplifter is heading for the door.','Stop him'],
     back:[i.line?`Backorder: ${lc(LI[i.line].n)} can't restock for ${fmtT((i.end-t)/1000)}.`:'',''],lift:['A truck lift went down. The shop is short on equipment.','Call for repair'],
     sick:[`A technician called in sick. The shop is short-handed for ${fmtT((i.end-t)/1000)}.`,''],comeback:['A customer brought a truck back. The job has to be redone.','Fix it right']}[i.type];$('incTxt').textContent=m[0];$('incBtn').hidden=!m[1];$('incBtn').textContent=m[1]}}
@@ -2002,7 +2040,7 @@ function iperson(x,y,body,hat,bob,tie){const [a,b]=P(x,y,0),k=s*1.05;cx.save();c
 function itruck(x,y,c,len,lift){const z=lift||0;ibox(x,y,z+4,len,26,20,shade(c,.05),tint(c,.3));ibox(x+len,y+1,z+4,24,24,30,c);quad([[x+len+24,y+5,z+20],[x+len+24,y+21,z+20],[x+len+24,y+21,z+30],[x+len+24,y+5,z+30]],'#bfe6ff');
   for(const wx of [x+8,x+len-6,x+len+14]){const [a,b]=P(wx,y+26,z+4);cx.fillStyle='#2a2440';cx.beginPath();cx.ellipse(a,b,5*s*1.6,4*s*1.6,0,0,7);cx.fill();cx.fillStyle='#8f8aa8';cx.beginPath();cx.ellipse(a,b,2*s*1.6,1.6*s*1.6,0,0,7);cx.fill()}}
 function itree(x,y){const [a,b]=P(x,y,0);rr(a-2*s*2,b-18*s*2,4*s*2,18*s*2,2,'#6b4a3a');cx.fillStyle='#2ec4a6';cx.beginPath();cx.arc(a,b-26*s*2,14*s*2,0,7);cx.fill();cx.fillStyle='rgba(126,232,210,.55)';cx.beginPath();cx.arc(a-4*s*2,b-30*s*2,6*s*2,0,7);cx.fill()}
-let bayTrucks=[];
+let bayTrucks=[],lastFac=-1,lastLanes=-1,pops=[],regBounce=0;window.SCENE_HITS=[];
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
   const day=daylight(),night=1-day,E=ERAS[eraOf()],w=weatherToday();
   /* fit the diorama to the canvas */
@@ -2042,12 +2080,18 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   const cols=[];const seen=new Set(LADDER.slice(0,S.top+1).map(x=>x.line));for(const c of LINES){if(!seen.has(c.id))continue;const n=lineFac(c.id);for(let i=0;i<Math.min(40,Math.ceil(n/10));i++)cols.push(c.c)}
   const rackC=has('sh','Pallet racking')?'#ff7a3d':has('sh','Steel shelving')?'#5c6aa8':'#8a6a9e',want=1+Math.floor(shelfCap()/40),units=Math.min(4,want);
   for(let u=0;u<units;u++){const x=10+u*46;ibox(x,4,0,40,16,64,rackC);
-    for(let k=0;k<4;k++){const i=u*4+k,z=8+k*14;if(i<cols.length){const f=R.E<1?.35+.65*R.E:1;quad([[x+3,20.2,z],[x+37,20.2,z],[x+37,20.2,z+10*f],[x+3,20.2,z+10*f]],cols[i]);quad([[x+3,20.3,z+10*f-1.5],[x+37,20.3,z+10*f-1.5],[x+37,20.3,z+10*f],[x+3,20.3,z+10*f]],'rgba(255,255,255,.35)')}
+    for(let k=0;k<4;k++){const i=u*4+k,z=8+k*14;if(i<cols.length){const f=R.lim==='sk'&&R.E<1?.25+.45*R.E:R.E<1?.35+.65*R.E:1;quad([[x+3,20.2,z],[x+37,20.2,z],[x+37,20.2,z+10*f],[x+3,20.2,z+10*f]],cols[i]);quad([[x+3,20.3,z+10*f-1.5],[x+37,20.3,z+10*f-1.5],[x+37,20.3,z+10*f],[x+3,20.3,z+10*f]],'rgba(255,255,255,.35)')}
       else quad([[x+3,20.2,z],[x+37,20.2,z],[x+37,20.2,z+10],[x+3,20.2,z+10]],shade(rackC,.45))}}
   if(want>units){const [a,b]=P(190,10,70);cx.fillStyle='#fff';cx.font='600 10px Barlow,sans-serif';cx.textAlign='center';cx.fillText('+'+fmt(want-units),a,b)}
+  {const [a,b]=P(10+units*23,12,32);SCENE_HITS.length=0;SCENE_HITS.push({k:'sh',x:a,y:b,r:60*s*1.6})}
+  /* a box pops onto a shelf when you stock a part */
+  if(lastFac>=0&&FAC>lastFac&&mv)for(let q=0;q<Math.min(3,FAC-lastFac);q++)pops.push({u:Math.floor(Math.random()*units),k:Math.floor(Math.random()*4),t:0});lastFac=FAC;
+  for(const p of pops){p.t+=dt;const x=10+p.u*46+8+((p.u*13+p.k*7)%24),z=8+p.k*14+12+Math.max(0,1-p.t*3)*14;const [a,b]=P(x,21,z);const k2=Math.min(1,p.t*4);cx.globalAlpha=Math.max(0,1-Math.max(0,p.t-.6)*2.5);rr(a-4*k2*s*1.6,b-4*k2*s*1.6,8*k2*s*1.6,7*k2*s*1.6,1.5,'#e0a35a');cx.globalAlpha=1}
+  pops=pops.filter(p=>p.t<1);
   /* hanging lights */
   for(const [lx,ly] of [[60,60],[140,60],[266,70]]){const [a,b]=P(lx,ly,78);cx.fillStyle='#2a2440';cx.fillRect(a-.5,b-10,1.5,10);cx.fillStyle='#fff3c4';cx.beginPath();cx.ellipse(a,b,5,1.8,0,0,7);cx.fill();glow(a,b+6,30+night*30,'255,232,160',.12+.25*night)}
   drawIsoSeason(day);
+  if(R.lim==='sk'&&FAC){for(let q=0;q<Math.min(6,2+Math.round((1-Math.min(1,R.E))*6));q++)ibox(20+q*22%140,30+(q%2)*8,(q>2?8:0),12,10,8,'#e0a35a')}
   /* stocking gear: forklift or pallet jack trundles along the shelves */
   if(has('sk','Forklift')||has('sk','Pallet jack')){const f=mv?(Math.sin(ph*.5)+1)/2:.3,x=20+f*140;ibox(x,46,0,22,14,12,'#ffb627');ibox(x+22,48,0,3,10,26,'#6b6488');if(Math.sin(ph*.5)>0)ibox(x+25,47,2,10,12,10,'#e0a35a')}
   /* the counter with registers, and staff standing behind it */
@@ -2058,7 +2102,11 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   for(const p of peeps)if(p.y<92)drawPeep(p,mv);
   ibox(cx0,92,0,cw,20,24,'#93506e','#e0907a');
   {const [a,b]=P(cx0+cw/2,112,12);const sn=storeName().toUpperCase();let fs=Math.max(6,Math.round(9*s*1.6));cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`;const tw=cx.measureText(sn).width,max=cw*.866*s*.9;if(tw>max){fs=Math.floor(fs*max/tw);cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`}if(fs>=6){cx.fillStyle='#ffe3c4';cx.textAlign='center';cx.save();cx.translate(a,b);cx.transform(1,.577,0,1,0,0);cx.fillText(sn,0,fs*.35);cx.restore()}}
-  const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){const x=rxw(i);ibox(x,96,24,14,10,7,'#3b3355');const jc=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff5a5f':'#4fe0a0';quad([[x+1,106.1,26],[x+13,106.1,26],[x+13,106.1,30],[x+1,106.1,30]],jc);const [a,b]=P(x+7,106,28);glow(a,b,10,jc==='#4fe0a0'?'79,224,160':'255,90,95',.35);if(pos)ibox(x+3,98,31,8,4,8,'#5c6aa8')}
+  if(lastLanes>=0&&lanes>lastLanes)regBounce=1;lastLanes=lanes;regBounce=Math.max(0,regBounce-dt*1.6);
+  const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){const x=rxw(i),bz=i===regs-1?Math.abs(Math.sin(regBounce*9))*regBounce*10:0;ibox(x,96,24+bz,14,10,7,'#3b3355');const jc=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff5a5f':'#4fe0a0';quad([[x+1,106.1,26],[x+13,106.1,26],[x+13,106.1,30],[x+1,106.1,30]],jc);const [a,b]=P(x+7,106,28);glow(a,b,10,jc==='#4fe0a0'?'79,224,160':'255,90,95',.35);if(pos)ibox(x+3,98,31,8,4,8,'#5c6aa8')}
+  {const [a,b]=P(cx0+cw/2,102,20);SCENE_HITS.push({k:'ck',x:a,y:b,r:50*s*1.6})}
+  /* checkout bottleneck: a line forms in front of the registers */
+  if(R.lim==='ck'&&FAC){const n=Math.min(5,2+Math.round((1-Math.min(1,R.E))*4));for(let q=n-1;q>=0;q--)iperson(rxw(0)+6+q*4,140+q*12,BODY[q%BODY.length],'#333',mv?Math.sin(ph*3+q)*.8:0)}
   if(lanes>regs){const [a,b]=P(cx0+cw+8,112,10);cx.fillStyle='#fff';cx.font='600 10px Barlow,sans-serif';cx.textAlign='left';cx.fillText('+'+fmt(lanes-regs),a,b)}
   for(const p of peeps)if(p.y>=92&&p.y<=150)drawPeep(p,mv);
   /* the half wall between store and shop goes in front of anyone walking beside it */
@@ -2090,7 +2138,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
    add(dog.x+206,()=>{const [a,b]=P(dog.x,206,0);cx.save();cx.translate(a,b);cx.scale(s*1.4,s*1.4);dogDraw(0,0,dog.dir,mv?Math.abs(Math.sin(ph*10)):0);cx.restore();dogHit={x:a,y:b-6};if(dogTap>0){dogTap-=dt;bubble(a,b-14*s*1.4,dogName()+' wags')}});
    for(const p of peeps)if(p.y>150)add(p.x+p.y,()=>drawPeep(p,mv));
    if(spotNow){spotNow.t+=dt;const f=spotNow.t/8;if(f>1)spotNow=null;else{const x=390-f*440;add(x+198+60,()=>itruck(x,198,spotNow.c,40))}}
-   L.sort((a,b)=>a[0]-b[0]);for(const [,f] of L)f()}
+   L.sort((a,b)=>a[0]-b[0]);for(const [,f] of L)f();{const [a,b]=P(290,190,0);SCENE_HITS.push({k:'cu',x:a,y:b,r:55*s*1.6})}{const [a,b]=P(100,55,0);SCENE_HITS.push({k:'sk',x:a,y:b,r:30*s*1.6})}{const [a,b]=P(266,70,20);SCENE_HITS.push({k:S.sv.open?'service':'svlock',x:a,y:b,r:60*s*1.6})}}
   /* incidents you can tap */
   hit=null;
   if(S.inc&&S.inc.type==='spill'){const [a,b]=P(120,70,0);cx.fillStyle='rgba(140,90,40,.85)';cx.beginPath();cx.ellipse(a,b,20*s*1.6,8*s*1.6,0,0,7);cx.fill();cx.fillStyle='rgba(255,255,255,.3)';cx.beginPath();cx.ellipse(a-6*s,b-2*s,6*s*1.6,2*s*1.6,0,0,7);cx.fill();hit={x:a,y:b}}
@@ -2106,7 +2154,7 @@ const AISLE_X=188;
 function route(p,pts){p.path=pts.slice();}
 function stepPeeps(dt,mv,regs,rxw){
   const add=o=>{const p=Object.assign({x:AISLE_X,y:225,c:pick(BODY),st:0,w:0},o);p.sx=20+Math.random()*150;p.tx=rxw(Math.floor(Math.random()*regs))+6;route(p,[[AISLE_X,140],[AISLE_X,40],[p.sx,32]]);peeps.push(p)};
-  if(mv&&FAC){spawn+=dt*Math.min(2.5,.25+Math.log10(1+R.moved)*.5);while(spawn>1){spawn--;if(peeps.length<9)add({})}}
+  if(mv&&FAC){spawn+=dt*Math.min(2.5,.25+Math.log10(1+R.moved)*.5)*(R.lim==='cu'?.45:1);while(spawn>1){spawn--;if(peeps.length<9)add({})}}
   if(regNow&&mv){const r=regNow.r;add({c:r.body,hat:r.hat,reg:regNow,bt:7});peeps[peeps.length-1].tx=rxw(0)+6;regNow=null}else if(regNow&&!mv)regNow=null;
   for(const p of peeps){
     if(p.path&&p.path.length){const [tx,ty]=p.path[0],dx=tx-p.x,dy=ty-p.y,d=Math.hypot(dx,dy),sp=p.st===4?90:75;
@@ -2130,7 +2178,7 @@ function finish(W,H,floorY,mv,day){
   let g=cx.createLinearGradient(0,0,0,H);g.addColorStop(0,'rgba(255,190,120,.10)');g.addColorStop(.55,'rgba(255,190,120,0)');g.addColorStop(1,'rgba(40,20,90,.22)');cx.fillStyle=g;cx.fillRect(0,0,W,H);
   g=cx.createRadialGradient(W/2,H*.45,Math.min(W,H)*.35,W/2,H*.45,Math.max(W,H)*.75);g.addColorStop(0,'rgba(20,10,50,0)');g.addColorStop(1,'rgba(20,10,50,.38)');cx.fillStyle=g;cx.fillRect(0,0,W,H)}
 requestAnimationFrame(frame);
-cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(!hit)return;if(Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender()}});
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dogHit&&Math.abs(x-dogHit.x)<24&&Math.abs(y-dogHit.y)<24){dogTap=2.5;return}if(hit&&Math.abs(x-hit.x)<30&&Math.abs(y-hit.y)<30){fixInc();forceRender();return}let best=null,bd=1e9;for(const h of SCENE_HITS){const d=Math.hypot(x-h.x,y-h.y);if(d<h.r&&d<bd){bd=d;best=h}}if(best&&typeof jumpTo==='function')jumpTo(best.k)});
 }
 </script>
 <script>/* ===== Parts Counter Idle: look-and-feel touches. Nothing here changes the game itself. ===== */
@@ -2204,6 +2252,62 @@ if(SY.on)setTimeout(()=>syncNow(false),1500);
 setInterval(()=>{if(!document.hidden)syncNow(false)},60000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)syncNow(false);else if(SY.on)syPull(true).catch(()=>{})});
 addEventListener('online',()=>syncNow(false));
+</script>
+<script>/* ===== Parts Counter Idle: getting around. Tap the picture or the header to jump, full-screen view,
+   tidy More tab, hide locked items, text size and color-blind options, start screen and a short guided start. ===== */
+
+/* ---------- jumping to the right place ---------- */
+function goTab(t){const b=document.querySelector(`[data-tab="${t}"]`);if(b)b.click()}
+function flashEl(el){if(!el)return;el.scrollIntoView({behavior:S.ui.anim?'smooth':'auto',block:'center'});el.classList.remove('jumpflash');void el.offsetWidth;el.classList.add('jumpflash')}
+function jumpTo(k){if(k==='service'){goTab('service');setTimeout(()=>flashEl(document.querySelector('#t-service .card')),80);return}
+  if(k==='svlock'){note('The service shop opens a little further up the parts list.');return}
+  const sv=k[0]==='v';goTab(sv?'shop':'store');setTimeout(()=>flashEl($('cap-'+k)),80);buzz(6)}
+document.addEventListener('click',e=>{const d=e.target.closest('[data-jump]');if(d)jumpTo(d.dataset.jump)});
+document.addEventListener('keydown',e=>{const d=e.target.closest&&e.target.closest('[data-jump]');if(d&&(e.key==='Enter'||e.key===' ')){e.preventDefault();jumpTo(d.dataset.jump)}});
+
+/* ---------- full-screen store picture ---------- */
+{const st=$('stage'),b=document.createElement('button');b.className='fsb';b.setAttribute('aria-label','Full-screen store view');
+  b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';st.appendChild(b);
+  const set=on=>{st.classList.toggle('full',on);document.body.classList.toggle('fsopen',on);b.setAttribute('aria-label',on?'Close full-screen view':'Full-screen store view');
+    b.innerHTML=on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>':'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>'};
+  b.addEventListener('click',e=>{e.stopPropagation();set(!st.classList.contains('full'))});
+  addEventListener('keydown',e=>{if(e.key==='Escape'&&st.classList.contains('full'))set(false)})}
+
+/* ---------- More tab: each heading folds its section away ---------- */
+function foldMore(){const sec=$('t-more');if(!sec||sec.dataset.folded)return;sec.dataset.folded=1;const open=(S.ui.open||{});
+  for(const h of [...sec.querySelectorAll(':scope > h2')]){const d=document.createElement('details');d.className='fold';const key=h.textContent.trim();d.open=open[key]!==undefined?open[key]:['Income','Goals','Settings'].includes(key);
+    const sm=document.createElement('summary');sm.textContent=key;d.appendChild(sm);h.parentNode.insertBefore(d,h);let n=h.nextSibling;h.remove();
+    while(n&&!(n.nodeType===1&&n.tagName==='H2')){const nx=n.nextSibling;d.appendChild(n);n=nx}
+    d.addEventListener('toggle',()=>{S.ui.open=Object.assign({},S.ui.open,{[key]:d.open});save()})}}
+foldMore();
+
+/* ---------- hide locked items, text size, color-blind colors ---------- */
+function applyView(){document.body.classList.toggle('hidelock',!!S.ui.hideLocked);document.body.classList.toggle('bigtext',!!S.ui.big);document.body.classList.toggle('cb',!!S.ui.cb);
+  for(const id of ['sHide','sHide2'])if($(id))$(id).checked=!!S.ui.hideLocked;if($('sBig'))$('sBig').checked=!!S.ui.big;if($('sCb'))$('sCb').checked=!!S.ui.cb}
+document.addEventListener('change',e=>{const id=e.target.id;if(id==='sHide'||id==='sHide2')S.ui.hideLocked=e.target.checked;else if(id==='sBig')S.ui.big=e.target.checked;else if(id==='sCb')S.ui.cb=e.target.checked;else return;applyView();save()},true);
+applyView();
+
+/* ---------- start screen ---------- */
+{const sp=$('splash');if(sp){setTimeout(()=>{sp.classList.add('out');setTimeout(()=>sp.remove(),500)},S.ui.anim?1100:200)}}
+
+/* ---------- a short guided start for a brand-new save ---------- */
+const TUT=[
+ {el:()=>document.querySelector('#ladder button[data-sku]:not([disabled])')||document.querySelector('#ladder button[data-sku]'),txt:'Tap here to stock your first oil filter. Every copy on the shelf sells on its own.',done:()=>FAC>=3},
+ {el:()=>$('prog'),txt:'This card shows your next goal. Stock 10 of a product to unlock the next one, and each new one earns more.',done:()=>S.top>=1,tap:true},
+ {el:()=>document.querySelector('#dash .lim')||$('dash'),txt:'These four boxes are your store. The red one is holding you back. Tap it to fix it in the Store tab.',done:()=>tab==='store',tap:true},
+ {el:()=>document.querySelector('#caps .card'),txt:'Buy here to keep up. Prices follow what you earn, so there is always a small wait. That is the puzzle: where to put the money.',done:()=>false,tap:true}];
+let tutEl=null;
+function tutStep(){const i=S.ui.tut||0;if(i>=TUT.length||S.st.play>1800){if(tutEl){tutEl.remove();tutEl=null}return}
+  const t=TUT[i];if(t.done()){S.ui.tut=i+1;save();if(tutEl){tutEl.remove();tutEl=null}return}
+  const el=t.el();if(!el||el.offsetParent===null){if(tutEl)tutEl.hidden=true;return}
+  if(!tutEl){tutEl=document.createElement('div');tutEl.className='tut';tutEl.innerHTML='<p></p><button class="btn">Got it</button>';document.body.appendChild(tutEl);
+    tutEl.querySelector('button').addEventListener('click',()=>{S.ui.tut=(S.ui.tut||0)+1;save();tutEl.remove();tutEl=null})}
+  if(tutEl.dataset.step!=String(i)){tutEl.dataset.step=i;const r0=el.getBoundingClientRect();if(r0.top<90||r0.bottom>innerHeight-170)el.scrollIntoView({block:'center',behavior:'smooth'})}
+  tutEl.hidden=false;tutEl.querySelector('p').textContent=t.txt;tutEl.querySelector('button').hidden=!t.tap;
+  const r=el.getBoundingClientRect(),below=r.top<innerHeight*.55;tutEl.classList.toggle('up',!below);
+  tutEl.style.top=(below?r.bottom+10:Math.max(8,r.top-10-tutEl.offsetHeight))+'px';tutEl.style.left=Math.max(10,Math.min(innerWidth-tutEl.offsetWidth-10,r.left+r.width/2-tutEl.offsetWidth/2))+'px';
+  tutEl.style.setProperty('--ax',Math.max(16,Math.min(tutEl.offsetWidth-16,r.left+r.width/2-parseFloat(tutEl.style.left)))+'px')}
+setInterval(tutStep,400);addEventListener('scroll',tutStep,{passive:true});
 </script>
 </body>
 </html>

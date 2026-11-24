@@ -27,6 +27,12 @@ jobs:
           P=android/app/src/main
           mkdir -p $P/java/com/fremonttruck/partscounter $P/assets $P/res/mipmap-anydpi-v26 $P/res/drawable $P/res/values
           cp "$SRC" $P/assets/index.html
+          # use icon.png from the repository as the app icon when it's there
+          if [ -f icon.png ]; then
+            mkdir -p $P/res/mipmap-xxxhdpi $P/res/mipmap-xxhdpi $P/res/mipmap-xhdpi
+            python3 -c "from PIL import Image;im=Image.open('icon.png').convert('RGBA');[im.resize((s,s),Image.LANCZOS).save(p) for s,p in [(192,'$P/res/mipmap-xxxhdpi/ic_launcher.png'),(144,'$P/res/mipmap-xxhdpi/ic_launcher.png'),(96,'$P/res/mipmap-xhdpi/ic_launcher.png')]]" || { cp icon.png $P/res/mipmap-xxxhdpi/ic_launcher.png; }
+            HAVE_ICON=1
+          fi
           echo "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" | base64 -d > android/app/release.p12
           cat > android/settings.gradle <<'EOF2'
           pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
@@ -140,6 +146,7 @@ jobs:
           cat > $P/res/values/colors.xml <<'EOF2'
           <resources><color name="icon_bg">#C8371D</color></resources>
           EOF2
+          if [ -z "$HAVE_ICON" ]; then
           cat > $P/res/mipmap-anydpi-v26/ic_launcher.xml <<'EOF2'
           <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
               <background android:drawable="@color/icon_bg"/>
@@ -155,6 +162,7 @@ jobs:
               </group>
           </vector>
           EOF2
+          fi
       - name: Build the APK
         working-directory: android
         run: gradle assembleRelease --no-daemon --stacktrace

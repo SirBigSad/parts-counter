@@ -22,7 +22,9 @@ jobs:
           set -e
           SRC=parts-counter.html; [ -f "$SRC" ] || SRC=index.html
           [ -f "$SRC" ] || { echo "Upload parts-counter.html to the top of the repository first."; exit 1; }
-          mkdir -p desktop && cp "$SRC" desktop/index.html && cd desktop
+          mkdir -p desktop/build && cp "$SRC" desktop/index.html
+          [ -f icon.png ] && cp icon.png desktop/build/icon.png
+          cd desktop
           cat > package.json <<'EOF2'
           {
             "name": "parts-counter",
@@ -36,6 +38,7 @@ jobs:
               "productName": "Parts Counter",
               "files": ["main.js", "index.html"],
               "win": { "target": "portable" },
+              "icon": "build/icon.png",
               "portable": { "artifactName": "PartsCounter.exe" },
               "directories": { "output": "dist" }
             }
