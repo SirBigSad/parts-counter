@@ -9,7 +9,7 @@ const NEG=-1e9;
 const addL=(a,b)=>{if(a<=NEG/2)return b;if(b<=NEG/2)return a;const m=Math.max(a,b);return m+lg(10**(a-m)+10**(b-m))};
 const subL=(a,b)=>{if(b<=NEG/2)return a;const d=b-a;if(d>=0)return NEG;if(d<-16)return a;return a+lg(1-10**d)};
 const freshSv=()=>({open:false,f:{},top:0,b:{vt0:1,vw0:1},sTop:{vb:0,vt:0,vw:0,vc:0,ve:0}});
-const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true,radio:false},fun:{spot:{},pl:{},name:'',dog:'',paint:''},
+const fresh=()=>({v:VERSION,cashL:lg(25),f:{},top:0,b:{ck0:1,sk0:1},sTop:{ck:0,sk:0,cu:0,sh:0},sv:freshSv(),ach:{},log:{},inc:null,nextInc:Date.now()+3e5,ui:{mode:1,anim:true,sci:false,theme:'auto',snd:true,vib:true,radio:false},fun:{spot:{},pl:{},name:'',dog:'',paint:''},deco:{own:{},on:{}},
   st:{totalL:NEG,incidents:0,shop:0,play:0,start:Date.now(),all:0,sold:{},br:{},trucks:0,hrs:0},hist:[],t:Date.now()});
 function load(d){if(!d||typeof d!=='object'||(d.v||0)<6)return fresh();const f=fresh();const s=Object.assign(f,d,{st:Object.assign(f.st,d.st,{sold:Object.assign({},(d.st||{}).sold),br:Object.assign({},(d.st||{}).br)}),hist:Array.isArray(d.hist)?d.hist.slice(-360):[],ui:Object.assign(f.ui,d.ui),fun:Object.assign(f.fun,d.fun,{spot:Object.assign({},(d.fun||{}).spot),pl:Object.assign({},(d.fun||{}).pl)}),b:Object.assign({},d.b||f.b),sTop:Object.assign(f.sTop,d.sTop)});
   {const v=d.sv||{},fv=freshSv();s.sv=Object.assign(fv,v,{f:Object.assign({},v.f||{}),b:Object.assign({},v.b||fv.b),sTop:Object.assign(fv.sTop,v.sTop)});

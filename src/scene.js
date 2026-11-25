@@ -51,6 +51,7 @@ function semi(x,y,c,s){cx.save();cx.translate(x,y);cx.scale(s,s);rr(0,-23,24,17,
 /* ===== isometric cutaway: the whole dealership as a little diorama. World units: x runs along the back wall,
    y runs toward the viewer, z is up. P() turns a world point into a screen point. ===== */
 let s=1,ox=0,oy=0;
+const deco=(layer,o)=>{try{return window.decoLayer?decoLayer(layer,o):false}catch(e){if(!deco.err){deco.err=1;console.error(e)}return false}};
 const P=(x,y,z)=>[ox+(x-y)*.866*s,oy+((x+y)*.5-z)*s];
 function quad(pts,c){cx.fillStyle=c;cx.beginPath();pts.forEach((p,i)=>{const [a,b]=P(...p);i?cx.lineTo(a,b):cx.moveTo(a,b)});cx.closePath();cx.fill()}
 /* a solid block: lit top, mid right face, shaded front face */
@@ -59,12 +60,15 @@ function iperson(x,y,body,hat,bob,tie){const [a,b]=P(x,y,0),k=s*1.05;cx.save();c
 function itruck(x,y,c,len,lift){const z=lift||0;ibox(x,y,z+4,len,26,20,shade(c,.05),tint(c,.3));ibox(x+len,y+1,z+4,24,24,30,c);quad([[x+len+24,y+5,z+20],[x+len+24,y+21,z+20],[x+len+24,y+21,z+30],[x+len+24,y+5,z+30]],'#bfe6ff');
   for(const wx of [x+8,x+len-6,x+len+14]){const [a,b]=P(wx,y+26,z+4);cx.fillStyle='#2a2440';cx.beginPath();cx.ellipse(a,b,5*s*1.6,4*s*1.6,0,0,7);cx.fill();cx.fillStyle='#8f8aa8';cx.beginPath();cx.ellipse(a,b,2*s*1.6,1.6*s*1.6,0,0,7);cx.fill()}}
 function itree(x,y){const [a,b]=P(x,y,0);rr(a-2*s*2,b-18*s*2,4*s*2,18*s*2,2,'#6b4a3a');cx.fillStyle='#2ec4a6';cx.beginPath();cx.arc(a,b-26*s*2,14*s*2,0,7);cx.fill();cx.fillStyle='rgba(126,232,210,.55)';cx.beginPath();cx.arc(a-4*s*2,b-30*s*2,6*s*2,0,7);cx.fill()}
+/* the decorations (deco.js) draw with the same helpers */
+window.ISO={P,quad,ibox,rr,glow,mix,shade,tint,iperson,person,cx,get s(){return s},get ph(){return ph},get W(){return W},get H(){return H}};
 /* pinch to zoom, drag to look around, double-tap to reset */
 const VIEW={z:1,x:0,y:0};window.SCENE_VIEW=VIEW;window.SCENE_PEEPS=()=>peeps;let bayTrucks=[],lastFac=-1,lastLanes=-1,pops=[],regBounce=0;window.SCENE_HITS=[];
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;
   const day=daylight(),night=1-day,E=ERAS[eraOf()],w=weatherToday();
   /* fit the diorama to the canvas */
   s=Math.min(W/530,H/405)*VIEW.z;ox=W/2-s*64+VIEW.x;oy=H/2-s*101+VIEW.y;
+  if(window.decoFocus)decoFocus(dt,(k,x,y)=>{s*=k;ox=x;oy=y});
   /* sky behind everything */
   const skyT=day>=1?'#5fb4e8':day<=0?'#141236':day>.5?mix('#ff8a6a','#5fb4e8',(day-.5)*2):mix('#141236','#ff8a6a',day*2),skyB=day>=1?'#c9ecf5':day<=0?'#3b2d6b':day>.5?mix('#ffd18a','#c9ecf5',(day-.5)*2):mix('#3b2d6b','#ffd18a',day*2);
   cx.fillStyle=vg(0,H,skyT,skyB);cx.fillRect(0,0,W,H);
@@ -82,12 +86,14 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   /* store and bay floors, back walls and the window */
   const fl=mix(shade(E.floor,.35),tint(E.floor,.08),.4+.6*day);
   quad([[0,0,0],[200,0,0],[200,150,0],[0,150,0]],fl);
+  deco('floor',{fl,day});deco('rug',{day});
   quad([[0,0,0],[0,150,0],[0,150,80],[0,0,80]],mix(shade(E.wall2,.3),E.wall2,day));
   quad([[0,0,0],[200,0,0],[200,0,80],[0,0,80]],mix(shade(E.wall,.3),E.wall,day));
   quad([[0,150,0],[0,150,80],[-6,150,80],[-6,150,0]],shade(E.wall2,.4));quad([[0,0,80],[200,0,80],[200,-6,80],[-6,-6,80],[-6,150,80],[0,150,80]],shade(E.trim,.1));
+  deco('paint',{day});
   quad([[0,30,18],[0,110,18],[0,110,62],[0,30,62]],skyB);quad([[0,30,40],[0,110,40],[0,110,62],[0,30,62]],skyT);
   quad([[.2,30,18],[.2,110,18],[.2,110,22],[.2,30,22]],mix('#2a2a4a','#4f8f7a',day));
-  {const [a,b]=P(0,90,52);cx.fillStyle='#ff3b3b';cx.shadowColor='#ff3b3b';cx.shadowBlur=6+night*10;cx.font=`700 ${Math.max(8,Math.round(13*s*1.6))}px "Barlow Condensed",sans-serif`;cx.textAlign='center';cx.save();cx.translate(a,b);cx.transform(1,-.577,0,1,0,0);cx.fillText('OPEN',0,0);cx.restore();cx.shadowBlur=0}
+  deco('window',{day,night});
   {const n=Object.keys(S.fun.pl).length;for(let i=0;i<Math.min(n,8);i++)quad([[0,118+i*4,50],[0,121+i*4,50],[0,121+i*4,56],[0,118+i*4,56]],'#ffcf4a')}
   /* service side: floor and back wall, or a closed shutter before it opens */
   const doors=!S.sv.open?1:has('vb','Second shop')?3:has('vb','Service bay')?2:1;
@@ -96,6 +102,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   quad([[200,0,80],[330,0,80],[330,-6,80],[200,-6,80]],'#3b3355');
   {const [a,b]=P(266,0,70);cx.fillStyle=night>.5?'#ffd54f':'#2a2440';cx.font=`700 ${Math.max(7,Math.round(11*s*1.6))}px "Barlow Condensed",sans-serif`;cx.textAlign='center';cx.save();cx.translate(a,b);cx.transform(1,.577,0,1,0,0);cx.fillText(S.sv.open?'SERVICE':'COMING SOON',0,0);cx.restore()}
   if(!S.sv.open)for(let i=0;i<8;i++)quad([[214,0,6+i*8],[320,0,6+i*8],[320,0,10+i*8],[214,0,10+i*8]],'rgba(0,0,0,.12)');
+  deco('wall',{day,night});deco('banner',{day,night});
   /* shelving along the back wall: more units as your shelves grow, bins coloured by the lines you stock */
   const cols=[];const seen=new Set(LADDER.slice(0,S.top+1).map(x=>x.line));for(const c of LINES){if(!seen.has(c.id))continue;const n=lineFac(c.id);for(let i=0;i<Math.min(40,Math.ceil(n/10));i++)cols.push(c.c)}
   const rackC=has('sh','Pallet racking')?'#ff7a3d':has('sh','Steel shelving')?'#5c6aa8':'#8a6a9e',want=1+Math.floor(shelfCap()/40),units=Math.min(4,want);
@@ -110,11 +117,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   pops=pops.filter(p=>p.t<1);
   /* hanging lights */
   for(const [lx,ly] of [[60,60],[140,60],[266,70]]){const [a,b]=P(lx,ly,78);cx.fillStyle='#2a2440';cx.fillRect(a-.5,b-10,1.5,10);cx.fillStyle='#fff3c4';cx.beginPath();cx.ellipse(a,b,5,1.8,0,0,7);cx.fill();glow(a,b+6,30+night*30,'255,232,160',.12+.25*night)}
-  /* the specials chalkboard by the door */
-  {quad([[150,.3,24],[192,.3,24],[192,.3,54],[150,.3,54]],'#6b4a3a');quad([[152,.4,26],[190,.4,26],[190,.4,52],[152,.4,52]],'#23392f');
-   const [a,b]=P(171,0,45),fs=Math.max(6,Math.round(7*s*1.6));cx.save();cx.translate(a,b);cx.transform(1,.577,0,1,0,0);cx.fillStyle='#f4f1de';cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`;cx.textAlign='center';cx.fillText('TODAY',0,0);
-   cx.font=`600 ${Math.max(5,fs-1)}px Barlow,sans-serif`;const t=curPart().split(' ').slice(-2).join(' ');cx.fillText(t.length>14?t.slice(0,13)+'…':t,0,fs*1.15);cx.strokeStyle='#ffcf4a';cx.lineWidth=1;cx.beginPath();cx.arc(-fs*2.2,-fs*.35,fs*.45,0,7);cx.stroke();cx.restore()}
-  drawIsoSeason(day);
+  deco('lights',{day,night});
   if(R.lim==='sk'&&FAC){for(let q=0;q<Math.min(6,2+Math.round((1-Math.min(1,R.E))*6));q++)ibox(20+q*22%140,30+(q%2)*8,(q>2?8:0),12,10,8,'#e0a35a')}
   /* stocking gear: forklift or pallet jack trundles along the shelves */
   if(has('sk','Forklift')||has('sk','Pallet jack')){const f=mv?(Math.sin(ph*.5)+1)/2:.3,x=20+f*140;ibox(x,46,0,22,14,12,'#ffb627');ibox(x+22,48,0,3,10,26,'#6b6488');if(Math.sin(ph*.5)>0)ibox(x+25,47,2,10,12,10,'#e0a35a')}
@@ -124,11 +127,14 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   /* customers at the shelves are behind the counter: draw them first */
   stepPeeps(dt,mv,regs,rxw);
   for(const p of peeps)if(p.y<92)drawPeep(p,mv);
+  deco('floorBack',{night});
   ibox(cx0,92,0,cw,20,24,'#93506e','#e0907a');
+  deco('wrap',{x0:cx0,w:cw});
   {const [a,b]=P(cx0+cw/2,112,12);const sn=storeName().toUpperCase();let fs=Math.max(6,Math.round(9*s*1.6));cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`;const tw=cx.measureText(sn).width,max=cw*.866*s*.9;if(tw>max){fs=Math.floor(fs*max/tw);cx.font=`700 ${fs}px "Barlow Condensed",sans-serif`}if(fs>=6){cx.fillStyle='#ffe3c4';cx.textAlign='center';cx.save();cx.translate(a,b);cx.transform(1,.577,0,1,0,0);cx.fillText(sn,0,fs*.35);cx.restore()}}
   if(lastLanes>=0&&lanes>lastLanes)regBounce=1;lastLanes=lanes;regBounce=Math.max(0,regBounce-dt*1.6);
   const pos=has('ck','POS terminal');for(let i=0;i<regs;i++){const x=rxw(i),bz=i===regs-1?Math.abs(Math.sin(regBounce*9))*regBounce*10:0;ibox(x,96,24+bz,14,10,7,'#3b3355');const jc=S.inc&&S.inc.type==='jam'&&(ph*4|0)%2?'#ff5a5f':'#4fe0a0';quad([[x+1,106.1,26],[x+13,106.1,26],[x+13,106.1,30],[x+1,106.1,30]],jc);const [a,b]=P(x+7,106,28);glow(a,b,10,jc==='#4fe0a0'?'79,224,160':'255,90,95',.35);if(pos)ibox(x+3,98,31,8,4,8,'#5c6aa8')}
   {const [a,b]=P(cx0+cw/2,102,20);SCENE_HITS.push({k:'ck',x:a,y:b,r:50*s*1.6})}
+  deco('counter',{night});deco('floorFront',{night});
   /* checkout bottleneck: a line forms in front of the registers */
   if(R.lim==='ck'&&FAC){const n=Math.min(5,2+Math.round((1-Math.min(1,R.E))*4));for(let q=n-1;q>=0;q--)iperson(rxw(0)+6+q*4,140+q*12,BODY[q%BODY.length],'#333',mv?Math.sin(ph*3+q)*.8:0)}
   if(lanes>regs){const [a,b]=P(cx0+cw+8,112,10);cx.fillStyle='#fff';cx.font='600 10px Barlow,sans-serif';cx.textAlign='left';cx.fillText('+'+fmt(lanes-regs),a,b)}
@@ -148,16 +154,16 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
         if(mv&&off===0&&!(S.inc&&S.inc.type==='lift')&&Math.random()<.35){const [sx2,sy2]=P(bx+bw/2,62,lift+18);for(let q=0;q<2;q++)sparks.push({x:sx2+(Math.random()-.5)*8,y:sy2,vx:(Math.random()-.5)*60,vy:-30-Math.random()*40,l:.5})}}}}
   for(const k of sparks){k.x+=k.vx*dt;k.y+=k.vy*dt;k.vy+=160*dt;k.l-=dt;const a=Math.max(0,k.l*2);glow(k.x,k.y,5,'255,190,80',a*.5);cx.fillStyle=`rgba(255,240,180,${a})`;cx.beginPath();cx.arc(k.x,k.y,1.2,0,7);cx.fill()}
   sparks=sparks.filter(k=>k.l>0);if(sparks.length>80)sparks.splice(0,sparks.length-80);
+  deco('floorShop',{night});deco('ceil',{night});
   /* the roof sign */
   {const [a,b]=P(100,-6,92);const sn=storeName().toUpperCase();cx.font=`700 ${Math.max(7,Math.round(11*s*1.6))}px "Barlow Condensed",sans-serif`;const tw=cx.measureText(sn).width+14,hh=Math.max(12,16*s*1.6);
-    rr(a-tw/2,b-hh/2,tw,hh,hh/2,'#2a1838');if(night>.4)glow(a,b,tw*.7,'255,170,120',.25*night);cx.fillStyle='#ffe3c4';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(sn,a,b+1);cx.textBaseline='alphabetic'}
+    if(!deco('sign',{a,b,sn,tw,hh,night})){rr(a-tw/2,b-hh/2,tw,hh,hh/2,'#2a1838');if(night>.4)glow(a,b,tw*.7,'255,170,120',.25*night);cx.fillStyle='#ffe3c4';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(sn,a,b+1);cx.textBaseline='alphabetic'}}
+  deco('roof',{night});
   /* the lot: trees, parked trucks, the delivery van, lamp posts and the shop dog */
   {const L=[];const add=(d,f)=>L.push([d,f]);
-   for(const [x,y] of [[-12,170],[-4,192],[150,214]])add(x+y,()=>itree(x,y));
+   deco('lot',{add,night});
    const trucks=Math.min(3,Math.ceil(Math.log10(1+customers()))),tc=[paint(),'#1565c0','#2e7d32'];for(let i=0;i<trucks;i++)add(230+i*56+180,()=>itruck(230+i*56,176,tc[i],18));
    if(has('ck','Delivery van')||has('ck','Box truck'))add(165+170,()=>{ibox(150,160,2,28,18,18,paint());quad([[178,164,10],[178,174,10],[178,174,18],[178,164,18]],'#bfe6ff')});
-   for(const [lx,ly] of [[376,160],[212,218]])add(lx+ly,()=>{ibox(lx,ly,0,2,2,60,'#3b3355');const [a,b]=P(lx+1,ly+1,60);cx.fillStyle=night>.3?'#fff3c4':'#8f8aa8';cx.beginPath();cx.ellipse(a,b,5,2,0,0,7);cx.fill();
-    if(night>.3){const al=Math.min(1,(night-.3)*2),[c2,d2]=P(lx,ly,0);const g=cx.createRadialGradient(a,b,1,c2,d2,40*s*2);g.addColorStop(0,`rgba(255,214,120,${.5*al})`);g.addColorStop(1,'rgba(255,214,120,0)');cx.fillStyle=g;cx.beginPath();cx.moveTo(a-2,b);cx.lineTo(c2-36*s*2,d2+6);cx.lineTo(c2+36*s*2,d2+6);cx.lineTo(a+2,b);cx.fill()}});
    if(mv){dog.x+=dog.dir*dt*14;dog.t-=dt;if(dog.x<225||dog.x>360||dog.t<0){dog.dir*=-1;dog.t=2+Math.random()*4;dog.x=Math.max(225,Math.min(360,dog.x))}}if(!dog.x||dog.x<225)dog.x=290;
    add(dog.x+206,()=>{const [a,b]=P(dog.x,206,0);cx.save();cx.translate(a,b);cx.scale(s*1.4,s*1.4);dogDraw(0,0,dog.dir,mv?Math.abs(Math.sin(ph*10)):0);cx.restore();dogHit={x:a,y:b-6};if(dogTap>0){dogTap-=dt;bubble(a,b-14*s*1.4,dogName()+' wags')}});
    for(const p of peeps)if(p.y>150)add(p.x+p.y,()=>drawPeep(p,mv));
@@ -167,6 +173,7 @@ function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/
   hit=null;
   if(S.inc&&S.inc.type==='spill'){const [a,b]=P(120,70,0);cx.fillStyle='rgba(140,90,40,.85)';cx.beginPath();cx.ellipse(a,b,20*s*1.6,8*s*1.6,0,0,7);cx.fill();cx.fillStyle='rgba(255,255,255,.3)';cx.beginPath();cx.ellipse(a-6*s,b-2*s,6*s*1.6,2*s*1.6,0,0,7);cx.fill();hit={x:a,y:b}}
   if(S.inc&&S.inc.type==='thief'){const f=1-Math.max(0,(S.inc.end-now())/2e4),x=30+f*170,y=40+f*120;iperson(x,y,'#2a2440','#2a2440',Math.sin(ph*14)*2);const [a,b]=P(x,y,20);hit={x:a,y:b}}
+  deco('ring',{});
   /* weather over the whole picture */
   if(w==='rain'){cx.strokeStyle='rgba(170,200,235,.7)';cx.lineWidth=1;cx.beginPath();for(const [a,b,v] of DROPS){const y=(b*H+ph*160*v*(mv?1:0))%H,x=a*W;cx.moveTo(x,y);cx.lineTo(x-3,y+8)}cx.stroke()}
   if(w==='snow'){cx.fillStyle='rgba(255,255,255,.9)';for(const [a,b,v] of DROPS){const y=(b*H+ph*22*v*(mv?1:0))%H,x=a*W+Math.sin(ph*2+b*9)*4;cx.beginPath();cx.arc(x,y,1.4,0,7);cx.fill()}}
@@ -194,11 +201,6 @@ function drawPeep(p,mv){const walk=p.st===0||p.st===2||p.st===4,bob=walk&&mv?Mat
   if(p.info>0){p.info-=1/60;const [a,b]=P(p.x,p.y,42);bubble(a,b,p.reg?`${p.reg.r.n}, ${p.reg.r.who}`:`${p.nm}, ${p.who}. ${p.st<=1?'Looking for':'Buying'} ${p.qty} ${curPart()}${p.qty>1?'s':''}`)}
   if(p.st===2||p.st===3){const [a,b]=P(p.x+6,p.y,16);rr(a-3*s*1.6,b-3*s*1.6,7*s*1.6,6*s*1.6,1.5,'#e0a35a')}
   if(p.reg&&p.bt>0&&p.st>=1){p.bt-=1/60;const [a,b]=P(p.x,p.y,40);bubble(a,b,p.reg.r.n+': '+p.reg.line)}}
-/* holiday touches along the top of the walls */
-function drawIsoSeason(day){const sn=seasonToday();if(!sn)return;const C={xmas:['#ff5252','#ffd740','#69f0ae','#40c4ff'],july:['#d32f2f','#ffffff','#1565c0'],valentine:['#e91e63','#f8bbd0'],shamrock:['#2e7d32','#66bb6a'],thanks:['#e65100','#f9a825','#bf360c'],fall:['#ef6c00','#bf360c','#f9a825'],newyear:['#ffd740','#40c4ff','#ff5252']}[sn]||['#fff'];
-  let i=0;for(let x=6;x<330;x+=14){const [a,b]=P(x,0,74+Math.sin(x*.2)*2);const c=C[i++%C.length];if(sn==='xmas'||sn==='newyear'){const on=((ph*2+i)|0)%4!==0;if(on)glow(a,b,6,'255,240,200',.4);cx.fillStyle=on?c:'#555'}else cx.fillStyle=c;cx.beginPath();cx.arc(a,b,2.2,0,7);cx.fill()}
-  for(let y=6;y<150;y+=14){const [a,b]=P(0,y,74+Math.sin(y*.2)*2);cx.fillStyle=C[i++%C.length];cx.beginPath();cx.arc(a,b,2.2,0,7);cx.fill()}
-  if(sn==='fall'||sn==='thanks'){for(const [x,y] of [[8,138],[18,146]]){const [a,b]=P(x,y,0);cx.fillStyle='#ef6c00';cx.beginPath();cx.ellipse(a,b-4*s*1.6,7*s*1.6,5*s*1.6,0,0,7);cx.fill();cx.fillStyle='#33691e';cx.fillRect(a-1,b-11*s*1.6,2,3*s*1.6)}}}
 /* the finishing pass: drifting specks of light, a warm top light, a cool shadow at the bottom and a soft vignette */
 const MOTES=Array.from({length:22},()=>({x:Math.random(),y:Math.random(),r:.6+Math.random()*1.6,s:.004+Math.random()*.012,p:Math.random()*7}));
 function finish(W,H,floorY,mv,day){
