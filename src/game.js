@@ -59,8 +59,12 @@ function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Mat
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
     after=p=>bBase(p)+lg(p.g2)*MAXC+NEXT_UP;
   /* shelf space and bay slots go up in small steps (each about 10% bigger than the last), so a new step
-     just carries on from the current price instead of jumping: it still never drops */
-  if(FLAT_UP[b.g]){if(b.j>tj)return own;const v=own+lg(b.amt/st[tj].amt);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
+     doesn't jump past the old one's 25th copy. A new shelf step's first copy costs at least what the old
+     step's next copy cost when the new one unlocked (its 11th), so moving up is never the cheaper-looking
+     choice at that moment. Shelf steps wait a little less (24s of income) to keep the pace. Never drops. */
+  if(FLAT_UP[b.g]){const nextOf=p=>bBase(p)+lg(p.g2)*Math.min(L(isS?S.b:S.sv.b,p.id),UNLOCK_N);
+    const ch=b.g==='sh'&&b.j>0;const ow=ch?own-lg(1.25):own;if(b.j>tj)return Math.max(ow,ch?nextOf(st[b.j-1]):NEG);
+    const v=b.j===tj?Math.max(ow,ch?nextOf(st[b.j-1]):NEG):ow+lg(b.amt/st[tj].amt);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(b.j>tj)return Math.max(own,after(st[b.j-1]));
   if(b.j===tj){const v=Math.max(own,b.j>0?after(st[b.j-1]):NEG);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(fl[k]===undefined)fl[k]=own+lg(b.amt/st[tj].amt);
