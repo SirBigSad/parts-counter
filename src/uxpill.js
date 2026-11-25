@@ -93,6 +93,12 @@ section:has(.tbar) details.intro:not([open]){display:none}
 .fit{display:inline-flex!important;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:var(--soft);margin:10px 0 4px;font-weight:700;font-size:13px;width:auto!important}
 .fit:not(:has(.bdg)){padding-left:10px}
 .fit small{display:none}.fit .bdg{border-radius:999px;font-size:10px;padding:2px 7px}
+/* Finished (25 of 25) items as thin long pills */
+.sku.full{display:flex!important;align-items:center;grid-template-columns:none!important;min-height:0!important;height:30px;padding:0 14px!important;margin:3px 0!important;border-radius:999px!important;background:var(--soft)!important;border-left:0!important;box-shadow:none!important;opacity:.75}
+.sku.full .sn{flex:1;min-width:0;display:flex!important;align-items:center;gap:8px;padding:0!important}
+.sku.full .sn b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px!important;line-height:30px;margin:0!important}
+.sku.full .sn b::after{content:none!important}
+.sku.full .sn::after{content:'25/25 ✓';flex:none;font:700 12px/1 system-ui,sans-serif;color:#2ec4a6}
 /* Service job headers as slim pills */
 details.line{border-radius:999px;border-left:0;box-shadow:var(--sh)}
 details.line[open]{border-radius:20px}
