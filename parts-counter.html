@@ -3799,12 +3799,12 @@ const AT={floorfin:()=>[100,75,0],paint:()=>[60,0,40],rug:()=>[146,131,0],window
 const ZOOM={floorfin:1.15,paint:1.15,rug:1.8,window:1.7,counter:2.4,wrap:1.8,floor:2,ceil:1.9,wall:2.2,banner:1.3,lights:1.15,sign:1.6,roof:2,lot:1.9};
 const SPOTS=[],SPOT={},ITEMS={},BYLAYER={},LIST=[];
 for(const [id,n,area,t,g0] of SP){const g=Object.assign({},g0||{}),sp={id,n,area,t,g,sv:!!g.sv,lay:g.lay||LAY[t],items:[]};SPOTS.push(sp);SPOT[id]=sp;(BYLAYER[sp.lay]=BYLAYER[sp.lay]||[]).push(sp)}
-/* prices: about $25K for the cheapest, up past what an Owner earns for the fanciest */
+/* prices: from about $50 up to around what an Owner earns, with far more cheap ones than pricey ones */
 const nice=L=>{let e=Math.floor(L),m=Math.round(10**(L-e)*10)/10;if(m>=10){m=1;e++}return e+Math.log10(m)};
 DECO_FAMS.forEach((f,fi)=>{const spots=SPOTS.filter(s=>s.t===f.t);let combos=[[]];for(const ax of f.axes){const nx=[];for(const c of combos)for(const e of ax)nx.push(c.concat([e]));combos=nx}
   const ids=combos.map((_,i)=>`${f.key}.${i}`),order=ids.map((id,i)=>[H(id+'$'),i]).sort((a,b)=>a[0]-b[0]),rank=[];order.forEach(([,i],r)=>rank[i]=r);
-  combos.forEach((es,i)=>{const id=ids[i],tier=f.lo+(f.hi-f.lo)*(rank[i]+.5)/combos.length,sp=spots[(i+fi*7)%spots.length],
-    it={id,f,es,sp,grp:f.grp,L:nice(4.4+650*tier),name:f.nm(...es)};ITEMS[id]=it;sp.items.push(it);LIST.push(it)})});
+  combos.forEach((es,i)=>{const id=ids[i],tier=f.lo*.25+(f.hi-f.lo*.25)*(rank[i]+.5)/combos.length,sp=spots[(i+fi*7)%spots.length],
+    it={id,f,es,sp,grp:f.grp,L:nice(1.7+400*tier*tier),name:f.nm(...es)};ITEMS[id]=it;sp.items.push(it);LIST.push(it)})});
 window.DECO_ITEMS=ITEMS;window.DECO_SPOTS=SPOTS;window.DECO_N=LIST.length;window.DECO_LIST=LIST;
 const activeId=id=>{if(DUI.open&&DUI.prev&&ITEMS[DUI.prev]&&ITEMS[DUI.prev].sp.id===id)return DUI.prev;if(DUI.open&&DUI.prev==='off:'+id)return null;const v=D().on[id];return v&&ITEMS[v]&&D().own[v]?v:null};
 const atOf=sp=>AT[sp.t](sp.g);
