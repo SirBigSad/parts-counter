@@ -11,7 +11,11 @@ const {chromium}=require('playwright'),path=require('path'),fs=require('fs');
   /* every decoration must draw without an error */
   const deco=await pg.evaluate(()=>{const cv=document.createElement('canvas');cv.style.cssText='width:110px;height:82px;position:fixed;left:0;top:0';document.body.appendChild(cv);const bad=[];const ce=console.error;console.error=(...a)=>bad.push(a.join(' '));
     for(const it of DECO_LIST){try{decoThumb(it,cv)}catch(e){bad.push(it.id+': '+e)}}console.error=ce;cv.remove();return {n:DECO_LIST.length,bad:bad.slice(0,10)}});
-  console.log(`Drew ${deco.n} decorations`);if(deco.bad.length)fail.push('decorations: '+deco.bad.join(' | '));
+  console.log(`Drew ${deco.n} decorations`);
+  /* add-on scripts must not replace the game's own functions (a leaked render() once emptied the Store tab) */
+  const leak=await pg.evaluate(async()=>{const bad=[];if(!String(render).includes('recount'))bad.push('render() was replaced');if(!String(window.open).includes('native'))bad.push('window.open was replaced');
+    openDeco();const c0=document.querySelector('#deco .dt canvas');await new Promise(r=>setTimeout(r,1200));if(c0&&!c0.isConnected)bad.push('Customize shop list keeps redrawing');document.querySelector('#deco [data-dx]').click();return bad});
+  if(leak.length)fail.push(...leak);if(deco.bad.length)fail.push('decorations: '+deco.bad.join(' | '));
   const ids=['',...await pg.evaluate(()=>SKINS.map(k=>k.id))];fs.mkdirSync(path.join(__dirname,'out'),{recursive:true});
   for(const id of ids)for(const tab of ['shelves','store','service','shop','more']){
     const n0=errs.length;
