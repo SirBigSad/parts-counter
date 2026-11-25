@@ -6,7 +6,7 @@
 const css=document.createElement('style');css.textContent=`
 header.mini .dash small{display:block!important;font-size:9.5px;line-height:1.1;opacity:.85}
 #weak{display:flex;align-items:center;gap:8px;max-width:720px;margin:7px auto 0;padding:6px 10px;border-radius:10px;background:rgba(255,90,120,.18);border:1px solid rgba(255,143,163,.45);font-size:13px;line-height:1.25;cursor:pointer}
-#weak[hidden]{display:none}#weak span{flex:1}#weak b{color:#ffb3c1}#weak em{font-style:normal;font-weight:700;white-space:nowrap;color:#fff}
+body.hidenext #prog .next{display:none!important}#weak[hidden]{display:none}#weak span{flex:1}#weak b{color:#ffb3c1}#weak em{font-style:normal;font-weight:700;white-space:nowrap;color:#fff}
 header.mini #weak{margin-top:5px;padding:4px 9px;font-size:12px}
 body.offhome #stage{height:64px!important;transition:height .25s}body.offhome #stage.open{height:220px!important}
 body.offhome #ticker{display:none}
@@ -70,7 +70,7 @@ function tick(){if(typeof R==='undefined'||!R)return;const t=typeof tab==='strin
   else if(FAC&&R.lim&&R.lim!=='shelf'&&NAMES[R.lim]&&R.E<.97)w=`<span><b>${NAMES[R.lim]}</b> is slowing you down. You sell ${Math.round(R.E*100)}% of what's on your shelves.</span><em>Fix ›</em>`;
   const key=w+R.lim;if(key!==last){weak.innerHTML=w;weak.hidden=!w;weak.dataset.jump=FAC>=shelfCap()?'sh':R.lim;last=key}
   /* the Shelves card's own hint says the same thing as the pink line: hide it while the line is showing */
-  for(const n of document.querySelectorAll('#prog .next'))n.style.display=w&&/your limit|Shelves are full/.test(n.textContent)?'none':'';
+  document.body.classList.toggle('hidenext',!!w&&typeof nextUp==='function'&&/your limit|Shelves are full/.test(nextUp()));
   /* one thing to do, at the top of the tab you're on */
   const c=cards[t];if(c){const inner=card(t);if(c._h!==inner){c._h=inner;c.innerHTML=inner;c.hidden=!inner}}
   /* Shop tab */
