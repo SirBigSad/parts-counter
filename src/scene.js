@@ -61,7 +61,7 @@ function itruck(x,y,c,len,lift){const z=lift||0;ibox(x,y,z+4,len,26,20,shade(c,.
   for(const wx of [x+8,x+len-6,x+len+14]){const [a,b]=P(wx,y+26,z+4);cx.fillStyle='#2a2440';cx.beginPath();cx.ellipse(a,b,5*s*1.6,4*s*1.6,0,0,7);cx.fill();cx.fillStyle='#8f8aa8';cx.beginPath();cx.ellipse(a,b,2*s*1.6,1.6*s*1.6,0,0,7);cx.fill()}}
 function itree(x,y){const [a,b]=P(x,y,0);rr(a-2*s*2,b-18*s*2,4*s*2,18*s*2,2,'#6b4a3a');cx.fillStyle='#2ec4a6';cx.beginPath();cx.arc(a,b-26*s*2,14*s*2,0,7);cx.fill();cx.fillStyle='rgba(126,232,210,.55)';cx.beginPath();cx.arc(a-4*s*2,b-30*s*2,6*s*2,0,7);cx.fill()}
 /* the decorations (deco.js) draw with the same helpers */
-window.ISO={P,quad,ibox,rr,glow,mix,shade,tint,iperson,person,cx,get s(){return s},get ph(){return ph},get W(){return W},get H(){return H}};
+window.ISO={P,quad,ibox,rr,glow,mix,shade,tint,iperson,person,cx,get s(){return s},get ox(){return ox},get oy(){return oy},get ph(){return ph},get W(){return W},get H(){return H}};
 /* pinch to zoom, drag to look around, double-tap to reset */
 const VIEW={z:1,x:0,y:0};window.SCENE_VIEW=VIEW;window.SCENE_PEEPS=()=>peeps;let bayTrucks=[],lastFac=-1,lastLanes=-1,pops=[],regBounce=0;window.SCENE_HITS=[];
 function frame(ts){requestAnimationFrame(frame);const dt=Math.min(.05,(ts-last)/1000||0);last=ts;if(document.hidden||!W)return;ph+=dt;const mv=S.ui.anim&&!reduce;

@@ -8,6 +8,10 @@ const {chromium}=require('playwright'),path=require('path'),fs=require('fs');
   await pg.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
   await pg.goto('file://'+path.join(__dirname,'..','parts-counter.html'));await pg.waitForTimeout(800);
   await pg.evaluate(()=>{S.cashL=40;for(let k=0;k<30;k++)S.f[LADDER[k].id]=needOf(LADDER[k]);for(const g of ['ck','sk','cu','sh']){S.b[g+'0']=12;S.b[g+'1']=3}S.ui.tut=99;forceRender()});
+  /* every decoration must draw without an error */
+  const deco=await pg.evaluate(()=>{const cv=document.createElement('canvas');cv.style.cssText='width:110px;height:82px;position:fixed;left:0;top:0';document.body.appendChild(cv);const bad=[];const ce=console.error;console.error=(...a)=>bad.push(a.join(' '));
+    for(const it of DECO_LIST){try{decoThumb(it,cv)}catch(e){bad.push(it.id+': '+e)}}console.error=ce;cv.remove();return {n:DECO_LIST.length,bad:bad.slice(0,10)}});
+  console.log(`Drew ${deco.n} decorations`);if(deco.bad.length)fail.push('decorations: '+deco.bad.join(' | '));
   const ids=['',...await pg.evaluate(()=>SKINS.map(k=>k.id))];fs.mkdirSync(path.join(__dirname,'out'),{recursive:true});
   for(const id of ids)for(const tab of ['shelves','store','service','shop','more']){
     const n0=errs.length;
