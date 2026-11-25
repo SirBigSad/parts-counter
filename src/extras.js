@@ -28,7 +28,7 @@ function renderCatalog(){let tot=0,got=0;const per={};
   setHTML('cat',LINES.map(l=>{const [g,a]=per[l.id],open=catOpen[l.id];
     let body='';if(open)body='<div class="tiles">'+(LINE_BASES[l.id]||[]).map(b=>{const c=baseCounts(b);
       return `<button class="tile ${c.paS?'':'none'}" data-info="${b}"><i style="color:${c.paS?l.c:'var(--mute)'}">${icSvg(BASE_IC[b])}</i><b>${esc(BASE_NAME[b])}</b><small>${c.paS?`${c.brS} of ${c.br} brands`:'Not stocked'}</small></button>`}).join('')+'</div>';
-    return `<details class="older cat" ${open?'open':''} data-cat="${l.id}"><summary><span class="bn"><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i>${esc(l.n)}</span><small class="num">${g} / ${a}</small></summary>${body}</details>`}).join(''))}
+    return `<details class="older cat" ${open?'open':''} data-cat="${l.id}"><summary style="--p:${a?Math.round(g/a*100):0}%;--lc:${l.c}"><span class="bn"><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i>${esc(l.n)}</span><small class="num">${g} / ${a}</small></summary>${body}</details>`}).join(''))}
 document.addEventListener('toggle',e=>{const el=e.target;if(el.dataset&&el.dataset.cat){if(catOpen[el.dataset.cat]!==el.open){catOpen[el.dataset.cat]=el.open;$('cat')._h=null;renderCatalog()}}},true);
 
 /* ---------- part lookup sheet ---------- */

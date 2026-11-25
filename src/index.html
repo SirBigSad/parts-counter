@@ -332,9 +332,8 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
   </section>
 
   <section id="t-store" hidden>
-    <label class="tog mini">Hide locked items<input type="checkbox" id="sHide"></label>
     <details class="intro"><summary>Keep the four links ahead of your shelves <span class="ib">i</span></summary><p class="sub">Each ring shows how much a link can handle compared with what your shelves can sell. Green means it keeps up, red means it is holding you back. On Shelf space, the ring shows how full your shelves are. You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up. Store prices rise as you climb the parts list, so a store buy costs about what a part does.</p></details>
-    <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+    <div class="row tbar" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><label class="tog mini">Hide locked<input type="checkbox" id="sHide"></label><button class="tbi" data-intro aria-label="How this works">i</button></div>
     <div id="caps"></div>
   </section>
 
@@ -351,8 +350,8 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
     <div id="shClosed"></div>
     <div id="shOpen" hidden>
       <div class="card"><div class="capg"><h3 class="bn" id="shHead"></h3></div><div class="kv" id="shFlow" style="margin-top:8px"></div></div>
-      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies. Each ring shows how much a part of the shop can handle compared with the work your bays are booked for. Red means it is holding you back.</p>
-      <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+      <details class="intro"><summary>How the shop works <span class="ib">i</span></summary><p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies. Each ring shows how much a part of the shop can handle compared with the work your bays are booked for. Red means it is holding you back.</p></details>
+      <div class="row tbar" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><button class="tbi" data-intro aria-label="How the shop works">i</button></div>
       <div id="shcaps"></div>
     </div>
   </section>
@@ -397,14 +396,14 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
       <label class="fld">Shop dog's name<input id="fDog" maxlength="16" placeholder="Diesel" autocomplete="off"></label>
       <div class="fld">Company truck paint<div class="sws" id="fPaint"></div></div></div>
     <h2>Settings</h2><div class="card">
-      <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
-      <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
-      <label class="tog">Sound effects<input type="checkbox" id="sSnd"></label>
+      <label class="tog">Animate picture<input type="checkbox" id="sAnim"></label>
+      <label class="tog">Scientific numbers<input type="checkbox" id="sSci"></label>
+      <label class="tog">Sound<input type="checkbox" id="sSnd"></label>
       <label class="tog">Vibration<input type="checkbox" id="sVib"></label>
       <label class="tog">Bigger text<input type="checkbox" id="sBig"></label>
-      <label class="tog">Color-blind friendly colors (blue and orange)<input type="checkbox" id="sCb"></label>
-      <label class="tog">Hide locked items in Store and Shop<input type="checkbox" id="sHide2"></label>
-      <label class="tog">Shop radio (background music)<input type="checkbox" id="sRadio"></label>
+      <label class="tog">Color-blind colors<input type="checkbox" id="sCb"></label>
+      <label class="tog">Hide locked items<input type="checkbox" id="sHide2"></label>
+      <label class="tog">Shop radio<input type="checkbox" id="sRadio"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
       <button class="btn" id="copy">Copy save code</button>

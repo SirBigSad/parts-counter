@@ -114,6 +114,6 @@ function tick(){if(typeof R==='undefined'||!R)return;
   /* greyed-out buttons say how long until you can afford them */
   const sec=document.querySelector('main>section:not([hidden])');if(sec)for(const b of sec.querySelectorAll('button[data-cl]')){const cl=+b.dataset.cl,want=b.disabled&&!canPay(cl)?etaL(cl):'',lab=want?'in '+want:'';if((b.dataset.eta||'')!==lab){if(lab)b.dataset.eta=lab;else delete b.dataset.eta}}
   /* next title */
-  if(rk){const k=RANKS.findIndex(r=>r[0]>S.st.totalL);let t='';if(k>0){const lo=Math.max(0,RANKS[k-1][0]),hi=RANKS[k][0],p=Math.max(0,Math.min(99,Math.floor((S.st.totalL-lo)/(hi-lo)*100)));t=`Next title: ${RANKS[k][1]} · ${p}%`}else if(k<0)t='Top title reached';if(rk.textContent!==t)rk.textContent=t}}
+  if(rk){const k=RANKS.findIndex(r=>r[0]>S.st.totalL);let t='';if(k>0){const lo=Math.max(0,RANKS[k-1][0]),hi=RANKS[k][0],p=Math.max(0,Math.min(99,Math.floor((S.st.totalL-lo)/(hi-lo)*100)));t=`<span>Next: ${RANKS[k][1]}</span><em><i style="width:${Math.max(3,p)}%"></i></em><b>${p}%</b>`}else if(k<0)t='<span>Top title reached</span>';if(rk._h!==t){rk._h=t;rk.innerHTML=t}}}
 setInterval(tick,500);tick();
 })();

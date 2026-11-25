@@ -40,6 +40,8 @@ function checkPrices(){const st=S();
     if(j<=st.sTop[g]&&lastPrice[k]!==undefined&&p<lastPrice[k]-1e-9)err(`price of ${b.n} dropped from ${fmtL(lastPrice[k])} to ${fmtL(p)}`);if(j<=st.sTop[g])lastPrice[k]=Math.max(p,lastPrice[k]??-1e9);
     if(j>0&&!G.FLAT_UP[g]){const prev=a[j-1],last=G.costL(G.bPrice(prev),prev.g2,G.MAXC-1,1);if(p<last-1e-9)err(`${b.n} (1st copy) is cheaper than the 25th ${prev.n}`)}}}
   if(st.sv.open)for(const g in G.SHOP){const a=G.SHOP[g];for(let j=0;j<=Math.min(a.length-1,st.sv.sTop[g]+1);j++){const b=a[j],p=G.bPrice(b),k='v'+b.id;
+    /* the shop follows the same 50% rule (bay slots excepted: one long row of the same thing) */
+    if(j>0&&g!=='vb'&&j<=st.sv.sTop[g]&&!(st.sv.b[b.id]>0)){const pv=a[j-1],nx=G.bPrice(pv)+Math.log10(pv.g2)*(st.sv.b[pv.id]||0);if(p<nx+Math.log10(1.5)-1e-6)err(`${b.n} first copy ${fmtL(p)} is less than 1.5x the next ${pv.n} (${fmtL(nx)})`)}
     if(j<=st.sv.sTop[g]&&lastPrice[k]!==undefined&&p<lastPrice[k]-1e-9)err(`shop price of ${b.n} dropped from ${fmtL(lastPrice[k])} to ${fmtL(p)} (step ${j}, top ${st.sv.sTop[g]})`);if(j<=st.sv.sTop[g])lastPrice[k]=Math.max(p,lastPrice[k]??-1e9)}}}
 
 /* what a sensible player buys next: the link holding the store back, else the next part, else shelf space */

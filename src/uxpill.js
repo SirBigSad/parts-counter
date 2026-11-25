@@ -48,3 +48,60 @@ const addAcc=()=>{const look=[...document.querySelectorAll('#t-more>details.fold
   c.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;S.ui.acc=b.dataset.c;applyAcc();save()});look.appendChild(c);applyAcc();return true};
 const ta=setInterval(()=>{if(addAcc())clearInterval(ta)},700);
 })();
+/* ---- pill pass 2: tiles, pill toggles, pill rows, one-row toolbars ---- */
+(function(){
+const css=`
+/* Stats + Shop floor as tiles */
+#stats.kv,#shFlow.kv{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.kt{background:var(--soft);border-radius:14px;padding:7px 10px;min-width:0}
+.kt small{display:block;font-size:11px;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kt b{display:block;font:700 16px/1.25 'Barlow Condensed',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kt.hot{background:color-mix(in srgb,var(--bad,#d33) 16%,var(--card));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--bad,#d33) 55%,transparent)}
+.kt.hot b{color:var(--bad,#d33)}
+/* Settings as a pill grid */
+.card:has(#sAnim){display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.card:has(#sAnim)>:not(label.tog){grid-column:1/-1}
+.card:has(#sAnim) label.tog{min-height:38px;border-radius:999px;background:var(--soft);padding:0 12px;font-size:13px;font-weight:600;border:0;margin:0;justify-content:center;text-align:center;position:relative;transition:background .2s,color .2s}
+.card:has(#sAnim) label.tog input{position:absolute;opacity:0;pointer-events:none}
+.card:has(#sAnim) label.tog:has(input:checked){background:var(--acc);color:var(--on-acc,#fff)}
+/* Catalog departments as pill rows with a bar */
+details.cat>summary{position:relative;border-radius:999px;background:var(--soft);padding:8px 14px 10px!important;margin:4px 0;overflow:hidden}
+details.cat>summary::before{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--lc,var(--acc)) var(--p,0%),color-mix(in srgb,var(--mute) 22%,transparent) var(--p,0%))}
+/* Next title bar */
+#rkEta{display:flex!important;align-items:center;gap:6px}header.mini #rkEta{display:none!important}
+#rkEta span{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#rkEta em{flex:0 0 46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--mute) 25%,transparent);overflow:hidden;display:block}
+#rkEta em i{display:block;height:100%;border-radius:5px;background:var(--acc);transition:width .4s}
+#rkEta b{flex:0 0 auto;font-weight:600;font-size:11px}
+/* Card headers in one row with a small ring */
+.capg{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.capg .gauge{width:44px!important;flex:0 0 44px}
+.capg .gauge svg{width:40px!important;height:40px!important}
+.capg .gauge small{display:none!important}
+.capg .gauge b{font-size:11px!important;height:40px!important}
+/* One toolbar */
+.row.tbar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.row.tbar .seg{flex:1 1 auto;min-width:0}
+.row.tbar label.tog.mini{flex:0 0 auto;min-height:32px;margin:0;padding:0 10px;border-radius:999px;background:var(--card);box-shadow:var(--sh);font-size:12px;font-weight:600;gap:6px;white-space:nowrap}
+.row.tbar label.tog.mini:has(input:checked){background:var(--acc);color:var(--on-acc,#fff)}
+.row.tbar label.tog.mini input{position:absolute;opacity:0;pointer-events:none}
+.tbi{flex:0 0 32px;height:32px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--sh);font:italic 700 15px Georgia,serif;color:var(--mute);cursor:pointer}
+.tbi.on{background:var(--acc);color:var(--on-acc,#fff)}
+section:has(.tbar) details.intro{margin:0 0 10px}section:has(.tbar) details.intro>summary{display:none}
+section:has(.tbar) details.intro:not([open]){display:none}
+/* Brand / level rows as slim chips */
+.fit{display:inline-flex!important;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:var(--soft);margin:10px 0 4px;font-weight:700;font-size:13px;width:auto!important}
+.fit:not(:has(.bdg)){padding-left:10px}
+.fit small{display:none}.fit .bdg{border-radius:999px;font-size:10px;padding:2px 7px}
+/* Service job headers as slim pills */
+details.line{border-radius:999px;border-left:0;box-shadow:var(--sh)}
+details.line[open]{border-radius:20px}
+details.line>summary{grid-template-columns:26px minmax(0,1fr) auto 12px!important;gap:8px!important;padding:7px 14px 7px 8px!important}
+details.line>summary .lic{width:26px;height:26px;border-radius:50%}
+details.line>summary .lsum b{font-size:15px!important}
+details.line>summary .lsum small{font-size:11.5px}
+details.line>summary .lval{font-size:14px}
+`;
+const st=document.createElement('style');st.id='pill2';st.textContent=css;document.head.appendChild(st);
+document.addEventListener('click',e=>{const b=e.target.closest('.tbi[data-intro]');if(!b)return;const sec=b.closest('section'),d=sec&&sec.querySelector('details.intro');if(!d)return;d.open=!d.open;b.classList.toggle('on',d.open)});
+})();

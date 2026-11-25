@@ -332,9 +332,8 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
   </section>
 
   <section id="t-store" hidden>
-    <label class="tog mini">Hide locked items<input type="checkbox" id="sHide"></label>
     <details class="intro"><summary>Keep the four links ahead of your shelves <span class="ib">i</span></summary><p class="sub">Each ring shows how much a link can handle compared with what your shelves can sell. Green means it keeps up, red means it is holding you back. On Shelf space, the ring shows how full your shelves are. You sell whatever is smallest: what the shelves hold, what customers want (about 3 units each), what checkout can ring up, and what the crew can restock. Each aisle is its own ladder: own 10 of an item to unlock the next one. An item holds at most 25 copies, so you have to keep moving up. Store prices rise as you climb the parts list, so a store buy costs about what a part does.</p></details>
-    <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+    <div class="row tbar" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><label class="tog mini">Hide locked<input type="checkbox" id="sHide"></label><button class="tbi" data-intro aria-label="How this works">i</button></div>
     <div id="caps"></div>
   </section>
 
@@ -351,8 +350,8 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
     <div id="shClosed"></div>
     <div id="shOpen" hidden>
       <div class="card"><div class="capg"><h3 class="bn" id="shHead"></h3></div><div class="kv" id="shFlow" style="margin-top:8px"></div></div>
-      <p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies. Each ring shows how much a part of the shop can handle compared with the work your bays are booked for. Red means it is holding you back.</p>
-      <div class="row" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div></div>
+      <details class="intro"><summary>How the shop works <span class="ib">i</span></summary><p class="sub">The shop finishes whatever is smallest: the work you have booked, the trucks coming in (about 4 labor hours each), what the writers can schedule, what the technicians can turn, and what the tools allow. Booked jobs take bay slots. Each section is its own ladder: own 10 of an item to unlock the next one, and each item holds at most 25 copies. Each ring shows how much a part of the shop can handle compared with the work your bays are booked for. Red means it is holding you back.</p></details>
+      <div class="row tbar" style="margin:0 0 10px"><div class="seg"><button data-m="1">×1</button><button data-m="10">×10</button><button data-m="25">×25</button><button data-m="max">Max</button></div><button class="tbi" data-intro aria-label="How the shop works">i</button></div>
       <div id="shcaps"></div>
     </div>
   </section>
@@ -397,14 +396,14 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
       <label class="fld">Shop dog's name<input id="fDog" maxlength="16" placeholder="Diesel" autocomplete="off"></label>
       <div class="fld">Company truck paint<div class="sws" id="fPaint"></div></div></div>
     <h2>Settings</h2><div class="card">
-      <label class="tog">Animate the store picture<input type="checkbox" id="sAnim"></label>
-      <label class="tog">Scientific notation (1.5e12)<input type="checkbox" id="sSci"></label>
-      <label class="tog">Sound effects<input type="checkbox" id="sSnd"></label>
+      <label class="tog">Animate picture<input type="checkbox" id="sAnim"></label>
+      <label class="tog">Scientific numbers<input type="checkbox" id="sSci"></label>
+      <label class="tog">Sound<input type="checkbox" id="sSnd"></label>
       <label class="tog">Vibration<input type="checkbox" id="sVib"></label>
       <label class="tog">Bigger text<input type="checkbox" id="sBig"></label>
-      <label class="tog">Color-blind friendly colors (blue and orange)<input type="checkbox" id="sCb"></label>
-      <label class="tog">Hide locked items in Store and Shop<input type="checkbox" id="sHide2"></label>
-      <label class="tog">Shop radio (background music)<input type="checkbox" id="sRadio"></label>
+      <label class="tog">Color-blind colors<input type="checkbox" id="sCb"></label>
+      <label class="tog">Hide locked items<input type="checkbox" id="sHide2"></label>
+      <label class="tog">Shop radio<input type="checkbox" id="sRadio"></label>
       <div class="tog" style="cursor:default">Appearance<div class="seg" id="theme"><button data-theme="auto">Auto</button><button data-theme="light">Light</button><button data-theme="dark">Dark</button></div></div></div>
     <h2>Save</h2><div class="card"><p class="sub">Saves on this device every few seconds. The game only runs while it's open; nothing happens while it's closed.</p>
       <button class="btn" id="copy">Copy save code</button>
@@ -1324,11 +1323,11 @@ const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
 /* store and shop prices only ever climb:
    - the newest item in an aisle costs at least STORE_WAIT (or SHOP_WAIT) seconds of your best income,
-   - and its first copy always costs 20% more than the 25th copy of the item before it
+   - and its first copy always costs 50% more than the 25th copy of the item before it
      (except shelf space and bay slots, see below),
    - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
      ones stays the cheaper choice and moving up always costs more. */
-const NEXT_UP=lg(1.2),NEXT_UP_S=lg(1.5),FLAT_UP={sh:1,vb:1},SH_WAIT=lg(7.5),SH_UP=lg(1.5);
+const NEXT_UP=lg(1.5),NEXT_UP_S=lg(1.5),FLAT_UP={sh:1,vb:1},SH_WAIT=lg(7.5),SH_UP=lg(1.5);
 function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
     after=p=>bBase(p)+lg(p.g2)*MAXC+(isS?NEXT_UP_S:NEXT_UP);
@@ -1336,7 +1335,7 @@ function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Mat
      it. Checkout, stocking and customer items get there by starting 50% above the old tier's 25th copy.
      Shelf steps are only about 10% bigger than the last, so that would stall the game; instead a new shelf
      step's first copy is 50% above the old step's next copy and rises as you buy more of the old one. Shelf
-     steps start from 4s of income (not 30s) to keep the pace. Bay slots carry on from their current price.
+     steps start from 4s of income (not 30s) to keep the pace. The shop follows the same 50% rule; bay slots carry on from their current price (they are one long row of the same thing).
      Prices never drop. */
   if(FLAT_UP[b.g]){const nextOf=p=>bBase(p)+lg(p.g2)*L(isS?S.b:S.sv.b,p.id)+SH_UP;
     const ch=b.g==='sh'&&b.j>0;const ow=ch?own-SH_WAIT:own;if(b.j>tj)return Math.max(ow,ch?nextOf(st[b.j-1]):NEG);
@@ -1682,6 +1681,8 @@ document.addEventListener('pointercancel',()=>busy=false,true);
 function setHTML(el,h){if(typeof el==='string')el=$(el);if(!el||el._h===h||busy)return;el._h=h;el.innerHTML=h}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kv=rows=>rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+/* the same rows as rounded tiles (Stats, Shop floor); the one holding things back is marked */
+const kvT=(rows,hot)=>rows.map(([a,b])=>`<div class="kt${hot&&a===hot?' hot':''}"><small>${a}</small><b>${b}</b></div>`).join('');
 /* money with a smaller suffix, so the digits stand out */
 const mHTML=L=>{const s=moneyL(L),m=s.match(/^(.*\d)([A-Za-z]+)$/);return m?`${m[1]}<em class="sfx">${m[2]}</em>`:s};
 const LOCK='<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
@@ -1794,7 +1795,7 @@ function buildJob(j){const steps=SV_STEPS[j],upto=Math.min(S.sv.top+1,steps[step
       `<div class="sku tt${s.t}" id="sr-${s.id}">${ik}<div class="sn"><b>${nm}</b><small id="si-${s.id}"></small>${BAR('srb-'+s.id)}</div><button class="btn pri" data-job="${s.id}" id="sb-${s.id}"></button></div>`}
   $('sjb-'+j).innerHTML=h}
 function updJob(s){const b=$('sb-'+s.id);if(!b)return;const n=L(S.sv.f,s.id),k=jobAmt(s),c=costL(s.lam,s.g,n,k),need=s.k===S.sv.top?svNeed(s):0,lE=lg(Math.max(R.sv.E,1e-300));
-  $('si-'+s.id).textContent=`×${fmt(n)}${need&&n<need?` of ${need}`:''} booked · ${n?moneyL(lg(n)+s.incL+lE)+'/s':moneyL(s.incL+lE)+'/s each'}`;
+  {const ke=$('si-'+s.id),kh=`<span class="rchips"><span class="rchip go">${n?moneyL(lg(n)+s.incL+lE)+'/s':moneyL(s.incL+lE)+'/s each'}</span><span class="rchip${n>=MAXC?' ok':''}">${fmt(n)}/${need&&n<need?need:MAXC}</span></span>`;if(ke._h!==kh){ke._h=kh;ke.innerHTML=kh}}
   b.innerHTML=`+${fmt(k)}<small>${mHTML(c)}</small>`;b.dataset.cl=c;b.disabled=!canPay(c)||SFAC+k>svSlots();
   const w=$('srb-'+s.id+'w');if(w){w.hidden=!(need&&n<need);if(!w.hidden)$('srb-'+s.id).style.width=Math.min(100,n/need*100)+'%'}}
 function openJob(){const c=svCur(),ln=$('sln-'+c.line),jd=$('sjd-'+c.job);if(!ln.open)ln.open=true;if(!jd.open)jd.open=true}
@@ -1824,8 +1825,8 @@ function renderShop(){const open=S.sv.open;$('shOpen').hidden=!open;$('shClosed'
   if(!open){setHTML('shClosed',`<div class="card"><p class="sub" style="margin:0">Open the service shop in the Service tab to start building bays, hiring technicians and buying tools.</p></div>`);return}
   recountSv();const v=R.sv;$('shHead').innerHTML=`${icSvg('dock')}Shop floor`;
   const limN={vb:'Booked work',vc:'Trucks coming in',vw:'Service writers',vt:'Technicians',ve:'Tools & equipment'}[v.lim];
-  $('shFlow').innerHTML=kv([['Booked work',fmt(v.work)+' hrs/s'],['Trucks coming in',fmt(v.dem)+' hrs/s'],['Service writers',fmt(v.wr)+' hrs/s'],['Technicians',fmt(v.tech)+' hrs/s'],['Tools & equipment',fmt(v.tools)+' hrs/s'],
-    ['Getting done',`${fmt(v.moved)} hrs/s (${Math.round(v.E*100)}%)`],['Holding the shop back',v.work>0?limN:'Nothing booked yet'],['Shop earns',moneyL(v.incL)+'/s']]);
+  setHTML('shFlow',kvT([['Booked work',fmt(v.work)+' hrs/s'],['Trucks coming in',fmt(v.dem)+' hrs/s'],['Service writers',fmt(v.wr)+' hrs/s'],['Technicians',fmt(v.tech)+' hrs/s'],['Tools & equipment',fmt(v.tools)+' hrs/s'],
+    ['Getting done',`${fmt(v.moved)} hrs/s (${Math.round(v.E*100)}%)`],['Holding the shop back',v.work>0?limN:'Nothing booked yet'],['Shop earns',moneyL(v.incL)+'/s']],v.work>0?limN:''));
   renderCaps(SHOP_O,{vb:svSlots(),vt:v.tech,vw:v.wr,vc:v.dem,ve:v.tools},v.work,v.lim==='vb'?null:v.lim,'vb',SFAC,{vc:'hrs wanted'})}
 
 /* ---------- more ---------- */
@@ -1834,9 +1835,9 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
   setHTML('goals',list.map(a=>`<div class="goal ${S.ach[a.id]?'ok':''}"><i></i>${esc(a.n)}</div>`).join('')||'<div class="empty">Nothing yet.</div>');
   setHTML('log',LOG.filter(([id])=>S.log[id]).sort((a,b)=>S.log[b[0]]-S.log[a[0]]).slice(0,30).map(([id,,tx])=>`<p><small>${new Date(S.log[id]).toLocaleDateString()}</small>${esc(tx)}</p>`).join(''));
   const mastered=BASES.filter(b=>{const st=BASE_STEPS[b];return L(S.f,st[st.length-1].id)>=BASE_NEED}).length;
-  $('stats').innerHTML=kv([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
+  setHTML('stats',kvT([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
     ['Products unlocked',`${fmt(S.top+1)} of ${fmt(NS)}`],['Parts mastered',`${mastered} of ${NB}`],['Facings',fmt(FAC)],['Incidents handled',fmt(S.st.incidents)],...lifeStats(),
-    ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]);
+    ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]));
   $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci;$('sSnd').checked=S.ui.snd;$('sVib').checked=S.ui.vib;renderCatalog();drawChart()}
 
 /* ---------- header ---------- */
@@ -1932,7 +1933,7 @@ function renderCatalog(){let tot=0,got=0;const per={};
   setHTML('cat',LINES.map(l=>{const [g,a]=per[l.id],open=catOpen[l.id];
     let body='';if(open)body='<div class="tiles">'+(LINE_BASES[l.id]||[]).map(b=>{const c=baseCounts(b);
       return `<button class="tile ${c.paS?'':'none'}" data-info="${b}"><i style="color:${c.paS?l.c:'var(--mute)'}">${icSvg(BASE_IC[b])}</i><b>${esc(BASE_NAME[b])}</b><small>${c.paS?`${c.brS} of ${c.br} brands`:'Not stocked'}</small></button>`}).join('')+'</div>';
-    return `<details class="older cat" ${open?'open':''} data-cat="${l.id}"><summary><span class="bn"><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i>${esc(l.n)}</span><small class="num">${g} / ${a}</small></summary>${body}</details>`}).join(''))}
+    return `<details class="older cat" ${open?'open':''} data-cat="${l.id}"><summary style="--p:${a?Math.round(g/a*100):0}%;--lc:${l.c}"><span class="bn"><i class="lic" style="background:${l.c}">${icSvg(LINE_IC[l.id])}</i>${esc(l.n)}</span><small class="num">${g} / ${a}</small></summary>${body}</details>`}).join(''))}
 document.addEventListener('toggle',e=>{const el=e.target;if(el.dataset&&el.dataset.cat){if(catOpen[el.dataset.cat]!==el.open){catOpen[el.dataset.cat]=el.open;$('cat')._h=null;renderCatalog()}}},true);
 
 /* ---------- part lookup sheet ---------- */
@@ -4060,7 +4061,7 @@ function tick(){if(typeof R==='undefined'||!R)return;
   /* greyed-out buttons say how long until you can afford them */
   const sec=document.querySelector('main>section:not([hidden])');if(sec)for(const b of sec.querySelectorAll('button[data-cl]')){const cl=+b.dataset.cl,want=b.disabled&&!canPay(cl)?etaL(cl):'',lab=want?'in '+want:'';if((b.dataset.eta||'')!==lab){if(lab)b.dataset.eta=lab;else delete b.dataset.eta}}
   /* next title */
-  if(rk){const k=RANKS.findIndex(r=>r[0]>S.st.totalL);let t='';if(k>0){const lo=Math.max(0,RANKS[k-1][0]),hi=RANKS[k][0],p=Math.max(0,Math.min(99,Math.floor((S.st.totalL-lo)/(hi-lo)*100)));t=`Next title: ${RANKS[k][1]} · ${p}%`}else if(k<0)t='Top title reached';if(rk.textContent!==t)rk.textContent=t}}
+  if(rk){const k=RANKS.findIndex(r=>r[0]>S.st.totalL);let t='';if(k>0){const lo=Math.max(0,RANKS[k-1][0]),hi=RANKS[k][0],p=Math.max(0,Math.min(99,Math.floor((S.st.totalL-lo)/(hi-lo)*100)));t=`<span>Next: ${RANKS[k][1]}</span><em><i style="width:${Math.max(3,p)}%"></i></em><b>${p}%</b>`}else if(k<0)t='<span>Top title reached</span>';if(rk._h!==t){rk._h=t;rk.innerHTML=t}}}
 setInterval(tick,500);tick();
 })();
 
@@ -4196,6 +4197,63 @@ const addAcc=()=>{const look=[...document.querySelectorAll('#t-more>details.fold
   const c=document.createElement('div');c.className='card';c.id='accCard';c.innerHTML=`<b>Accent colour</b><p class="sub" style="margin:4px 0 0">Colours the buttons, pills and highlights. Works with any look.</p><div id="accRow">${ACC.map(([v,n])=>`<button data-c="${v}" class="${v?'':'def'}" style="--c:${v||'#999'}" aria-label="${n}" title="${n}"></button>`).join('')}</div>`;
   c.addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(!b)return;S.ui.acc=b.dataset.c;applyAcc();save()});look.appendChild(c);applyAcc();return true};
 const ta=setInterval(()=>{if(addAcc())clearInterval(ta)},700);
+})();
+/* ---- pill pass 2: tiles, pill toggles, pill rows, one-row toolbars ---- */
+(function(){
+const css=`
+/* Stats + Shop floor as tiles */
+#stats.kv,#shFlow.kv{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.kt{background:var(--soft);border-radius:14px;padding:7px 10px;min-width:0}
+.kt small{display:block;font-size:11px;color:var(--mute);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kt b{display:block;font:700 16px/1.25 'Barlow Condensed',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kt.hot{background:color-mix(in srgb,var(--bad,#d33) 16%,var(--card));box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--bad,#d33) 55%,transparent)}
+.kt.hot b{color:var(--bad,#d33)}
+/* Settings as a pill grid */
+.card:has(#sAnim){display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.card:has(#sAnim)>:not(label.tog){grid-column:1/-1}
+.card:has(#sAnim) label.tog{min-height:38px;border-radius:999px;background:var(--soft);padding:0 12px;font-size:13px;font-weight:600;border:0;margin:0;justify-content:center;text-align:center;position:relative;transition:background .2s,color .2s}
+.card:has(#sAnim) label.tog input{position:absolute;opacity:0;pointer-events:none}
+.card:has(#sAnim) label.tog:has(input:checked){background:var(--acc);color:var(--on-acc,#fff)}
+/* Catalog departments as pill rows with a bar */
+details.cat>summary{position:relative;border-radius:999px;background:var(--soft);padding:8px 14px 10px!important;margin:4px 0;overflow:hidden}
+details.cat>summary::before{content:"";position:absolute;left:14px;right:14px;bottom:4px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--lc,var(--acc)) var(--p,0%),color-mix(in srgb,var(--mute) 22%,transparent) var(--p,0%))}
+/* Next title bar */
+#rkEta{display:flex!important;align-items:center;gap:6px}header.mini #rkEta{display:none!important}
+#rkEta span{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+#rkEta em{flex:0 0 46px;height:5px;border-radius:5px;background:color-mix(in srgb,var(--mute) 25%,transparent);overflow:hidden;display:block}
+#rkEta em i{display:block;height:100%;border-radius:5px;background:var(--acc);transition:width .4s}
+#rkEta b{flex:0 0 auto;font-weight:600;font-size:11px}
+/* Card headers in one row with a small ring */
+.capg{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.capg .gauge{width:44px!important;flex:0 0 44px}
+.capg .gauge svg{width:40px!important;height:40px!important}
+.capg .gauge small{display:none!important}
+.capg .gauge b{font-size:11px!important;height:40px!important}
+/* One toolbar */
+.row.tbar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.row.tbar .seg{flex:1 1 auto;min-width:0}
+.row.tbar label.tog.mini{flex:0 0 auto;min-height:32px;margin:0;padding:0 10px;border-radius:999px;background:var(--card);box-shadow:var(--sh);font-size:12px;font-weight:600;gap:6px;white-space:nowrap}
+.row.tbar label.tog.mini:has(input:checked){background:var(--acc);color:var(--on-acc,#fff)}
+.row.tbar label.tog.mini input{position:absolute;opacity:0;pointer-events:none}
+.tbi{flex:0 0 32px;height:32px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--sh);font:italic 700 15px Georgia,serif;color:var(--mute);cursor:pointer}
+.tbi.on{background:var(--acc);color:var(--on-acc,#fff)}
+section:has(.tbar) details.intro{margin:0 0 10px}section:has(.tbar) details.intro>summary{display:none}
+section:has(.tbar) details.intro:not([open]){display:none}
+/* Brand / level rows as slim chips */
+.fit{display:inline-flex!important;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:var(--soft);margin:10px 0 4px;font-weight:700;font-size:13px;width:auto!important}
+.fit:not(:has(.bdg)){padding-left:10px}
+.fit small{display:none}.fit .bdg{border-radius:999px;font-size:10px;padding:2px 7px}
+/* Service job headers as slim pills */
+details.line{border-radius:999px;border-left:0;box-shadow:var(--sh)}
+details.line[open]{border-radius:20px}
+details.line>summary{grid-template-columns:26px minmax(0,1fr) auto 12px!important;gap:8px!important;padding:7px 14px 7px 8px!important}
+details.line>summary .lic{width:26px;height:26px;border-radius:50%}
+details.line>summary .lsum b{font-size:15px!important}
+details.line>summary .lsum small{font-size:11.5px}
+details.line>summary .lval{font-size:14px}
+`;
+const st=document.createElement('style');st.id='pill2';st.textContent=css;document.head.appendChild(st);
+document.addEventListener('click',e=>{const b=e.target.closest('.tbi[data-intro]');if(!b)return;const sec=b.closest('section'),d=sec&&sec.querySelector('details.intro');if(!d)return;d.open=!d.open;b.classList.toggle('on',d.open)});
 })();
 
 </script>

@@ -50,11 +50,11 @@ const STORE_WAIT=lg(30),SHOP_WAIT=lg(75);
 const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,lg(.5));
 /* store and shop prices only ever climb:
    - the newest item in an aisle costs at least STORE_WAIT (or SHOP_WAIT) seconds of your best income,
-   - and its first copy always costs 20% more than the 25th copy of the item before it
+   - and its first copy always costs 50% more than the 25th copy of the item before it
      (except shelf space and bay slots, see below),
    - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
      ones stays the cheaper choice and moving up always costs more. */
-const NEXT_UP=lg(1.2),NEXT_UP_S=lg(1.5),FLAT_UP={sh:1,vb:1},SH_WAIT=lg(7.5),SH_UP=lg(1.5);
+const NEXT_UP=lg(1.5),NEXT_UP_S=lg(1.5),FLAT_UP={sh:1,vb:1},SH_WAIT=lg(7.5),SH_UP=lg(1.5);
 function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
     after=p=>bBase(p)+lg(p.g2)*MAXC+(isS?NEXT_UP_S:NEXT_UP);
@@ -62,7 +62,7 @@ function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Mat
      it. Checkout, stocking and customer items get there by starting 50% above the old tier's 25th copy.
      Shelf steps are only about 10% bigger than the last, so that would stall the game; instead a new shelf
      step's first copy is 50% above the old step's next copy and rises as you buy more of the old one. Shelf
-     steps start from 4s of income (not 30s) to keep the pace. Bay slots carry on from their current price.
+     steps start from 4s of income (not 30s) to keep the pace. The shop follows the same 50% rule; bay slots carry on from their current price (they are one long row of the same thing).
      Prices never drop. */
   if(FLAT_UP[b.g]){const nextOf=p=>bBase(p)+lg(p.g2)*L(isS?S.b:S.sv.b,p.id)+SH_UP;
     const ch=b.g==='sh'&&b.j>0;const ow=ch?own-SH_WAIT:own;if(b.j>tj)return Math.max(ow,ch?nextOf(st[b.j-1]):NEG);

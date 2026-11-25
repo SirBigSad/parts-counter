@@ -7,6 +7,8 @@ document.addEventListener('pointercancel',()=>busy=false,true);
 function setHTML(el,h){if(typeof el==='string')el=$(el);if(!el||el._h===h||busy)return;el._h=h;el.innerHTML=h}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const kv=rows=>rows.map(([a,b])=>`<span>${a}</span><span>${b}</span>`).join('');
+/* the same rows as rounded tiles (Stats, Shop floor); the one holding things back is marked */
+const kvT=(rows,hot)=>rows.map(([a,b])=>`<div class="kt${hot&&a===hot?' hot':''}"><small>${a}</small><b>${b}</b></div>`).join('');
 /* money with a smaller suffix, so the digits stand out */
 const mHTML=L=>{const s=moneyL(L),m=s.match(/^(.*\d)([A-Za-z]+)$/);return m?`${m[1]}<em class="sfx">${m[2]}</em>`:s};
 const LOCK='<svg class="lki" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
@@ -119,7 +121,7 @@ function buildJob(j){const steps=SV_STEPS[j],upto=Math.min(S.sv.top+1,steps[step
       `<div class="sku tt${s.t}" id="sr-${s.id}">${ik}<div class="sn"><b>${nm}</b><small id="si-${s.id}"></small>${BAR('srb-'+s.id)}</div><button class="btn pri" data-job="${s.id}" id="sb-${s.id}"></button></div>`}
   $('sjb-'+j).innerHTML=h}
 function updJob(s){const b=$('sb-'+s.id);if(!b)return;const n=L(S.sv.f,s.id),k=jobAmt(s),c=costL(s.lam,s.g,n,k),need=s.k===S.sv.top?svNeed(s):0,lE=lg(Math.max(R.sv.E,1e-300));
-  $('si-'+s.id).textContent=`×${fmt(n)}${need&&n<need?` of ${need}`:''} booked · ${n?moneyL(lg(n)+s.incL+lE)+'/s':moneyL(s.incL+lE)+'/s each'}`;
+  {const ke=$('si-'+s.id),kh=`<span class="rchips"><span class="rchip go">${n?moneyL(lg(n)+s.incL+lE)+'/s':moneyL(s.incL+lE)+'/s each'}</span><span class="rchip${n>=MAXC?' ok':''}">${fmt(n)}/${need&&n<need?need:MAXC}</span></span>`;if(ke._h!==kh){ke._h=kh;ke.innerHTML=kh}}
   b.innerHTML=`+${fmt(k)}<small>${mHTML(c)}</small>`;b.dataset.cl=c;b.disabled=!canPay(c)||SFAC+k>svSlots();
   const w=$('srb-'+s.id+'w');if(w){w.hidden=!(need&&n<need);if(!w.hidden)$('srb-'+s.id).style.width=Math.min(100,n/need*100)+'%'}}
 function openJob(){const c=svCur(),ln=$('sln-'+c.line),jd=$('sjd-'+c.job);if(!ln.open)ln.open=true;if(!jd.open)jd.open=true}
@@ -149,8 +151,8 @@ function renderShop(){const open=S.sv.open;$('shOpen').hidden=!open;$('shClosed'
   if(!open){setHTML('shClosed',`<div class="card"><p class="sub" style="margin:0">Open the service shop in the Service tab to start building bays, hiring technicians and buying tools.</p></div>`);return}
   recountSv();const v=R.sv;$('shHead').innerHTML=`${icSvg('dock')}Shop floor`;
   const limN={vb:'Booked work',vc:'Trucks coming in',vw:'Service writers',vt:'Technicians',ve:'Tools & equipment'}[v.lim];
-  $('shFlow').innerHTML=kv([['Booked work',fmt(v.work)+' hrs/s'],['Trucks coming in',fmt(v.dem)+' hrs/s'],['Service writers',fmt(v.wr)+' hrs/s'],['Technicians',fmt(v.tech)+' hrs/s'],['Tools & equipment',fmt(v.tools)+' hrs/s'],
-    ['Getting done',`${fmt(v.moved)} hrs/s (${Math.round(v.E*100)}%)`],['Holding the shop back',v.work>0?limN:'Nothing booked yet'],['Shop earns',moneyL(v.incL)+'/s']]);
+  setHTML('shFlow',kvT([['Booked work',fmt(v.work)+' hrs/s'],['Trucks coming in',fmt(v.dem)+' hrs/s'],['Service writers',fmt(v.wr)+' hrs/s'],['Technicians',fmt(v.tech)+' hrs/s'],['Tools & equipment',fmt(v.tools)+' hrs/s'],
+    ['Getting done',`${fmt(v.moved)} hrs/s (${Math.round(v.E*100)}%)`],['Holding the shop back',v.work>0?limN:'Nothing booked yet'],['Shop earns',moneyL(v.incL)+'/s']],v.work>0?limN:''));
   renderCaps(SHOP_O,{vb:svSlots(),vt:v.tech,vw:v.wr,vc:v.dem,ve:v.tools},v.work,v.lim==='vb'?null:v.lim,'vb',SFAC,{vc:'hrs wanted'})}
 
 /* ---------- more ---------- */
@@ -159,9 +161,9 @@ function renderMore(){const done=Object.keys(S.ach).length;$('achs').textContent
   setHTML('goals',list.map(a=>`<div class="goal ${S.ach[a.id]?'ok':''}"><i></i>${esc(a.n)}</div>`).join('')||'<div class="empty">Nothing yet.</div>');
   setHTML('log',LOG.filter(([id])=>S.log[id]).sort((a,b)=>S.log[b[0]]-S.log[a[0]]).slice(0,30).map(([id,,tx])=>`<p><small>${new Date(S.log[id]).toLocaleDateString()}</small>${esc(tx)}</p>`).join(''));
   const mastered=BASES.filter(b=>{const st=BASE_STEPS[b];return L(S.f,st[st.length-1].id)>=BASE_NEED}).length;
-  $('stats').innerHTML=kv([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
+  setHTML('stats',kvT([['Time played',fmtT(S.st.play)],['Total earned',moneyL(S.st.totalL)],['Earning now',moneyL(R.incL)+'/s'],['Units moving',fmt(R.moved)+'/s'],
     ['Products unlocked',`${fmt(S.top+1)} of ${fmt(NS)}`],['Parts mastered',`${mastered} of ${NB}`],['Facings',fmt(FAC)],['Incidents handled',fmt(S.st.incidents)],...lifeStats(),
-    ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]);
+    ...(S.sv.open?[['Shop earns',moneyL(R.sv.incL)+'/s'],['Job steps unlocked',`${fmt(S.sv.top+1)} of ${fmt(NSV)}`],['Jobs mastered',`${SV_JOBS.filter(([j])=>{const st=SV_STEPS[j];return L(S.sv.f,st[st.length-1].id)>=BASE_NEED}).length} of ${SV_JOBS_N}`],['Jobs booked',fmt(SFAC)]]:[['Service shop','Not open yet']])]));
   $('sAnim').checked=S.ui.anim;$('sSci').checked=S.ui.sci;$('sSnd').checked=S.ui.snd;$('sVib').checked=S.ui.vib;renderCatalog();drawChart()}
 
 /* ---------- header ---------- */
