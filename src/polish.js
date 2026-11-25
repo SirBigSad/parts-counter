@@ -9,7 +9,7 @@ let mini=false;addEventListener('scroll',()=>{const y=scrollY;if(!mini&&y>160){m
 /* tabs slide in from the side you tapped */
 let lastTabI=TABS.findIndex(t=>t[0]===tab);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;const i=TABS.findIndex(t=>t[0]===b.dataset.tab),sec=$('t-'+b.dataset.tab);if(!sec||i===lastTabI)return;
-  sec.style.setProperty('--tx',(i>lastTabI?14:-14)+'px');sec.classList.remove('tabin');void sec.offsetWidth;if(S.ui.anim)sec.classList.add('tabin');lastTabI=i});
+  sec.style.setProperty('--tx',(i>lastTabI?40:-40)+'px');sec.classList.remove('tabin');void sec.offsetWidth;if(S.ui.anim)sec.classList.add('tabin');lastTabI=i});
 
 
 /* the slim goal bar in the shrunken header */

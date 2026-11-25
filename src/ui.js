@@ -43,7 +43,7 @@ function buildBase(b){const steps=BASE_STEPS[b],upto=Math.min(S.top+1,steps[step
   $('bb-'+b).innerHTML=h}
 const rollL={};const roll=(id,t)=>{const p=rollL[id];const v=(p===undefined||!isFinite(p)||Math.abs(t-p)>3)?t:p+(t-p)*.4;rollL[id]=Math.abs(t-v)<.001?t:v;return rollL[id]};
 function updRow(s){const b=$('kb-'+s.id);if(!b)return;const n=L(S.f,s.id),k=skuAmt(s),c=costL(s.lam,s.g,n,k),need=s.k===S.top?needOf(s):0;
-  $('ki-'+s.id).textContent=`${n?`${moneyL(roll(s.id,lg(n)+s.incL+lg(Math.max(R.E,1e-300))))}/s`:`${moneyL(s.incL+lg(Math.max(R.E,1e-300)))}/s each`} · ${fmt(n)}${need&&n<need?` of ${need} needed`:` of ${MAXC} stocked`}`;
+  {const ke=$('ki-'+s.id),kh=`<span class="rchips"><span class="rchip go">${n?`${moneyL(roll(s.id,lg(n)+s.incL+lg(Math.max(R.E,1e-300))))}/s`:`${moneyL(s.incL+lg(Math.max(R.E,1e-300)))}/s each`}</span><span class="rchip${n>=MAXC?' ok':''}">${fmt(n)}${need&&n<need?`/${need} to unlock`:`/${MAXC}`}</span></span>`;if(ke._h!==kh){ke._h=kh;ke.innerHTML=kh}}
   const full=n>=MAXC;$('r-'+s.id).classList.toggle('full',full);if(full){b.innerHTML='Full';delete b.dataset.cl;b.disabled=true}else{b.innerHTML=`+${fmt(k)}<small>${mHTML(c)}</small>`;b.dataset.cl=c;b.disabled=!canPay(c)||FAC+k>shelfCap()||!onShelf(s)}
   const w=$('rb-'+s.id+'w');if(w){w.hidden=!(need&&n<need);if(!w.hidden)$('rb-'+s.id).style.width=Math.min(100,n/need*100)+'%'}}
 function baseLvl(b){const st=BASE_STEPS[b];return st[0].k<=S.top}

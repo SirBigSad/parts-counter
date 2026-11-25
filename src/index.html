@@ -209,7 +209,7 @@ header.mini{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}
 .awn{position:relative;height:30px;margin:0 6px -6px;border-radius:10px 10px 0 0;background:repeating-linear-gradient(90deg,var(--acc) 0 22px,light-dark(#fff,#e9ebef) 22px 44px);z-index:1;display:grid;place-items:center;box-shadow:0 3px 6px rgba(0,0,0,.2)}
 .awn::after{content:'';position:absolute;left:0;right:0;bottom:-7px;height:8px;background:radial-gradient(circle at 11px -1px,var(--acc) 7px,transparent 7.5px) 0 0/44px 8px,radial-gradient(circle at 33px -1px,light-dark(#fff,#e9ebef) 7px,transparent 7.5px) 0 0/44px 8px}
 .awn span{background:light-dark(#1b1d20,#101215);color:#fff;font:700 13px/1 'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:5px;box-shadow:0 1px 3px rgba(0,0,0,.4);max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-main>section.tabin{animation:tabin .22s ease-out}@keyframes tabin{from{opacity:0;transform:translateX(var(--tx,14px))}to{opacity:1;transform:none}}
+main>section.tabin{animation:tabin .3s cubic-bezier(.2,.9,.3,1)}@keyframes tabin{from{opacity:0;transform:translateX(var(--tx,14px))}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){main>section.tabin,#cps.pulse{animation:none}}
 
 /* ---------- polish pass 2 ---------- */
@@ -431,6 +431,6 @@ details.line>summary{position:relative;overflow:hidden}.dart{position:absolute;r
 <script src="ux.js"></script>
 <script src="skins.js"></script>
 <script src="skinlay.js"></script>
-<script src="decoart.js"></script><script src="decofam.js"></script><script src="deco.js"></script><script src="uxv2.js"></script><script src="uxv3.js"></script>
+<script src="decoart.js"></script><script src="decofam.js"></script><script src="deco.js"></script><script src="uxv2.js"></script><script src="uxv3.js"></script><script src="uxpill.js"></script>
 </body>
 </html>
