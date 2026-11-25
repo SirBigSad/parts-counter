@@ -4023,6 +4023,46 @@ function tick(){if(typeof R==='undefined'||!R)return;const t=typeof tab==='strin
   if(shopBtn){const op=!!S.sv.open;shopBtn.hidden=!op;if(wasOpen===false&&op){shopBtn.classList.add('born');if(typeof note==='function')note('The Shop tab is open: hire staff and buy tools for the service shop.')}wasOpen=op}}
 setInterval(tick,400);tick();
 })();
+/* ===== Layout pass 2: maxed items shrink to one slim line, greyed buttons say how long until you can afford
+   them, incidents are a small pill on the store picture, money suffixes explain themselves when tapped, the
+   header shows the next title, buying gives a little "+1" pop, and only the next locked item is listed. ===== */
+(()=>{
+const css=document.createElement('style');css.textContent=`
+.sku.full{padding-top:5px!important;padding-bottom:5px!important;min-height:0!important;opacity:.62}
+.sku.full .sn small,.sku.full .rbar,.sku.full>button,.sku.full .ski{display:none!important}.sku.full .sn b::after{content:'  ✓ 25 of 25';font-weight:600;font-size:.8em;color:#2ec4a6}
+.item.full{padding-top:6px!important;padding-bottom:6px!important;min-height:0!important;opacity:.62}.item.full>p,.item.full>button,.item.full>.rbar,.item.full .stamp{display:none!important}.item.full h3{margin:0!important;font-size:15px!important}.item.full .ct::after{content:' ✓';color:#2ec4a6}
+.item.locked:has(+.item.locked){display:none!important}.sku.locked+.sku.locked{display:none!important}
+button[data-eta]{position:relative}button[data-eta]::after{content:attr(data-eta);position:absolute;top:-8px;right:-4px;padding:1px 6px;border-radius:999px;background:#2a2440;color:#fff;font:600 10.5px system-ui,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+#stage>#inc{position:absolute!important;right:8px;bottom:8px;left:auto;top:auto;z-index:3;margin:0!important;display:flex;align-items:center;gap:8px;max-width:calc(100% - 150px);padding:5px 5px 5px 12px!important;border-radius:999px!important;font-size:12.5px!important;line-height:1.2;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+#stage>#inc[hidden]{display:none!important}#stage>#inc #incTxt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#stage>#inc .btn{flex:none;min-height:30px!important;padding:0 12px!important;font-size:13px!important;border-radius:999px!important;white-space:nowrap}
+body.decoopen #stage>#inc{display:none!important}
+#rkEta{display:block;font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:62vw;margin-top:1px}header.mini #rkEta{display:none}
+#cash .sfx,#cash{cursor:help}
+.pop1{position:fixed;z-index:80;pointer-events:none;font:800 18px 'Barlow Condensed',sans-serif;color:#2ec4a6;text-shadow:0 1px 3px rgba(0,0,0,.5);animation:pop1 .8s ease-out forwards}@keyframes pop1{0%{opacity:0;transform:translate(-50%,0) scale(.7)}15%{opacity:1;transform:translate(-50%,-8px) scale(1.15)}100%{opacity:0;transform:translate(-50%,-46px) scale(1)}}
+.sku.bought,.item.bought{animation:bought .5s ease-out}@keyframes bought{0%{background-color:rgba(46,196,166,.28)}100%{background-color:transparent}}`;
+document.head.appendChild(css);
+const $=id=>document.getElementById(id);
+/* incidents become a pill on the picture */
+const inc=$('inc'),stage=$('stage');if(inc&&stage)stage.appendChild(inc);
+/* the next title */
+const where=$('where');let rk=null;if(where){rk=document.createElement('small');rk.id='rkEta';where.after(rk)}
+const NAMES={K:'thousand',M:'million',B:'billion',T:'trillion',Qa:'quadrillion',Qi:'quintillion',Sx:'sextillion',Sp:'septillion',Oc:'octillion',No:'nonillion',Dc:'decillion',Ud:'undecillion',Dd:'duodecillion',Td:'tredecillion',Qad:'quattuordecillion',Qid:'quindecillion',Sxd:'sexdecillion',Spd:'septendecillion',Ocd:'octodecillion',Nod:'novemdecillion',Vg:'vigintillion'};
+document.addEventListener('click',e=>{const c=e.target.closest('#cash');if(!c)return;const sx=(c.querySelector('.sfx')||{}).textContent||'';const i=U3.indexOf(sx);
+  note(i>=0?`${sx} means ${NAMES[sx]||sx}: a 1 followed by ${(i+1)*3} zeros. Settings can show numbers like 4.1e${(i+1)*3} instead.`:'Big numbers use short names like K (thousand), M (million) and B (billion). Settings can show them in scientific form instead.')});
+const dur=s=>s<1?'now':s<60?Math.ceil(s)+'s':s<3600?Math.ceil(s/60)+'m':s<86400?Math.round(s/3600)+'h':s<86400*30?Math.round(s/86400)+'d':'a while';
+/* time from now until a log-dollar amount is affordable at the current income */
+const etaL=cl=>{const inc=R&&R.incL;if(!isFinite(inc)||inc<-50)return '';if(S.cashL>=cl)return '';const d=cl-inc;if(d>9)return 'a while';const t=10**d-(isFinite(S.cashL)?10**(S.cashL-inc):0);return dur(Math.max(1,t))};
+/* buying gives a little pop */
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-sku],button[data-bld],button[data-job],button[data-shp],button[data-svb]');if(!b||b.disabled||!S.ui.anim)return;
+  const t=(b.childNodes[0]&&b.childNodes[0].textContent||'+1').trim(),r=b.getBoundingClientRect(),p=document.createElement('div');p.className='pop1';p.textContent=t;p.style.left=(r.left+r.width/2)+'px';p.style.top=(r.top-4)+'px';document.body.appendChild(p);setTimeout(()=>p.remove(),850);
+  const row=b.closest('.sku,.item');if(row){row.classList.remove('bought');void row.offsetWidth;row.classList.add('bought')}},true);
+function tick(){if(typeof R==='undefined'||!R)return;
+  /* greyed-out buttons say how long until you can afford them */
+  const sec=document.querySelector('main>section:not([hidden])');if(sec)for(const b of sec.querySelectorAll('button[data-cl]')){const cl=+b.dataset.cl,want=b.disabled&&!canPay(cl)?etaL(cl):'',lab=want?'in '+want:'';if((b.dataset.eta||'')!==lab){if(lab)b.dataset.eta=lab;else delete b.dataset.eta}}
+  /* next title */
+  if(rk){const k=RANKS.findIndex(r=>r[0]>S.st.totalL);let t='';if(k>0){const lo=Math.max(0,RANKS[k-1][0]),hi=RANKS[k][0],p=Math.max(0,Math.min(99,Math.floor((S.st.totalL-lo)/(hi-lo)*100)));t=`Next title: ${RANKS[k][1]} · ${p}%`}else if(k<0)t='Top title reached';if(rk.textContent!==t)rk.textContent=t}}
+setInterval(tick,500);tick();
+})();
 
 </script>
 </body>
