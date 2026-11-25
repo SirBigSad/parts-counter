@@ -1328,16 +1328,18 @@ const incNow=()=>Math.max(isFinite(R.incL)?R.incL:-9,S.pk===undefined?NEG:S.pk,l
      (except shelf space and bay slots, see below),
    - once something newer unlocks, an item keeps its price (it never drops), so finishing the older
      ones stays the cheaper choice and moving up always costs more. */
-const NEXT_UP=lg(1.2),FLAT_UP={sh:1,vb:1};
+const NEXT_UP=lg(1.2),NEXT_UP_S=lg(1.5),FLAT_UP={sh:1,vb:1},SH_WAIT=lg(7.5),SH_UP=lg(1.5);
 function bBase(b){const isS=!!AISLE_SPEC[b.g],st=isS?AISLE[b.g]:SHOP[b.g],tj=Math.min(st.length-1,(isS?S.sTop:S.sv.sTop)[b.g]),
     own=incNow()+(isS?STORE_WAIT:SHOP_WAIT),fl=S.bfl||(S.bfl={}),k=(isS?'s.':'v.')+b.id,
-    after=p=>bBase(p)+lg(p.g2)*MAXC+NEXT_UP;
-  /* shelf space and bay slots go up in small steps (each about 10% bigger than the last), so a new step
-     doesn't jump past the old one's 25th copy. A new shelf step's first copy costs at least what the old
-     step's next copy cost when the new one unlocked (its 11th), so moving up is never the cheaper-looking
-     choice at that moment. Shelf steps wait a little less (24s of income) to keep the pace. Never drops. */
-  if(FLAT_UP[b.g]){const nextOf=p=>bBase(p)+lg(p.g2)*Math.min(L(isS?S.b:S.sv.b,p.id),UNLOCK_N);
-    const ch=b.g==='sh'&&b.j>0;const ow=ch?own-lg(1.25):own;if(b.j>tj)return Math.max(ow,ch?nextOf(st[b.j-1]):NEG);
+    after=p=>bBase(p)+lg(p.g2)*MAXC+(isS?NEXT_UP_S:NEXT_UP);
+  /* Store-wide rule: a newer tier's first copy costs at least 50% more than the next copy of the tier before
+     it. Checkout, stocking and customer items get there by starting 50% above the old tier's 25th copy.
+     Shelf steps are only about 10% bigger than the last, so that would stall the game; instead a new shelf
+     step's first copy is 50% above the old step's next copy and rises as you buy more of the old one. Shelf
+     steps start from 4s of income (not 30s) to keep the pace. Bay slots carry on from their current price.
+     Prices never drop. */
+  if(FLAT_UP[b.g]){const nextOf=p=>bBase(p)+lg(p.g2)*L(isS?S.b:S.sv.b,p.id)+SH_UP;
+    const ch=b.g==='sh'&&b.j>0;const ow=ch?own-SH_WAIT:own;if(b.j>tj)return Math.max(ow,ch?nextOf(st[b.j-1]):NEG);
     const v=b.j===tj?Math.max(ow,ch?nextOf(st[b.j-1]):NEG):ow+lg(b.amt/st[tj].amt);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}
   if(b.j>tj)return Math.max(own,after(st[b.j-1]));
   if(b.j===tj){const v=Math.max(own,b.j>0?after(st[b.j-1]):NEG);fl[k]=Math.max(fl[k]===undefined?NEG:fl[k],v);return fl[k]}

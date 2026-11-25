@@ -35,6 +35,8 @@ const mark=(name)=>{milestones.push({name,t});
 function checkPrices(){const st=S();
   for(const g in G.AISLE){const a=G.AISLE[g];for(let j=0;j<=Math.min(a.length-1,st.sTop[g]+1);j++){const b=a[j],p=G.bPrice(b),k='s'+b.id;
     if(!isFinite(p))err(`price of ${b.n} is ${p}`);
+    /* store-wide: a newer tier's first copy costs at least 50% more than the next copy of the tier before it */
+    if(j>0&&j<=st.sTop[g]&&!(st.b[b.id]>0)){const pv=a[j-1],nx=G.bPrice(pv)+Math.log10(pv.g2)*(st.b[pv.id]||0);if(p<nx+Math.log10(1.5)-1e-6)err(`${b.n} first copy ${fmtL(p)} is less than 1.5x the next ${pv.n} (${fmtL(nx)})`)}
     if(j<=st.sTop[g]&&lastPrice[k]!==undefined&&p<lastPrice[k]-1e-9)err(`price of ${b.n} dropped from ${fmtL(lastPrice[k])} to ${fmtL(p)}`);if(j<=st.sTop[g])lastPrice[k]=Math.max(p,lastPrice[k]??-1e9);
     if(j>0&&!G.FLAT_UP[g]){const prev=a[j-1],last=G.costL(G.bPrice(prev),prev.g2,G.MAXC-1,1);if(p<last-1e-9)err(`${b.n} (1st copy) is cheaper than the 25th ${prev.n}`)}}}
   if(st.sv.open)for(const g in G.SHOP){const a=G.SHOP[g];for(let j=0;j<=Math.min(a.length-1,st.sv.sTop[g]+1);j++){const b=a[j],p=G.bPrice(b),k='v'+b.id;
