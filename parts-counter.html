@@ -1755,12 +1755,16 @@ const sRow=(s,c,o)=>{const own=o.own(),tops=o.tops();if(s.j>tops[s.g])return `<d
 const sItem=(st,it,c,all,o)=>{const tops=o.tops(),rows=st.filter(s=>s.it===it&&(all||s.j<=tops[s.g]+3));const own=rows.filter(s=>s.j<=tops[s.g]).length,tot=st.filter(s=>s.it===it).length;
   return `<div class="ihd"><b class="bn">${icSvg(rows[0].ic)}${esc(rows[0].item)}</b><small>${own} of ${tot} unlocked</small></div>`+rows.slice().reverse().map(s=>sRow(s,c,o)).join('')};
 /* vals: what each group provides now; need: what it has to keep up with; slot: the group measured in slots */
+/* which shelf step unlocks a store item, in words that match the Shelves tab */
+function unlockAt(kb){const it=LADDER[kb],cur=LADDER[S.top],first=b=>LADDER.findIndex(x=>x.base===b),stepOf=k=>k-first(LADDER[k].base)+1;
+  if(cur&&cur.base===it.base)return `It unlocks when ${esc(shortName(it))} unlocks on the Shelves tab: step ${fmt(stepOf(kb))} of this part (you're on step ${fmt(stepOf(S.top))}).`;
+  return `It unlocks when you reach ${esc(shortName(it))} on the Shelves tab: ${esc(lc(BASE_NAME[it.base]))}, step ${fmt(stepOf(kb))} (part ${BASES.indexOf(it.base)+1}).`}
 function renderCaps(o,vals,need,lim,slot,used,lbl){const own=o.own(),tops=o.tops();
   for(const [g,c] of Object.entries(o.spec)){const v=vals[g],isLim=lim===g,st=o.ais[g],top=tops[g],cs=st[top];
     $('cg-'+g).innerHTML=g===slot?`<b class="num">${fmt(used)} / ${fmt(v)}</b> ${c.unit}`:`<b class="num" style="color:${isLim?'var(--bad)':'inherit'}">${fmt(v)}</b> / ${fmt(need)} ${lbl[g]||'needed'}`;
     const pct=g===slot?used/v:Math.min(1,v/Math.max(need,1e-9)),m=$('cm-'+g);setHTML('cgg-'+g,gauge(g===slot?used/Math.max(v,1e-9):v/Math.max(need,1e-9),(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)',g===slot));m.style.width=Math.min(100,pct*100)+'%';m.style.background=(g===slot?pct>.95:pct<.999)?'var(--bad)':'var(--good)';
     const n=L(own,cs.id);
-    const nx=st[top+1],wait=nx&&n>=UNLOCK_N&&g!=='sh'&&g!=='vb'?(o===SHOP_O?(S.sv.top<nx.kb?`It unlocks once the shop reaches job step ${fmt(nx.kb+1)} (you're on ${fmt(S.sv.top+1)}).`:''):(S.top<nx.kb?`It unlocks once you reach ${esc(lc(BASE_NAME[LADDER[nx.kb].base]))} on the parts list (part ${BASES.indexOf(LADDER[nx.kb].base)+1}).`:'')):'';
+    const nx=st[top+1],wait=nx&&n>=UNLOCK_N&&g!=='sh'&&g!=='vb'?(o===SHOP_O?(S.sv.top<nx.kb?`It unlocks once the shop reaches job step ${fmt(nx.kb+1)} (you're on ${fmt(S.sv.top+1)}).`:''):(S.top<nx.kb?unlockAt(nx.kb):'')):'';
     setHTML('cp-'+g,top<st.length-1?`<small>Step ${top+1} of ${st.length} · Own ${UNLOCK_N} ${esc(cs.n)} to unlock ${esc(nx.n)}. ${wait}</small><div class="meter"><i style="width:${Math.min(1,n/UNLOCK_N)*100}%"></i></div><small class="num">${fmt(Math.min(n,UNLOCK_N))} / ${UNLOCK_N}</small>`
       :`<small>Step ${st.length} of ${st.length} · Everything here is unlocked.</small>`);
     setHTML('ci-'+g,sItem(st,cs.it,c,false,o));
