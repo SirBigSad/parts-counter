@@ -50,20 +50,43 @@ jobs:
           }
           EOF2
           cat > main.js <<'EOF2'
-          const { app, BrowserWindow, shell } = require('electron');
-          const path = require('path');
+          const { app, BrowserWindow, shell, screen } = require('electron');
+          const path = require('path'), fs = require('fs');
           // keep the save in the same place every time, even though the portable exe unpacks to a temp folder
           app.setPath('userData', path.join(app.getPath('appData'), 'PartsCounter'));
+          // remember the window's size, position and maximized state between runs
+          const stateFile = () => path.join(app.getPath('userData'), 'window.json');
+          function readState() {
+            try {
+              const s = JSON.parse(fs.readFileSync(stateFile(), 'utf8'));
+              // only reuse the spot if it is still on a connected screen
+              const onScreen = screen.getAllDisplays().some(d => { const a = d.workArea; return s.x >= a.x - 50 && s.y >= a.y - 50 && s.x < a.x + a.width - 100 && s.y < a.y + a.height - 100; });
+              return onScreen ? s : { width: s.width, height: s.height, max: s.max };
+            } catch (e) {
+              // first run: most of the screen, so the computer layout has room
+              const a = screen.getPrimaryDisplay().workArea;
+              return { width: Math.min(1600, Math.round(a.width * 0.9)), height: Math.min(1000, Math.round(a.height * 0.9)), max: a.width < 1400 };
+            }
+          }
           function open() {
+            const s = readState();
             const win = new BrowserWindow({
-              width: 1280, height: 900, minWidth: 380, minHeight: 600,
+              x: s.x, y: s.y, width: s.width || 1280, height: s.height || 900, minWidth: 380, minHeight: 600,
               backgroundColor: '#101215', autoHideMenuBar: true, title: 'Parts Counter',
               webPreferences: { contextIsolation: true, backgroundThrottling: false }
             });
+            if (s.max) win.maximize();
             win.setMenu(null);
             win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
+            // F11 toggles full screen; Escape leaves it
+            win.webContents.on('before-input-event', (e, input) => {
+              if (input.type !== 'keyDown') return;
+              if (input.key === 'F11') { win.setFullScreen(!win.isFullScreen()); e.preventDefault(); }
+              else if (input.key === 'Escape' && win.isFullScreen()) win.setFullScreen(false);
+            });
+            const keep = () => { try { const b = win.getNormalBounds(); fs.mkdirSync(app.getPath('userData'), { recursive: true }); fs.writeFileSync(stateFile(), JSON.stringify({ x: b.x, y: b.y, width: b.width, height: b.height, max: win.isMaximized() })); } catch (e) {} };
             // save right before the window closes, so nothing is lost
-            win.on('close', () => { win.webContents.executeJavaScript("typeof save==='function'&&save()").catch(() => {}); });
+            win.on('close', () => { keep(); win.webContents.executeJavaScript("typeof save==='function'&&save()").catch(() => {}); });
             win.loadFile('index.html');
           }
           app.whenReady().then(open);
