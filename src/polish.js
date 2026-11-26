@@ -5,7 +5,11 @@ function fillPass(){for(const b of document.querySelectorAll('button[data-cl]'))
 let lastInc=null;function pulsePass(){const v=R.incL;if(lastInc!==null&&isFinite(v)&&v>lastInc+lg(1.004)){const el=$('cps');el.classList.remove('pulse');void el.offsetWidth;el.classList.add('pulse')}lastInc=v}
 /* the header shrinks once you scroll down the list */
 /* two thresholds so the header can't flip back and forth while its own height changes */
-let mini=false;addEventListener('scroll',()=>{const y=scrollY;if(!mini&&y>160){mini=true;$('top').classList.add('mini')}else if(mini&&y<24){mini=false;$('top').classList.remove('mini')}},{passive:true});
+/* the header shrinks once you scroll down. Two guards stop it flickering: the browser must not shift the
+   page to make up for the header shrinking (overflow-anchor), and it only shrinks when the page is tall
+   enough to stay scrolled down after it does */
+document.documentElement.style.overflowAnchor='none';
+let mini=false;addEventListener('scroll',()=>{const y=scrollY;if(!mini&&y>160&&document.documentElement.scrollHeight-innerHeight>420){mini=true;$('top').classList.add('mini')}else if(mini&&y<24){mini=false;$('top').classList.remove('mini')}},{passive:true});
 /* tabs slide in from the side you tapped */
 let lastTabI=TABS.findIndex(t=>t[0]===tab);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(!b)return;const i=TABS.findIndex(t=>t[0]===b.dataset.tab),sec=$('t-'+b.dataset.tab);if(!sec||i===lastTabI)return;
